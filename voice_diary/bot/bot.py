@@ -118,7 +118,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 
 def sendDelayed(message):
-	print("Delayed timer!")
+	print("Озвучивание текста")
 
 	from synth_speech import text_to_audio
 	text_to_audio(config["dir"] + '/v_tts.ogg', message.text)
@@ -126,6 +126,8 @@ def sendDelayed(message):
 	bot.reply_to(message, 'Озвучивание:')
 	voice = open(config["dir"] + '/v_tts.ogg', 'rb')
 	bot.send_voice(message.char.id, voice)
+
+	print("Текст озвучен")
 
 
 def draw_intensity_praat(intensity):
@@ -252,7 +254,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-	
+
 	sendDelayed(message)
 	t = threading.Timer(1.0, sendDelayed, [message])
 	t.start()
