@@ -1,3 +1,7 @@
 key.json
 .aws*
 .aws/*
+
+*.wav
+*.ogg
+*.opus
