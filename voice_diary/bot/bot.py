@@ -194,9 +194,7 @@ def process_voice_message(message):
 
 	bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-	deplayed_recognition(message, downloaded_file)
-
-	t = threading.Timer(1.0, deplayed_recognition, [message, downloaded_file])
+	t = threading.Timer(1.0, deplayed_recognition, [path_user_logs, message, downloaded_file])
 	t.start()
 
 	print("Audio saved")
