@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>cards/DBT.json</file>
+        <file>cards/BPD.json</file>
+        <file>cards/DBT_skills.json</file>
+    </qresource>
+</RCC>

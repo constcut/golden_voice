@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/consoleLog.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/audioHandler.qml</file>
+        <file>qml/WaveshapeQML.qml</file>
+        <file>qml/ACFQML.qml</file>
+        <file>qml/STFTQML.qml</file>
+        <file>qml/CQTQML.qml</file>
+        <file>qml/FiltersQML.qml</file>
+        <file>qml/CepstrumQML.qml</file>
+        <file>qml/config.qml</file>
+        <file>qml/recorder.qml</file>
+        <file>qml/SingleRecord.qml</file>
+        <file>qml/text.qml</file>
+        <file>qml/calendar.qml</file>
+        <file>qml/diaryCard.qml</file>
+        <file>qml/testsEngine.qml</file>
+        <file>qml/YearCalendar.qml</file>
+        <file>qml/testsResults.qml</file>
+        <file>qml/diaryCardRecords.qml</file>
+        <file>qml/pageView.qml</file>
+    </qresource>
+</RCC>

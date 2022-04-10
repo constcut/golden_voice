@@ -1,0 +1,62 @@
+{
+    "name" : "Bipolar",
+
+    "groups" : [
+        {
+            "name" : "main",
+
+            "fields"  : [
+                {
+                    "name" : "mood",
+                    "type" : "range",
+                    "rangeMin" : -3,
+                    "rangeMax" : 3
+                },
+                {
+                    "name" : "sleep",
+                    "type" : "real"
+                },
+                {
+                    "name" : "anxiety"
+                },
+                {
+                    "name" : "irritability"
+                }
+            ]
+        },
+        {
+            "name" : "women",
+            "fields" : [
+                {
+                    "name" : "menstruation"
+                }
+            ],
+            "mandatory" : false
+        },
+        {
+            "name" : "substance",
+            "fields" : [
+                {
+                    "name" : "alcohol"
+                },
+                {
+                    "name" : "drugs"
+                },
+                {
+                    "name" : "meds",
+                    "type" : "text"
+                }
+            ]
+        },
+        {
+            "name" : "weight",
+            "onMonthDays" : [14, 28],
+            "fields" : [
+                {
+                    "name" : "weight",
+                    "type" : "real"
+                }
+            ]
+        }
+    ] 
+}

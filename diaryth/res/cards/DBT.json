@@ -1,0 +1,139 @@
+{
+    "name" : "DBT",
+
+    "enums" : [
+        {
+            "name" : "SkillsEnum",
+            "values" : [0,1,2,3,4,5,6,7],
+            "names" : ["None", "Thought, didn't want", "Thought, wanted", "Failed", "Didn't help", "Did help", "Auto no help", "Auto help"],
+            "showValues" : true 
+        }
+    ],
+
+    "groups" : [
+        {
+            "name" : "Strong intention",
+
+            "fields" : [
+                {
+                    "name" : "Sucide",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Selfharm",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Drugs",
+                    "type" : "range",
+                    "rangeMax" : 5
+                }
+            ]
+        },
+        {
+            "name" : "Rates for day",
+
+            "fields" : [
+                {
+                    "name": "Drained",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name": "Tiered",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name": "Joy",
+                    "type" : "range",
+                    "rangeMax" : 5
+                }
+            ]
+        },
+        {
+            "name" : "Drugs-meds",
+            "fields" : [
+                {
+                    "name": "alcohol",
+                    "type": "text"
+                },
+                {
+                    "name": "drugs",
+                    "type": "text"
+                },
+                {
+                    "name": "recipe meds",
+                    "type": "text"
+                },
+                {
+                    "name": "no recipe meds",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "name" : "Actions",
+
+            "fields" : [
+                {
+                    "name": "Selfharm"
+                },
+                {
+                    "name": "Lie"
+                },
+                {
+                    "name": "Skills",
+                    "type": "enum",
+                    "enumName" : "SkillsEnum"
+                }
+            ]
+        },
+        {
+            "name" : "Emotions",
+
+            "fields" : [
+                {
+                    "name" : "Pain",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Sadness",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Shame",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Fear",
+                    "type" : "range",
+                    "rangeMax" : 5
+                },
+                {
+                    "name" : "Anger",
+                    "type" : "range",
+                    "rangeMax" : 5
+                }
+            ]
+        },
+        {
+            "name" : "TEST",
+            "fields" : [
+                {
+                    "name" : "int",
+                    "type" : "int"
+                }, 
+                {
+                    "name" : "real",
+                    "type" : "real"
+                }
+            ]
+        }
+    ]
+}
