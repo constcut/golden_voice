@@ -36,5 +36,5 @@ def synthesize(folder_id, iam_token, text):
 if __name__ == "__main__":
 
     with open(config["dir"] + "/chech.ogg", "wb") as f:
-        for audio_content in synthesize('', '', "Проверка синтеза самого простого текста"):
+        for audio_content in synthesize('', '', "Продолжение экспериментов"):
             f.write(audio_content)
