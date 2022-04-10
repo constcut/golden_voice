@@ -1,4 +1,3 @@
-import argparse
 from distutils.command.config import config
 import requests
 import json
@@ -9,12 +8,8 @@ with open('key.json', 'r') as file:
 key = config["api-key"]
 
 
-def synthesize(folder_id, iam_token, text):
+def text_to_speech(text):
     url = 'https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize'
-    headers = {
-        'Authorization': 'Bearer ' + iam_token,
-    }
-
 
     header = {'Authorization': 'Api-Key {}'.format(key)}
 
@@ -22,7 +17,6 @@ def synthesize(folder_id, iam_token, text):
         'text': text,
         'lang': 'ru-RU',
         'voice': 'filipp',
-        #'folderId': folder_id
     }
 
     with requests.post(url, headers=header, data=data, stream=True) as resp:
@@ -33,8 +27,7 @@ def synthesize(folder_id, iam_token, text):
             yield chunk
 
 
-if __name__ == "__main__":
-
-    with open(config["dir"] + "/chech.ogg", "wb") as f:
-        for audio_content in synthesize('', '', "Продолжение экспериментов"):
+def text_to_audio(filename, text):
+    with open(filename, "wb") as f:
+        for audio_content in text_to_speech('', '', text):
             f.write(audio_content)
