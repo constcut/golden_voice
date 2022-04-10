@@ -109,6 +109,26 @@ def saveImages(input_filename, output_filepath):
 	return full_dict, voice_report_str
 
 
+def deplayed_recognition(path_user_logs, message, downloaded_file):
+
+	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
+	spectrum_file_path = path_user_logs
+
+	print(record_file_path, " <- filepath")
+
+	with open(os.path.join(record_file_path), 'wb') as new_file:
+		new_file.write(downloaded_file)
+
+	full_dict, voice_report = saveImages(record_file_path, spectrum_file_path)
+
+	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
+	bot.send_photo(message.chat.id, rosaInfo)
+
+	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
+	bot.send_photo(message.chat.id, praatInfo)
+
+	bot.reply_to(message, voice_report)
+
 
 def saveBlend(y,  sr, output_filename):
 
@@ -158,9 +178,7 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
 
-	t = threading.Timer(3.0, sendDelayed, [message])
-	t.start()
-
+	#TODO speech generation
 	bot.reply_to(message, message.text)
 
 
@@ -174,27 +192,12 @@ def process_voice_message(message):
 	file_info = bot.get_file(message.voice.file_id)
 	downloaded_file = bot.download_file(file_info.file_path)
 
-	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-	spectrum_file_path = path_user_logs
-
 	bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-	print(record_file_path, " <- filepath")
+	deplayed_recognition(message, downloaded_file)
 
-	with open(os.path.join(record_file_path), 'wb') as new_file:
-		new_file.write(downloaded_file)
-
-	full_dict, voice_report = saveImages(record_file_path, spectrum_file_path)
-
-	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
-	bot.send_photo(message.chat.id, rosaInfo)
-
-	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
-	bot.send_photo(message.chat.id, praatInfo)
-
-	#TODO some more?
-	#bot.reply_to(message, str(full_dict))
-	bot.reply_to(message, voice_report)
+	t = threading.Timer(1.0, deplayed_recognition, [message, downloaded_file])
+	t.start()
 
 	print("Audio saved")
 
