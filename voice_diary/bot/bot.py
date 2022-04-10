@@ -20,6 +20,7 @@ from subprocess import check_call #used for ffmpeg ogg to wav
 
 import threading
 import time
+import requests
 
 
 with open('key.json', 'r') as file:
@@ -97,7 +98,7 @@ def saveImages(input_filename, output_filepath):
 	print(duration, meanF0, stdevF0)
 
 	full_dict = {"duration":duration, "meanF0": meanF0, "stdevF0": stdevF0, "local jitter": localJitter,
-	"local shimmer": localShimmer}
+	"local shimmer": localShimmer} #TODO new params from python praat scripts site
 
 	pulses = call([snd, pitch], "To PointProcess (cc)")
 	voice_report_str = call([snd, pitch, pulses], "Voice report", 0.0, 0.0, 75, 600, 1.3, 1.6, 0.03, 0.45)
@@ -108,26 +109,6 @@ def saveImages(input_filename, output_filepath):
 	#Refactoring + some more: https://github.com/drfeinberg/PraatScripts/blob/master/Measure%20Pitch%2C%20HNR%2C%20Jitter%2C%20Shimmer%2C%20and%20Formants.ipynb
 	return full_dict, voice_report_str
 
-
-def deplayed_recognition(path_user_logs, message, downloaded_file):
-
-	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-	spectrum_file_path = path_user_logs
-
-	print(record_file_path, " <- filepath")
-
-	with open(os.path.join(record_file_path), 'wb') as new_file:
-		new_file.write(downloaded_file)
-
-	full_dict, voice_report = saveImages(record_file_path, spectrum_file_path)
-
-	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
-	bot.send_photo(message.chat.id, rosaInfo)
-
-	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
-	bot.send_photo(message.chat.id, praatInfo)
-
-	bot.reply_to(message, voice_report)
 
 
 def saveBlend(y,  sr, output_filename):
@@ -194,6 +175,7 @@ def process_voice_message(message):
 
 	bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+
 	t = threading.Timer(1.0, deplayed_recognition, [path_user_logs, message, downloaded_file])
 	t.start()
 
@@ -206,3 +188,33 @@ print("Starting bot")
 bot.infinity_polling()
 
 print("Bot is done")
+
+
+
+
+
+def deplayed_recognition(path_user_logs, message, downloaded_file):
+
+	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
+	spectrum_file_path = path_user_logs
+
+	print(record_file_path, " <- filepath")
+
+	with open(os.path.join(record_file_path), 'wb') as new_file:
+		new_file.write(downloaded_file)
+
+	from cloud_storage import upload_file
+
+	alias_name = "a" + message.chat.id  + "b" + message.id + ".ogg"
+
+	upload_file(record_file_path,  alias_name)
+
+	_, voice_report = saveImages(record_file_path, spectrum_file_path)
+
+	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
+	bot.send_photo(message.chat.id, rosaInfo)
+
+	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
+	bot.send_photo(message.chat.id, praatInfo)
+
+	bot.reply_to(message, voice_report)
