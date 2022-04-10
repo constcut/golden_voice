@@ -16,7 +16,8 @@ def text_to_speech(text):
     data = {
         'text': text,
         'lang': 'ru-RU',
-        'voice': 'filipp',
+        'voice': 'filip', #filip, alena, jane
+        #'emotion' : 'good' #neutral
     }
 
     with requests.post(url, headers=header, data=data, stream=True) as resp:
