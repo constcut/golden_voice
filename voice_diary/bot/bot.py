@@ -24,9 +24,97 @@ import requests
 
 
 with open('key.json', 'r') as file:
-    key = json.load(file)
+    config = json.load(file)
 
-bot = telebot.TeleBot(key["key"])
+bot = telebot.TeleBot(config["key"])
+
+
+
+def deplayed_recognition(path_user_logs, message, downloaded_file):
+
+	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
+	spectrum_file_path = path_user_logs
+
+	print(record_file_path, " <- filepath")
+
+	with open(os.path.join(record_file_path), 'wb') as new_file:
+		new_file.write(downloaded_file)
+
+	from cloud_storage import upload_file
+
+	alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
+
+	upload_file(record_file_path,  alias_name)
+
+	key = config["api-key"]
+	filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name #TODO или даже хранить алиас без расширения
+
+	POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
+
+	body ={
+		"config": {
+			"specification": {
+				"languageCode": "ru-RU"
+			}
+		},
+		"audio": {
+			"uri": filelink
+		}
+	}
+
+	header = {'Authorization': 'Api-Key {}'.format(key)}
+
+	req = requests.post(POST, headers=header, json=body)
+	data = req.json()
+	print(data)
+
+	id = data['id']
+
+	_, voice_report = saveImages(record_file_path, spectrum_file_path)
+
+	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
+	bot.send_photo(message.chat.id, rosaInfo)
+
+	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
+	bot.send_photo(message.chat.id, praatInfo)
+
+	bot.reply_to(message, voice_report)
+
+	while True:
+
+		GET = "https://operation.api.cloud.yandex.net/operations/{id}"
+		req = requests.get(GET.format(id=id), headers=header)
+		req = req.json()
+
+		if req['done']: break
+		print("Not ready")
+
+		time.sleep(10) #TODO рассчитывать от длины изначального аудио
+
+	print("Response:")
+
+	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+
+	print(full_string)
+
+	with open(config['dir'] + '/stt.json', 'w') as outfile:
+		outfile.write(full_string)
+
+	text_lines = []
+	message_text = ""
+
+	print("Text chunks:")
+	for chunk in req['response']['chunks']:
+		print(chunk['alternatives'][0]['text'])
+		text_lines.append(chunk['alternatives'][0]['text']) #TODO check alternatives
+		message_text += chunk['alternatives'][0]['text'] + "\n"
+		
+	bot.reply_to(message, message_text)
+
+	doc = open(config['dir'] + '/stt.json', 'rb')
+	bot.send_document(message.chat.id, doc)
+
+
 
 
 def sendDelayed(message):
@@ -166,7 +254,7 @@ def echo_all(message):
 @bot.message_handler(content_types=['voice'])
 def process_voice_message(message):
 
-	path_user_logs = key["dir"] + '/' + str(message.chat.id)
+	path_user_logs = config["dir"] + '/' + str(message.chat.id)
 	if not os.path.exists(path_user_logs):
 		os.makedirs(path_user_logs)
 
@@ -190,31 +278,3 @@ bot.infinity_polling()
 print("Bot is done")
 
 
-
-
-
-def deplayed_recognition(path_user_logs, message, downloaded_file):
-
-	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-	spectrum_file_path = path_user_logs
-
-	print(record_file_path, " <- filepath")
-
-	with open(os.path.join(record_file_path), 'wb') as new_file:
-		new_file.write(downloaded_file)
-
-	from cloud_storage import upload_file
-
-	alias_name = "a" + message.chat.id  + "b" + message.id + ".ogg"
-
-	upload_file(record_file_path,  alias_name)
-
-	_, voice_report = saveImages(record_file_path, spectrum_file_path)
-
-	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
-	bot.send_photo(message.chat.id, rosaInfo)
-
-	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
-	bot.send_photo(message.chat.id, praatInfo)
-
-	bot.reply_to(message, voice_report)
