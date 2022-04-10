@@ -32,6 +32,3 @@ def text_to_audio(filename, text):
     with open(filename, "wb") as f:
         for audio_content in text_to_speech(text):
             f.write(audio_content)
-
-#
-#text_to_audio("try.ogg", "Только короткие фразы работают?")
