@@ -32,6 +32,5 @@ def text_to_audio(filename, text):
         for audio_content in text_to_speech(text):
             f.write(audio_content)
 
-
-
-text_to_audio(config["dir"] + '/v_tts.ogg', "Только короткие фразы работают?")
+#
+#text_to_audio("try.ogg", "Только короткие фразы работают?")

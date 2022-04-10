@@ -121,11 +121,11 @@ def sendDelayed(message):
 	print("Озвучивание текста")
 
 	from synth_speech import text_to_audio
-	text_to_audio(config["dir"] + '/v_tts.ogg', message.text)
+	text_to_audio("123.ogg", message.text)
 
 	bot.reply_to(message, 'Озвучивание:')
-	voice = open(config["dir"] + '/v_tts.ogg', 'rb')
-	bot.send_voice(message.char.id, voice)
+	voice = open("123.ogg", 'rb')
+	bot.send_voice(message.chat.id, voice)
 
 	print("Текст озвучен")
 
@@ -254,8 +254,6 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-
-	sendDelayed(message)
 	t = threading.Timer(1.0, sendDelayed, [message])
 	t.start()
 
