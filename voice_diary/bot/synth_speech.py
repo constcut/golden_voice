@@ -1,5 +1,12 @@
 import argparse
+from distutils.command.config import config
 import requests
+import json
+
+
+with open('key.json', 'r') as file:
+    config = json.load(file)
+key = config["api-key"]
 
 
 def synthesize(folder_id, iam_token, text):
@@ -8,14 +15,17 @@ def synthesize(folder_id, iam_token, text):
         'Authorization': 'Bearer ' + iam_token,
     }
 
+
+    header = {'Authorization': 'Api-Key {}'.format(key)}
+
     data = {
         'text': text,
         'lang': 'ru-RU',
         'voice': 'filipp',
-        'folderId': folder_id
+        #'folderId': folder_id
     }
 
-    with requests.post(url, headers=headers, data=data, stream=True) as resp:
+    with requests.post(url, headers=header, data=data, stream=True) as resp:
         if resp.status_code != 200:
             raise RuntimeError("Invalid response received: code: %d, message: %s" % (resp.status_code, resp.text))
 
@@ -24,13 +34,7 @@ def synthesize(folder_id, iam_token, text):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--token", required=True, help="IAM token")
-    parser.add_argument("--folder_id", required=True, help="Folder id")
-    parser.add_argument("--text", required=True, help="Text for synthesize")
-    parser.add_argument("--output", required=True, help="Output file name")
-    args = parser.parse_args()
 
-    with open(args.output, "wb") as f:
-        for audio_content in synthesize(args.folder_id, args.token, args.text):
+    with open(config["dir"] + "/chech.ogg", "wb") as f:
+        for audio_content in synthesize('', '', "Проверка синтеза самого простого текста"):
             f.write(audio_content)
