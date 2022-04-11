@@ -95,7 +95,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
-	
+
 
 	#Кодовая вакханалия
 
@@ -155,8 +155,10 @@ def draw_pitch_praat(pitch):
 
 
 def saveImages(input_filename, output_filepath):
+	
+	if os.path.exists(output_filepath + '/pcm.wav'):
+		os.remove(output_filepath +"/pcm.wav")
 
-	os.remove(output_filepath +"/pcm.wav")
 	command = f"ffmpeg -i {input_filename} -ar 16000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav
 	_ = check_call(command.split())
 
