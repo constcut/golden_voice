@@ -1,3 +1,4 @@
+from cmath import pi
 import os
 import datetime
 
@@ -95,7 +96,13 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
-	print("INFO: ", len(f0), len(rms), len(pitch), len(intensity))
+	print("RMS: ", len(rms[0]), " ", len(intensity))
+
+	f0_step = duration / len(f0)
+	pitch_step = duration / len(pitch)
+	intensity_step = duration / len(intensity)
+
+	print("F0 step ", f0_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 
 	words = []
 
@@ -107,8 +114,32 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 			for word in alt['words']:
 
-				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": word['startTime'],
-							   "endTime": word['endTime'], "confidence": word['confidence']} #channel tag left away
+				start = word['startTime']
+				end = word['endTime']
+
+				f0_idx_start = start / f0_step
+				f0_idx_end = end / f0_step
+
+				f0_cut = []
+				for i in range(f0_idx_start, f0_idx_end + 1):
+					f0_cut.append(f0[i])
+
+				pitch_idx_start = start / pitch_step
+				pitch_idx_end = end / pitch_step
+
+				pitch_cut = []
+				for i in range(pitch_idx_start, pitch_idx_end + 1):
+					pitch_cut.append(pitch[i])
+
+				intens_idx_start = start / intensity_step
+				intens_idx_end = end / intensity_step
+
+				intens_cut = []
+				for i in range(intens_idx_start, intens_idx_end + 1):
+					intens_cut.append(intensity[i])
+	
+				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": start,
+							   "endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
 
 				words.append(singleWord)
 
@@ -116,9 +147,12 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 		chunkId += 1
 
-	#Кодовая вакханалия
+	root_element = {"words": words}
+	json_report = json.dumps(root_element, indent = 4) 
 
-	#print(full_string)
+	#Кодовая вакханалия
+	with open(config['dir'] + '/full_report.json', 'w') as outfile:
+		outfile.write(json_report)
 
 	with open(config['dir'] + '/stt.json', 'w') as outfile:
 		outfile.write(full_string)
@@ -135,6 +169,9 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	bot.reply_to(message, message_text)
 
 	doc = open(config['dir'] + '/stt.json', 'rb')
+	bot.send_document(message.chat.id, doc)
+
+	doc = open(config['dir'] + '/full_report.json', 'rb')
 	bot.send_document(message.chat.id, doc)
 
 
