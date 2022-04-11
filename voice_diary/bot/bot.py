@@ -114,8 +114,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 			for word in alt['words']:
 
-				start = word['startTime']
-				end = word['endTime']
+				start = float(word['startTime'])
+				end = float(word['endTime'])
 
 				f0_idx_start = start / f0_step
 				f0_idx_end = end / f0_step
@@ -137,9 +137,15 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 				intens_cut = []
 				for i in range(intens_idx_start, intens_idx_end + 1):
 					intens_cut.append(intensity[i])
-	
+
+
+				#TODO full praat info for the word?
+
+				#TODO mean, median, mode
+				import statistics
+
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": start,
-							   "endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
+				"endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
 
 				words.append(singleWord)
 
