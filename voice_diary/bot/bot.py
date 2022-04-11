@@ -103,7 +103,11 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	pitch_step = duration / len(pitch)
 	intensity_step = duration / len(intensity)
 
+	pitch = pitch.to_array()
+	intensity = intensity.to_array()
+
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
+	print(type(f0), type(rms), type(pitch), type(intensity))
 
 	words = []
 
@@ -130,16 +134,15 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 				pitch_cut = []
 				for i in range(pitch_idx_start, pitch_idx_end + 1):
-					pitch_cut.append(pitch[i])
+					pitch_cut.append(float(pitch[i]))
 
 				intens_idx_start = int(start / intensity_step)
 				intens_idx_end = int(end / intensity_step)
 
 				intens_cut = []
-				#for i in range(intens_idx_start, intens_idx_end + 1):
-				#	intens_cut.append(intensity[i])
+				for i in range(intens_idx_start, intens_idx_end + 1):
+					intens_cut.append(float(intensity[i]))
 
-					
 				rms_idx_start = int(start / rms_step)
 				rms_idx_end = int(end / rms_step)
 
@@ -229,6 +232,7 @@ def saveImages(input_filename, output_filepath):
 	if os.path.exists(output_filepath + '/pcm.wav'):
 		os.remove(output_filepath +"/pcm.wav")
 
+	#update SR
 	command = f"ffmpeg -i {input_filename} -ar 16000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav
 	_ = check_call(command.split())
 
