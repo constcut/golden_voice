@@ -103,8 +103,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	pitch_step = duration / len(pitch)
 	intensity_step = duration / len(intensity)
 
-	pitch = pitch.to_array()
-	intensity = intensity.to_array()
+	pitch = pitch.to_array().selected_array['frequency']
+	intensity = intensity.t_bins()
 
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
@@ -133,15 +133,15 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 				pitch_idx_end = int(end / pitch_step)
 
 				pitch_cut = []
-				for i in range(pitch_idx_start, pitch_idx_end + 1):
-					pitch_cut.append(float(pitch[i]))
+				#for i in range(pitch_idx_start, pitch_idx_end + 1):
+				#	pitch_cut.append(pitch[i])
 
 				intens_idx_start = int(start / intensity_step)
 				intens_idx_end = int(end / intensity_step)
 
 				intens_cut = []
-				for i in range(intens_idx_start, intens_idx_end + 1):
-					intens_cut.append(float(intensity[i]))
+				#for i in range(intens_idx_start, intens_idx_end + 1):
+				#	intens_cut.append(intensity[i])
 
 				rms_idx_start = int(start / rms_step)
 				rms_idx_end = int(end / rms_step)
@@ -156,7 +156,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 				import statistics
 
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": start,
-				"endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "RMS": rms_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
+				"endTime": end, "confidence": word['confidence'], "pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut), "dB": list(intens_cut)} #channel tag left away
 
 				words.append(singleWord)
 
