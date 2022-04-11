@@ -68,7 +68,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	id = data['id']
 
-	_, voice_report = saveImages(record_file_path, spectrum_file_path)
+	_, voice_report = saveImages(record_file_path, spectrum_file_path) #TODO возвращать больше! yin, rms, intencity, praat pitch
 
 	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
 	bot.send_photo(message.chat.id, rosaInfo)
@@ -95,7 +95,24 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
+	words = []
 
+	chunkId = 0
+	for chunk in req['response']['chunks']:
+
+		altId = 0
+		for alt in chunk['alternatives']:
+
+			for word in alt['words']:
+
+				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": word['startTime'],
+							   "endTime": word['endTime'], "confidence": word['confidence']} #channel tag left away
+
+				words.append(singleWord)
+
+			altId += 1
+
+		chunkId += 1
 
 	#Кодовая вакханалия
 
