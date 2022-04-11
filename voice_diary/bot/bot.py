@@ -68,7 +68,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	id = data['id']
 
-	_, voice_report = saveImages(record_file_path, spectrum_file_path) #TODO возвращать больше! yin, rms, intencity, praat pitch
+	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_file_path) 
 
 	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
 	bot.send_photo(message.chat.id, rosaInfo)
@@ -95,6 +95,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
+	print("INFO: ", len(f0), len(rms), len(pitch), len(intensity))
+
 	words = []
 
 	chunkId = 0
@@ -116,7 +118,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
-	print(full_string)
+	#print(full_string)
 
 	with open(config['dir'] + '/stt.json', 'w') as outfile:
 		outfile.write(full_string)
@@ -182,7 +184,7 @@ def saveImages(input_filename, output_filepath):
 	temp_wav = output_filepath + "/pcm.wav"
 
 	y, sr = librosa.load(temp_wav) #input_filename
-	saveBlend(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
+	f0, rms = saveBlend(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
 	#TODO выделить в подфункцию
 
@@ -204,29 +206,17 @@ def saveImages(input_filename, output_filepath):
 	#Дополнительный анализ
 	f0min = 60
 	f0max = 300
-	unit = "Hertz"
 
-	duration = call(snd, "Get total duration") # duration
 	pitch = call(snd, "To Pitch", 0.0, f0min, f0max) #create a praat pitch object
-	meanF0 = call(pitch, "Get mean", 0, 0, unit) # get mean pitch
-	stdevF0 = call(pitch, "Get standard deviation", 0 ,0, unit) # get standard deviation
-	pointProcess = call(snd, "To PointProcess (periodic, cc)", f0min, f0max)
-	localJitter = call(pointProcess, "Get jitter (local)", 0, 0, 0.0001, 0.02, 1.3)
-	localShimmer =  call([snd, pointProcess], "Get shimmer (local)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
-
-	print(duration, meanF0, stdevF0)
-
-	full_dict = {"duration":duration, "meanF0": meanF0, "stdevF0": stdevF0, "local jitter": localJitter,
-	"local shimmer": localShimmer} #TODO new params from python praat scripts site
-
 	pulses = call([snd, pitch], "To PointProcess (cc)")
 	voice_report_str = call([snd, pitch, pulses], "Voice report", 0.0, 0.0, 75, 600, 1.3, 1.6, 0.03, 0.45)
 
+	duration = call(snd, "Get total duration") # duration
 
 	#https://stackoverflow.com/questions/45237091/how-to-automate-voice-reports-for-praat
 	#https://www.fon.hum.uva.nl/praat/manual/Voice_6__Automating_voice_analysis_with_a_script.html
 	#Refactoring + some more: https://github.com/drfeinberg/PraatScripts/blob/master/Measure%20Pitch%2C%20HNR%2C%20Jitter%2C%20Shimmer%2C%20and%20Formants.ipynb
-	return full_dict, voice_report_str
+	return voice_report_str, f0, rms, pitch, intensity, duration
 
 
 
@@ -267,6 +257,8 @@ def saveBlend(y,  sr, output_filename):
 	fig.set_size_inches(12, 9)
 
 	plt.savefig(output_filename, bbox_inches='tight')
+
+	return f0, rms #voiced_flag, voiced_probs
 
 
 
