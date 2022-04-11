@@ -103,8 +103,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	pitch_step = duration / len(pitch)
 	intensity_step = duration / len(intensity)
 
-	pitch = pitch.to_array().selected_array['frequency']
-	intensity = intensity.t_bins()
+	#pitch = pitch.to_array()
+	#intensity = intensity.t_bins()
 
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
