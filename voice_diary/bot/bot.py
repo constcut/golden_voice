@@ -99,10 +99,11 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	print("RMS: ", len(rms[0]), " ", len(intensity))
 
 	f0_step = duration / len(f0)
+	rms_step = duration / len(rms[0])
 	pitch_step = duration / len(pitch)
 	intensity_step = duration / len(intensity)
 
-	print("F0 step ", f0_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
+	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 
 	words = []
 
@@ -117,35 +118,42 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 				start = float(word['startTime'][:-1])
 				end = float(word['endTime'][:-1])
 
-				f0_idx_start = start / f0_step
-				f0_idx_end = end / f0_step
+				f0_idx_start = int(start / f0_step)
+				f0_idx_end = int(end / f0_step)
 
 				f0_cut = []
 				for i in range(f0_idx_start, f0_idx_end + 1):
 					f0_cut.append(f0[i])
 
-				pitch_idx_start = start / pitch_step
-				pitch_idx_end = end / pitch_step
+				pitch_idx_start = int(start / pitch_step)
+				pitch_idx_end = int(end / pitch_step)
 
 				pitch_cut = []
 				for i in range(pitch_idx_start, pitch_idx_end + 1):
 					pitch_cut.append(pitch[i])
 
-				intens_idx_start = start / intensity_step
-				intens_idx_end = end / intensity_step
+				intens_idx_start = int(start / intensity_step)
+				intens_idx_end = int(end / intensity_step)
 
 				intens_cut = []
-				for i in range(intens_idx_start, intens_idx_end + 1):
-					intens_cut.append(intensity[i])
+				#for i in range(intens_idx_start, intens_idx_end + 1):
+				#	intens_cut.append(intensity[i])
+
+					
+				rms_idx_start = int(start / rms_step)
+				rms_idx_end = int(end / rms_step)
+
+				rms_cut = []
+				for i in range(rms_idx_start, rms_idx_end + 1):
+					rms_cut.append(rms[0][i])
 
 
 				#TODO full praat info for the word?
-
 				#TODO mean, median, mode
 				import statistics
 
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": start,
-				"endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
+				"endTime": end, "confidence": word['confidence'], "pYin": f0_cut, "RMS": rms_cut, "pPitch": pitch_cut, "dB": intens_cut} #channel tag left away
 
 				words.append(singleWord)
 
