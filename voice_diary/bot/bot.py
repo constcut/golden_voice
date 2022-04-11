@@ -12,8 +12,6 @@ import numpy as np
 import parselmouth
 from parselmouth.praat import call
 
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 from subprocess import check_call #used for ffmpeg ogg to wav
@@ -94,6 +92,12 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	print("Response:")
 
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+
+	#Кодовая вакханалия
+
+	
+
+	#Кодовая вакханалия
 
 	print(full_string)
 
