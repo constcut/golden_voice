@@ -114,8 +114,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 			for word in alt['words']:
 
-				start = float(word['startTime'])
-				end = float(word['endTime'])
+				start = float(word['startTime'][:-1])
+				end = float(word['endTime'][:-1])
 
 				f0_idx_start = start / f0_step
 				f0_idx_end = end / f0_step
