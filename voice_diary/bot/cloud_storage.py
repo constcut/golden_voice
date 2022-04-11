@@ -59,10 +59,6 @@ def delete_file(alias): #TODO + another function to clean all using time (after 
 
 
 
-upload_file('C:/Users/constcut/Desktop/bot_records/580761785/record_1058.ogg', 'present_test2.ogg')
-
-
-
 #Допольнительная справочная информация:
 # Создать новый бакет
 #s3.create_bucket(Bucket=key["bucket"])
