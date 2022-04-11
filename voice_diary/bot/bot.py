@@ -95,8 +95,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
 
 	#Кодовая вакханалия
-
-	
+	intensity = intensity.values.T
 
 	f0_step = duration / len(f0)
 	rms_step = duration / len(rms[0])
@@ -104,12 +103,14 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	intensity_step = duration / len(intensity)
 
 	pitch = pitch.selected_array['frequency']
-	intensity = intensity.t_grid() #intensity.ts()
+	
 
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
 
 	print("PITCH: ", len(pitch), " inte ", len(intensity))
+
+	print("SHAPE ", intensity.shape)
 
 	words = []
 
@@ -143,7 +144,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 				intens_cut = []
 				for i in range(intens_idx_start, intens_idx_end + 1):
-					intens_cut.append(intensity[i])
+					intens_cut.append(intensity[i][0])
 
 				rms_idx_start = int(start / rms_step)
 				rms_idx_end = int(end / rms_step)
@@ -159,8 +160,10 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 				#TODO replace NAN with 0
 
-				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], "startTime": start,
-				"endTime": end, "confidence": word['confidence'], "pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut), "dB": list(intens_cut)} #channel tag left away
+				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], 
+				"startTime": start, "endTime": end, 
+				"confidence": word['confidence'], 
+				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut), "dB": list(intens_cut)} #channel tag left away
 
 				words.append(singleWord)
 
