@@ -165,7 +165,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 		chunkId += 1
 
 	root_element = {"words": words}
-	json_report = json.dumps(root_element, indent = 4) 
+	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
 	#Кодовая вакханалия
 	with open(config['dir'] + '/full_report.json', 'w') as outfile:
