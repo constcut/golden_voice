@@ -1,6 +1,6 @@
 boto3
 librosa
-parselmouth
+praat-parselmouth
 numpy
 matplotlib
 seaborn
