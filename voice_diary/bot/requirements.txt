@@ -1,0 +1,7 @@
+boto3
+librosa
+parselmouth
+numpy
+matplotlib
+seaborn
+pyTelegramBotAPI
