@@ -96,18 +96,20 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	#Кодовая вакханалия
 
-	print("RMS: ", len(rms[0]), " ", len(intensity))
+	
 
 	f0_step = duration / len(f0)
 	rms_step = duration / len(rms[0])
 	pitch_step = duration / len(pitch)
 	intensity_step = duration / len(intensity)
 
-	#pitch = pitch.to_array()
+	pitch = pitch.selected_array['frequency']
 	#intensity = intensity.t_bins()
 
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
+
+	print("PITCH: ", len(pitch), " inte ", len(intensity))
 
 	words = []
 
@@ -133,8 +135,8 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 				pitch_idx_end = int(end / pitch_step)
 
 				pitch_cut = []
-				#for i in range(pitch_idx_start, pitch_idx_end + 1):
-				#	pitch_cut.append(pitch[i])
+				for i in range(pitch_idx_start, pitch_idx_end + 1):
+					pitch_cut.append(pitch[i])
 
 				intens_idx_start = int(start / intensity_step)
 				intens_idx_end = int(end / intensity_step)
