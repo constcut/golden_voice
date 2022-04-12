@@ -5,6 +5,8 @@ import time
 import json
 
 
+#Unite with synth_speech into yandex_speechkit
+
 def recoginze_speech(alias):
 
     with open('key.json', 'r') as file:

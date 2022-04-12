@@ -24,7 +24,7 @@ import requests
 from cloud_storage import upload_file
 
 
-
+#TODO to class
 with open('key.json', 'r') as file:
     config = json.load(file)
 
@@ -97,15 +97,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 	intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 	rms = rms.reshape(rms.shape[0] * rms.shape[1])
-	
-	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
-	print(type(f0), type(rms), type(pitch), type(intensity))
-	print("PITCH: ", len(pitch), " inte ", len(intensity))
-	print("SHAPE I ", intensity.shape)
-	print("SHAPE R ", rms.shape)
 
 	words = []
-
 	prev_word_end = 0.0
 
 	chunkId = 0
@@ -160,6 +153,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				#TODO full praat info for the word?
 				#TODO mean, median, mode
 				import statistics
+
+				#function to calculate for all
 
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 

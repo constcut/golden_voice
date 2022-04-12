@@ -1,6 +1,7 @@
 import boto3
 import json
 
+#class yandex_object_storage class
 
 def upload_file(filename, alias):
 
