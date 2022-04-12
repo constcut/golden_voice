@@ -125,6 +125,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				#TODO create silence object
 
 
+				#Sub function pitches
 				f0_idx_start = int(start / f0_step)
 				f0_idx_end = int(end / f0_step)
 
@@ -139,6 +140,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				for i in range(pitch_idx_start, pitch_idx_end + 1):
 					pitch_cut.append(pitch[i])
 
+
+				#Sub function volumes - use it for RMS
 				intens_idx_start = int(start / intensity_step)
 				intens_idx_end = int(end / intensity_step)
 
