@@ -165,7 +165,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 	return json_report
 
 
-def deplayed_recognition(path_user_logs, message, downloaded_file):
+def save_downloaded_and_name(path_user_logs, message, downloaded_file):
 
 	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
 	spectrum_dir_path = path_user_logs
@@ -177,11 +177,10 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
 
+	return record_file_path, alias_name, spectrum_dir_path
 
-	id = request_recognition(record_file_path, alias_name)
 
-
-	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_dir_path) 
+def save_images_info(spectrum_dir_path, message, voice_report):
 
 	rosaInfo = open(spectrum_dir_path + '/rosaInfo.png', 'rb')
 	bot.send_photo(message.chat.id, rosaInfo)
@@ -191,17 +190,17 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	bot.reply_to(message, voice_report)
 
-	req = check_server_recognition(id)
-	full_string = json.dumps(req, ensure_ascii=False, indent=2)
 
-
-	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+def save_json_products(json_report, full_string):
 
 	with open(config['dir'] + '/full_report.json', 'w') as outfile:
 		outfile.write(json_report)
 
 	with open(config['dir'] + '/stt.json', 'w') as outfile:
 		outfile.write(full_string)
+
+
+def merge_text_from_request(req):
 
 	text_lines = []
 	message_text = ""
@@ -211,7 +210,12 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 		print(chunk['alternatives'][0]['text'])
 		text_lines.append(chunk['alternatives'][0]['text']) #TODO check alternatives
 		message_text += chunk['alternatives'][0]['text'] + "\n"
-		
+
+	return message_text
+
+
+def send_message_and_reports(message, message_text):
+
 	bot.reply_to(message, message_text)
 
 	doc = open(config['dir'] + '/stt.json', 'rb')
@@ -220,6 +224,27 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	doc = open(config['dir'] + '/full_report.json', 'rb')
 	bot.send_document(message.chat.id, doc)
 
+
+def deplayed_recognition(path_user_logs, message, downloaded_file):
+
+	record_file_path, alias_name, spectrum_dir_path = save_downloaded_and_name(path_user_logs, message, downloaded_file)
+
+	id = request_recognition(record_file_path, alias_name)
+
+	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_dir_path) 
+
+	save_images_info(spectrum_dir_path, message, voice_report)
+
+	req = check_server_recognition(id)
+
+	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+
+	save_json_products(json_report, full_string)
+
+	message_text = merge_text_from_request(req)
+		
+	send_message_and_reports(message, message_text)
 
 
 
@@ -261,18 +286,22 @@ def saveImages(input_filename, output_filepath):
 	if os.path.exists(output_filepath + '/pcm.wav'):
 		os.remove(output_filepath +"/pcm.wav")
 
-	#update SR
-	command = f"ffmpeg -i {input_filename} -ar 16000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav
+	command = f"ffmpeg -i {input_filename} -ar 16000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
 	_ = check_call(command.split())
 
-	temp_wav = output_filepath + "/pcm.wav"
+	wave_file = output_filepath + "/pcm.wav"
 
-	y, sr = librosa.load(temp_wav) #input_filename
+	y, sr = librosa.load(wave_file) #input_filename
 	f0, rms = saveBlend(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
-	#TODO выделить в подфункцию
+	voice_report_str, pitch, intensity, duration = save_praat_images(wave_file, output_filepath)
 
-	snd = parselmouth.Sound(output_filepath + "/pcm.wav")
+	return voice_report_str, f0, rms, pitch, intensity, duration
+
+
+def save_praat_images(wave_file, output_filepath):
+
+	snd = parselmouth.Sound(wave_file)
 	intensity = snd.to_intensity()
 
 	fig = plt.figure()
@@ -291,16 +320,12 @@ def saveImages(input_filename, output_filepath):
 	f0min = 60
 	f0max = 300
 
-	pitch = call(snd, "To Pitch", 0.0, f0min, f0max) #create a praat pitch object
+	pitch = call(snd, "To Pitch", 0.0, f0min, f0max) 
 	pulses = call([snd, pitch], "To PointProcess (cc)")
 	voice_report_str = call([snd, pitch, pulses], "Voice report", 0.0, 0.0, 75, 600, 1.3, 1.6, 0.03, 0.45)
+	duration = call(snd, "Get total duration") 
 
-	duration = call(snd, "Get total duration") # duration
-
-	#https://stackoverflow.com/questions/45237091/how-to-automate-voice-reports-for-praat
-	#https://www.fon.hum.uva.nl/praat/manual/Voice_6__Automating_voice_analysis_with_a_script.html
-	#Refactoring + some more: https://github.com/drfeinberg/PraatScripts/blob/master/Measure%20Pitch%2C%20HNR%2C%20Jitter%2C%20Shimmer%2C%20and%20Formants.ipynb
-	return voice_report_str, f0, rms, pitch, intensity, duration
+	return voice_report_str, pitch, intensity, duration
 
 
 
