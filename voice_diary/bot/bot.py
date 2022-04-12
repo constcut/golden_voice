@@ -94,24 +94,36 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 	intensity_step = duration / len(intensity)
 
 	pitch = pitch.selected_array['frequency']
+
+	intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
+	rms = rms.reshape(rms.shape[0] * rms.shape[1])
 	
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
 	print("PITCH: ", len(pitch), " inte ", len(intensity))
-	print("SHAPE ", intensity.shape)
+	print("SHAPE I ", intensity.shape)
+	print("SHAPE R ", rms.shape)
 
 	words = []
+
+	prev_word_end = 0.0
 
 	chunkId = 0
 	for chunk in req['response']['chunks']:
 
 		altId = 0
-		for alt in chunk['alternatives']:
+		for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts
 
 			for word in alt['words']:
 
 				start = float(word['startTime'][:-1])
 				end = float(word['endTime'][:-1])
+
+				silence_start = prev_word_end
+				silence_end = start
+
+				#TODO create silence object
+
 
 				f0_idx_start = int(start / f0_step)
 				f0_idx_end = int(end / f0_step)
@@ -132,21 +144,19 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				intens_cut = []
 				for i in range(intens_idx_start, intens_idx_end + 1):
-					intens_cut.append(intensity[i][0])
+					intens_cut.append(intensity[i])
 
 				rms_idx_start = int(start / rms_step)
 				rms_idx_end = int(end / rms_step)
 
 				rms_cut = []
 				for i in range(rms_idx_start, rms_idx_end + 1):
-					rms_cut.append(rms[0][i])
+					rms_cut.append(rms[i])
 
 
 				#TODO full praat info for the word?
 				#TODO mean, median, mode
 				import statistics
-
-				#TODO replace NAN with 0
 
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
