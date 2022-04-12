@@ -21,6 +21,9 @@ import threading
 import time
 import requests
 
+from cloud_storage import upload_file
+
+
 
 with open('key.json', 'r') as file:
     config = json.load(file)
@@ -28,24 +31,11 @@ with open('key.json', 'r') as file:
 bot = telebot.TeleBot(config["key"])
 
 
-
-def deplayed_recognition(path_user_logs, message, downloaded_file):
-
-	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-	spectrum_file_path = path_user_logs
-
-	print(record_file_path, " <- filepath")
-
-	with open(os.path.join(record_file_path), 'wb') as new_file:
-		new_file.write(downloaded_file)
-
-	from cloud_storage import upload_file
-
-	alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
-
+def request_recognition(record_file_path, alias_name):
+	
 	upload_file(record_file_path,  alias_name)
 
-	key = config["api-key"]
+	
 	filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name #TODO или даже хранить алиас без расширения
 
 	POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
@@ -61,6 +51,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 		}
 	}
 
+	key = config["api-key"]
 	header = {'Authorization': 'Api-Key {}'.format(key)}
 
 	req = requests.post(POST, headers=header, json=body)
@@ -68,16 +59,14 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	print(data)
 
 	id = data['id']
+	return id
 
-	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_file_path) 
 
-	rosaInfo = open(spectrum_file_path + '/rosaInfo.png', 'rb')
-	bot.send_photo(message.chat.id, rosaInfo)
 
-	praatInfo = open(spectrum_file_path + '/praatInfo.png', 'rb')
-	bot.send_photo(message.chat.id, praatInfo)
+def check_server_recognition(id):
 
-	bot.reply_to(message, voice_report)
+	key = config["api-key"]
+	header = {'Authorization': 'Api-Key {}'.format(key)}
 
 	while True:
 
@@ -92,11 +81,13 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	print("Response:")
 
-	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+	return req
 
-	#Кодовая вакханалия
+
+def make_json_report(req, f0, rms, pitch, intensity, duration):
+
 	intensity = intensity.values.T
-
+	
 	f0_step = duration / len(f0)
 	rms_step = duration / len(rms[0])
 	pitch_step = duration / len(pitch)
@@ -104,12 +95,9 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	pitch = pitch.selected_array['frequency']
 	
-
 	print("F0 step ", f0_step, " rms step", rms_step, " pitch step: ", pitch_step, " intensity step: ", intensity_step)
 	print(type(f0), type(rms), type(pitch), type(intensity))
-
 	print("PITCH: ", len(pitch), " inte ", len(intensity))
-
 	print("SHAPE ", intensity.shape)
 
 	words = []
@@ -174,7 +162,41 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	root_element = {"words": words}
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
-	#Кодовая вакханалия
+	return json_report
+
+
+def deplayed_recognition(path_user_logs, message, downloaded_file):
+
+	record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
+	spectrum_dir_path = path_user_logs
+
+	print(record_file_path, " <- dir path")
+
+	with open(os.path.join(record_file_path), 'wb') as new_file:
+		new_file.write(downloaded_file)
+
+	alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
+
+
+	id = request_recognition(record_file_path, alias_name)
+
+
+	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_dir_path) 
+
+	rosaInfo = open(spectrum_dir_path + '/rosaInfo.png', 'rb')
+	bot.send_photo(message.chat.id, rosaInfo)
+
+	praatInfo = open(spectrum_dir_path + '/praatInfo.png', 'rb')
+	bot.send_photo(message.chat.id, praatInfo)
+
+	bot.reply_to(message, voice_report)
+
+	req = check_server_recognition(id)
+	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+
+
+	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+
 	with open(config['dir'] + '/full_report.json', 'w') as outfile:
 		outfile.write(json_report)
 
@@ -346,7 +368,6 @@ def process_voice_message(message):
 	downloaded_file = bot.download_file(file_info.file_path)
 
 	bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
 
 	t = threading.Timer(1.0, deplayed_recognition, [path_user_logs, message, downloaded_file])
 	t.start()
