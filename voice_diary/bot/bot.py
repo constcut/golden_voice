@@ -400,6 +400,21 @@ def process_voice_message(message):
 
 
 
+
+def local_recognition(spectrum_dir_path, record_file_path, alias_name):
+
+	id = request_recognition(record_file_path, alias_name)
+
+	voice_report, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
+
+	req = check_server_recognition(id)
+
+	full_string = json.dumps(req, ensure_ascii=False, indent=2)
+	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+
+	save_json_products(json_report, full_string)
+
+
 print("Starting bot")
 
 bot.infinity_polling()
