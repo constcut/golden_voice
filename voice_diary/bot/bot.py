@@ -415,10 +415,9 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 	save_json_products(json_report, full_string)
 
 
-print("Starting bot")
 
-bot.infinity_polling()
+#print("Starting bot")
+#bot.infinity_polling()
+#print("Bot is done")
 
-print("Bot is done")
-
-
+local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
