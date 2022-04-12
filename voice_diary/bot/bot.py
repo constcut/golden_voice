@@ -79,8 +79,6 @@ def check_server_recognition(id):
 
 		time.sleep(10) #TODO рассчитывать от длины изначального аудио
 
-	print("Response:")
-
 	return req
 
 
@@ -270,6 +268,7 @@ def send_delayed_text(message):
 
 
 def draw_intensity_praat(intensity):
+
     plt.plot(intensity.xs(), intensity.values.T, linewidth=3, color='g')
     plt.plot(intensity.xs(), intensity.values.T, linewidth=1)
     plt.grid(False)
@@ -279,6 +278,7 @@ def draw_intensity_praat(intensity):
 
 
 def draw_pitch_praat(pitch):
+
     pitch_values = pitch.selected_array['frequency']
     pitch_values[pitch_values==0] = np.nan
     plt.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='r')
@@ -286,6 +286,28 @@ def draw_pitch_praat(pitch):
     plt.grid(False)
     plt.ylim(0, pitch.ceiling)
     plt.ylabel("fundamental frequency [Hz]")
+
+
+
+def save_pitches(f0, pitch, output_filepath):
+
+	fig = plt.figure()
+
+	times = librosa.times_like(f0)
+	plt.plot(times, f0, color='green', linewidth=5)
+	plt.ylim(0, pitch.ceiling)
+
+	pitch_values = pitch.selected_array['frequency']
+	pitch_values[pitch_values==0] = np.nan
+	plt.plot(pitch.xs(), pitch_values, 'o', markersize=3, color='r')
+	plt.grid(False)
+	plt.ylim(0, pitch.ceiling)
+	plt.ylabel("fundamental frequency [Hz]")
+
+	fig.set_size_inches(12, 9)
+
+	plt.savefig(output_filepath + '/pitches.png', bbox_inches='tight')
+
 
 
 
@@ -303,6 +325,8 @@ def extract_save_images(input_filename, output_filepath):
 	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
 	voice_report_str, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
+
+	save_pitches(f0, pitch, output_filepath)
 
 	return voice_report_str, f0, rms, pitch, intensity, duration
 
