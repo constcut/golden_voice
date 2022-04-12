@@ -231,7 +231,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	id = request_recognition(record_file_path, alias_name)
 
-	voice_report, f0, rms, pitch, intensity, duration = saveImages(record_file_path, spectrum_dir_path) 
+	voice_report, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
 
 	save_images_info(spectrum_dir_path, message, voice_report)
 
@@ -248,7 +248,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 
 
-def sendDelayed(message):
+def send_delayed_text(message):
 	print("Озвучивание текста")
 
 	from synth_speech import text_to_audio
@@ -281,7 +281,7 @@ def draw_pitch_praat(pitch):
 
 
 
-def saveImages(input_filename, output_filepath):
+def extract_save_images(input_filename, output_filepath):
 	
 	if os.path.exists(output_filepath + '/pcm.wav'):
 		os.remove(output_filepath +"/pcm.wav")
@@ -292,14 +292,14 @@ def saveImages(input_filename, output_filepath):
 	wave_file = output_filepath + "/pcm.wav"
 
 	y, sr = librosa.load(wave_file) #input_filename
-	f0, rms = saveBlend(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
+	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
-	voice_report_str, pitch, intensity, duration = save_praat_images(wave_file, output_filepath)
+	voice_report_str, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
 
 	return voice_report_str, f0, rms, pitch, intensity, duration
 
 
-def save_praat_images(wave_file, output_filepath):
+def extract_save_praat(wave_file, output_filepath):
 
 	snd = parselmouth.Sound(wave_file)
 	intensity = snd.to_intensity()
@@ -316,7 +316,6 @@ def save_praat_images(wave_file, output_filepath):
 	
 	plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
 
-	#Дополнительный анализ
 	f0min = 60
 	f0max = 300
 
@@ -329,7 +328,7 @@ def save_praat_images(wave_file, output_filepath):
 
 
 
-def saveBlend(y,  sr, output_filename):
+def extract_save_librosa(y,  sr, output_filename):
 
 	S, phase = librosa.magphase(librosa.stft(y))
 	rms = librosa.feature.rms(S=S)
@@ -378,7 +377,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-	t = threading.Timer(1.0, sendDelayed, [message])
+	t = threading.Timer(1.0, send_delayed_text, [message])
 	t.start()
 
 
