@@ -191,12 +191,12 @@ def save_images_info(spectrum_dir_path, message, voice_report):
 	bot.reply_to(message, voice_report)
 
 
-def save_json_products(json_report, full_string):
+def save_json_products(path_user_logs, json_report, full_string):
 
-	with open(config['dir'] + '/full_report.json', 'w') as outfile:
+	with open(path_user_logs + '/full_report.json', 'w') as outfile:
 		outfile.write(json_report)
 
-	with open(config['dir'] + '/stt.json', 'w') as outfile:
+	with open(path_user_logs + '/stt.json', 'w') as outfile:
 		outfile.write(full_string)
 
 
@@ -214,14 +214,14 @@ def merge_text_from_request(req):
 	return message_text
 
 
-def send_message_and_reports(message, message_text):
+def send_message_and_reports(path_user_logs, message, message_text):
 
 	bot.reply_to(message, message_text)
 
-	doc = open(config['dir'] + '/stt.json', 'rb')
+	doc = open(path_user_logs + '/stt.json', 'rb')
 	bot.send_document(message.chat.id, doc)
 
-	doc = open(config['dir'] + '/full_report.json', 'rb')
+	doc = open(path_user_logs + '/full_report.json', 'rb')
 	bot.send_document(message.chat.id, doc)
 
 
@@ -240,11 +240,11 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
 	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
 
-	save_json_products(json_report, full_string)
+	save_json_products(config['dir'], json_report, full_string)
 
 	message_text = merge_text_from_request(req)
 		
-	send_message_and_reports(message, message_text)
+	send_message_and_reports(config['dir'], message, message_text)
 
 
 
@@ -412,12 +412,12 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
 	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
 
-	save_json_products(json_report, full_string)
+	save_json_products(spectrum_dir_path, json_report, full_string)
 
 
 
-#print("Starting bot")
-#bot.infinity_polling()
-#print("Bot is done")
+print("Starting bot")
+bot.infinity_polling()
+print("Bot is done")
 
-local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+#local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
