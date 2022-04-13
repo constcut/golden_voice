@@ -11,6 +11,8 @@
     ? https://github.com/drfeinberg/PraatScripts/blob/master/Measure%20Pitch%2C%20HNR%2C%20Jitter%2C%20Shimmer%2C%20and%20Formants.ipynb
 
 4) Сравнение методов определения основного тона: pYin, Swipe, praat
+
+
 5) Сравнение методов рассчёта интенсивности
 
     +) выделение участка, где находятся слова (можно использовать уже распознанный файл, чтобы иметь тайминги)
