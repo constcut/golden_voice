@@ -126,6 +126,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				silence_end = start
 
 				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
+				#сжимать данные
+
 				#pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
 				#TODO only stats
 				
