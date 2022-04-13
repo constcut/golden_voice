@@ -126,21 +126,16 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				silence_end = start
 
 				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
-				pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
-
-				print("Pause ", silence_start, silence_end, " and ")
-				print(len(pause_intens))
-				print(len(pause_RMS))
+				#pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
 				
-
 				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
-								"RMS": list(pause_RMS), "dB": list(pause_intens)}
+								"RMS": list(pause_RMS)} #, "dB": list(pause_intens)
 
 				events.append(single_pause)
 
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
-				intens_cut = make_cut(intensity_step, start, end, intensity)
+				#intens_cut = make_cut(intensity_step, start, end, intensity)
 				rms_cut = make_cut(rms_step, start, end, rms)
 
 				import statistics #TODO mean, median, mode #function to calculate for all
@@ -148,7 +143,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
-				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut), "dB": list(intens_cut)} #channel tag left away
+				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut) 
+				#,"dB": list(intens_cut)
+				} #channel tag left away
 
 				events.append(singleWord)
 
