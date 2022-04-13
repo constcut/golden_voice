@@ -35,7 +35,6 @@ def request_recognition(record_file_path, alias_name):
 	
 	upload_file(record_file_path,  alias_name)
 
-	
 	filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name #TODO или даже хранить алиас без расширения
 
 	POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
@@ -82,6 +81,17 @@ def check_server_recognition(id):
 	return req
 
 
+def make_cut(step_size, start, end, sequence):
+	
+	cut = []
+	idx_start = int(start / step_size)
+	idx_end = int(end / step_size)
+
+	for i in range(idx_start, idx_end + 1):
+		cut.append(sequence[i])
+
+
+
 def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 	intensity = intensity.values.T
@@ -115,44 +125,12 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				#TODO create silence object
 
+				f0_cut = make_cut(f0_step, start, end, f0)
+				pitch_cut = make_cut(pitch_step, start, end, pitch)
+				intens_cut = make_cut(intensity_step, start, end, intensity)
+				rms_cut = make_cut(rms_step, start, end, rms)
 
-				#Sub function pitches
-				f0_idx_start = int(start / f0_step)
-				f0_idx_end = int(end / f0_step)
-
-				f0_cut = []
-				for i in range(f0_idx_start, f0_idx_end + 1):
-					f0_cut.append(f0[i])
-
-				pitch_idx_start = int(start / pitch_step)
-				pitch_idx_end = int(end / pitch_step)
-
-				pitch_cut = []
-				for i in range(pitch_idx_start, pitch_idx_end + 1):
-					pitch_cut.append(pitch[i])
-
-
-				#Sub function volumes - use it for RMS
-				intens_idx_start = int(start / intensity_step)
-				intens_idx_end = int(end / intensity_step)
-
-				intens_cut = []
-				for i in range(intens_idx_start, intens_idx_end + 1):
-					intens_cut.append(intensity[i])
-
-				rms_idx_start = int(start / rms_step)
-				rms_idx_end = int(end / rms_step)
-
-				rms_cut = []
-				for i in range(rms_idx_start, rms_idx_end + 1):
-					rms_cut.append(rms[i])
-
-
-				#TODO full praat info for the word?
-				#TODO mean, median, mode
-				import statistics
-
-				#function to calculate for all
+				import statistics #TODO mean, median, mode #function to calculate for all
 
 				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
