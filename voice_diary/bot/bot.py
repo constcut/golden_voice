@@ -90,6 +90,8 @@ def make_cut(step_size, start, end, sequence):
 	for i in range(idx_start, idx_end + 1):
 		cut.append(sequence[i])
 
+	return cut
+
 
 
 def make_json_report(req, f0, rms, pitch, intensity, duration):
@@ -106,7 +108,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 	intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 	rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-	words = []
+	events = []
 	prev_word_end = 0.0
 
 	chunkId = 0
@@ -123,7 +125,18 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				silence_start = prev_word_end
 				silence_end = start
 
-				#TODO create silence object
+				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
+				pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
+
+				print("Pause ", silence_start, silence_end, " and ")
+				print(len(pause_intens))
+				print(len(pause_RMS))
+				
+
+				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
+								"RMS": list(pause_RMS), "dB": list(pause_intens)}
+
+				events.append(single_pause)
 
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
@@ -132,18 +145,18 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				import statistics #TODO mean, median, mode #function to calculate for all
 
-				singleWord =  {"chunkId" : chunkId, "altId": altId, "word": word['word'], 
+				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
 				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut), "dB": list(intens_cut)} #channel tag left away
 
-				words.append(singleWord)
+				events.append(singleWord)
 
 			altId += 1
 
 		chunkId += 1
 
-	root_element = {"words": words}
+	root_element = {"events": events}
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
 	return json_report
