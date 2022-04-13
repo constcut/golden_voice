@@ -127,6 +127,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
 				#pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
+				#TODO only stats
 				
 				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
 								"RMS": list(pause_RMS)} #, "dB": list(pause_intens)
@@ -136,6 +137,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
 				#intens_cut = make_cut(intensity_step, start, end, intensity)
+				#TODO only stats
+
 				rms_cut = make_cut(rms_step, start, end, rms)
 
 				import statistics #TODO mean, median, mode #function to calculate for all
