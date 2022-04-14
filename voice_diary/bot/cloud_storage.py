@@ -3,11 +3,10 @@ import json
 
 #class yandex_object_storage class
 
-def upload_file(filename, alias):
+def start_session():
 
     with open('key.json', 'r') as file:
         config = json.load(file)
-
 
     session = boto3.session.Session()
     s3 = session.client(
@@ -15,25 +14,20 @@ def upload_file(filename, alias):
         endpoint_url='https://storage.yandexcloud.net'
     )
 
+    return config, s3, session
 
+
+def upload_file(filename, alias):
+
+    config, s3, session = start_session()
     s3.upload_file(filename, config["bucket"], alias)
-
     print("File uploaded")
 
 
 
 def get_all_files():
 
-    #TODO реализовать как класс, для единичного создания сессии и чтения JSON
-
-    with open('key.json', 'r') as file:
-        config = json.load(file)
-
-    session = boto3.session.Session()
-    s3 = session.client(
-        service_name='s3',
-        endpoint_url='https://storage.yandexcloud.net'
-    )
+    config, s3, session = start_session()
 
     files_list = []
 
@@ -46,14 +40,7 @@ def get_all_files():
 
 def delete_file(alias): #TODO + another function to clean all using time (after 1 week)
 
-    with open('key.json', 'r') as file:
-        config = json.load(file)
-
-    session = boto3.session.Session()
-    s3 = session.client(
-        service_name='s3',
-        endpoint_url='https://storage.yandexcloud.net'
-    )
+    config, s3, session = start_session()
 
     forDeletion = [{'Key':alias}] 
     response = s3.delete_objects(Bucket=config["bucket"], Delete={'Objects': forDeletion})
