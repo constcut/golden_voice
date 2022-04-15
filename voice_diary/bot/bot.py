@@ -106,7 +106,10 @@ def stats(sequence, type):
 	import statistics
 	import math
 
-	sub_sequence = [0 if math.isnan(x) else x for x in sequence]
+	sub_sequence = [x for x in sequence if (math.isnan(x) == False)]
+
+	if len(sub_sequence) == 0:
+		return 0.0
 
 	if type == "mean":
 		return statistics.mean(sub_sequence)
@@ -129,6 +132,9 @@ def stats(sequence, type):
 
 
 def get_full_stats(sequence):
+
+	if len(sequence) <= 2:
+		return {"error": "too small sequence"}
 
 	full_stats = {"mean": stats(sequence, type="mean"),
 			 "mode": stats(sequence, type="mode"),
