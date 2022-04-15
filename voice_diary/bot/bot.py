@@ -103,9 +103,10 @@ def make_cut(step_size, start, end, sequence):
 
 def stats(sequence, type):
 
-	import statistics #TODO mean, median, mode #function to calculate for all
+	import statistics
+	import math
 
-	sub_sequence = sequence.fillna(np.nan, 0)
+	sub_sequence = [0 if math.isnan(x) else x for x in sequence]
 
 	if type == "mean":
 		return statistics.mean(sub_sequence)
