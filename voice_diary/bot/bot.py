@@ -194,6 +194,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				
 				events.append(single_pause)
 
+				prev_word_end = end
+
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
 				intens_cut = make_cut(intensity_step, start, end, intensity)
@@ -206,10 +208,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				from parselmouth.praat import call
 
-				print("Types ", type(start), " ", type(duration))
-
 				report_string = "" #call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
-
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
