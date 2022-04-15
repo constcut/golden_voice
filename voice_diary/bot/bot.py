@@ -106,7 +106,7 @@ def stats(sequence, type):
 	import statistics
 	import math
 
-	sub_sequence = [x for x in sequence if (math.isnan(x) == False)]
+	sub_sequence = [x for x in sequence if (math.isnan(x) == False and x != 0)]
 
 	if len(sub_sequence) == 0:
 		return 0.0
