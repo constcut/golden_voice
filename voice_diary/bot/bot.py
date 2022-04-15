@@ -164,20 +164,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	prev_word_end = 0.0
 
 
-	snd = parselmouth.Sound(wav_file) #TODO make global in class
-
-	f0min = 60
-	f0max = 600
-
-	from parselmouth.praat import call
-
-	pitch_full = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-	pulses_full = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
-	duration_full = call(snd, "Get total duration") #TODO make global in class 
-
-	full_report = call([snd, pitch_full, pulses_full], "Voice report", 0, duration_full, 60, 600, 1.3, 1.6, 0.03, 0.45)
-
-
 	chunkId = 0
 	for chunk in req['response']['chunks']:
 
@@ -200,6 +186,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				pause_RMS = get_full_stats(pause_RMS)
 				pause_intens = get_full_stats(pause_intens)
 
+				silence_report = ""
+
 				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
 								"RMS": pause_RMS, "Intensity": pause_intens, "info": silence_report}; #, "dB": list(pause_intens)
 
@@ -220,7 +208,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				print("Types ", type(start), " ", type(duration))
 
-				report_string = call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
+				report_string = "" #call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
 
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
@@ -522,8 +510,8 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 
 	save_json_products(spectrum_dir_path, json_report, full_string)
 
-	#with open(spectrum_dir_path + '/info1.txt', 'w') as outfile:
-	#	outfile.write(voice_report_str1)
+	with open(spectrum_dir_path + '/info_.txt', 'w') as outfile:
+		outfile.write(full_report)
 
 	#with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
 	#	outfile.write(voice_report_str2)
