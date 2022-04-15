@@ -199,6 +199,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
 					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
+
+				#TODO praat info
 				
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
