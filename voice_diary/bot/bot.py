@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import parselmouth
-from parselmouth.praat import call
+
 
 import seaborn as sns
 
@@ -146,7 +146,7 @@ def get_full_stats(sequence):
 			 
 
 
-def make_json_report(req, f0, rms, pitch, intensity, duration):
+def make_json_report(req, f0, rms, pitch, intensity, duration, snd, pulses):
 
 	intensity = intensity.values.T
 	
@@ -185,9 +185,13 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				pause_RMS = get_full_stats(pause_RMS)
 				pause_intens = get_full_stats(pause_intens)
 
-				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
-								"RMS": pause_RMS, "Intensity": pause_intens}; #, "dB": list(pause_intens)
+				silence_report = {}# call([snd, pitch, pulses], "Voice report", silence_start, silence_end, 60, 600, 1.3, 1.6, 0.03, 0.45)				
 
+
+				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
+								"RMS": pause_RMS, "Intensity": pause_intens, "info": silence_report}; #, "dB": list(pause_intens)
+
+				
 				events.append(single_pause)
 
 				f0_cut = make_cut(f0_step, start, end, f0)
@@ -200,15 +204,18 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
 					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
 
-				#TODO praat info
-				
+				from parselmouth.praat import call
+
+				print("Types ", type(start), " ", type(duration))
+
+				report_string = call([snd, pitch, pulses], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
 				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut) 
 				#,"dB": list(intens_cut)
-				,"stats" : statistics_records
+				,"stats" : statistics_records,  "info": report_string
 				} #channel tag left away
 
 				events.append(singleWord)
@@ -289,7 +296,7 @@ def deplayed_recognition(path_user_logs, message, downloaded_file):
 
 	id = request_recognition(record_file_path, alias_name)
 
-	voice_report, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
+	snd, pulses, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
 
 	save_images_info(spectrum_dir_path, message, voice_report)
 
@@ -376,11 +383,11 @@ def extract_save_images(input_filename, output_filepath):
 	y, sr = librosa.load(wave_file) #input_filename
 	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
-	voice_report_str1, voice_report_str2, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
+	snd, pulses, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
 
 	save_pitches(f0, pitch, output_filepath)
 
-	return voice_report_str1, voice_report_str2, f0, rms, pitch, intensity, duration
+	return snd, pulses, f0, rms, pitch, intensity, duration
 
 
 def extract_save_praat(wave_file, output_filepath):
@@ -403,17 +410,13 @@ def extract_save_praat(wave_file, output_filepath):
 	f0min = 60
 	f0max = 300
 
+	from parselmouth.praat import call
+
 	pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
 	pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
 	duration = call(snd, "Get total duration") #TODO make global in class 
-
-	#TODO use this for single word, and distances to any word.
-	voice_report_str1 = call([snd, pitch, pulses], "Voice report", 0.0, duration / 2, 75, 600, 1.3, 1.6, 0.03, 0.45)
-	voice_report_str2 = call([snd, pitch, pulses], "Voice report", duration / 2, duration, 75, 600, 1.3, 1.6, 0.03, 0.45)
-
-
-
-	return voice_report_str1, voice_report_str2, pitch, intensity, duration
+	
+	return snd, pulses, pitch, intensity, duration
 
 
 
@@ -494,20 +497,20 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 
 	id = request_recognition(record_file_path, alias_name)
 
-	voice_report_str1, voice_report_str2, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
+	snd, pulses, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
 
 	req = check_server_recognition(id)
 
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
-	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+	json_report = make_json_report(req, f0, rms, pitch, intensity, duration, snd, pulses)
 
 	save_json_products(spectrum_dir_path, json_report, full_string)
 
-	with open(spectrum_dir_path + '/info1.txt', 'w') as outfile:
-		outfile.write(voice_report_str1)
+	#with open(spectrum_dir_path + '/info1.txt', 'w') as outfile:
+	#	outfile.write(voice_report_str1)
 
-	with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
-		outfile.write(voice_report_str2)
+	#with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
+	#	outfile.write(voice_report_str2)
 
 
 
