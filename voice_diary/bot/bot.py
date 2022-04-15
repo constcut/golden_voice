@@ -24,7 +24,14 @@ import requests
 from cloud_storage import upload_file
 
 
-#TODO to class
+#TODO 1: to class
+#TODO 2: поиск листа булевых элементов карточки
+# поиск цифровых, поиск перечислительных
+#
+#заполнение цифровых, цифрой, которая идёт после ключевого слова, до следующего слова
+#
+#поиск 
+
 with open('key.json', 'r') as file:
     config = json.load(file)
 
@@ -94,6 +101,42 @@ def make_cut(step_size, start, end, sequence):
 
 
 
+def stats(sequence, type):
+
+	import statistics #TODO mean, median, mode #function to calculate for all
+
+	if type == "mean":
+		return statistics.mean(sequence)
+
+	if type == "mode":
+		return statistics.mode(sequence)
+
+	if type == "median":
+		return statistics.median(sequence)
+
+	if type == "min":
+		return min(sequence)
+	
+	if type == "max":
+		return max(sequence)
+
+	print("WARNING: wrong statistic value: ", type)
+	return 0.0
+
+
+
+def get_full_stats(sequence):
+
+	full_stats = {"mean": stats(sequence, type="mean"),
+			 "mode": stats(sequence, type="mode"),
+			 "median": stats(sequence, type="median"),
+			 "min": stats(sequence, type="min"),
+			 "max": stats(sequence, type="max")}
+
+	return full_stats
+			 
+
+
 def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 	intensity = intensity.values.T
@@ -127,29 +170,34 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 
 				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
 				#сжимать данные
-
-				#pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
+				pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
 				#TODO only stats
 				
+				pause_RMS = get_full_stats(pause_RMS)
+				pause_intens = get_full_stats(pause_intens)
+
 				single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
-								"RMS": list(pause_RMS)} #, "dB": list(pause_intens)
+								"RMS": pause_RMS, "Intensity": pause_intens}; #, "dB": list(pause_intens)
 
 				events.append(single_pause)
 
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
-				#intens_cut = make_cut(intensity_step, start, end, intensity)
+				intens_cut = make_cut(intensity_step, start, end, intensity)
 				#TODO only stats
 
 				rms_cut = make_cut(rms_step, start, end, rms)
 
-				import statistics #TODO mean, median, mode #function to calculate for all
+				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
+					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
+				
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
 				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut) 
 				#,"dB": list(intens_cut)
+				,"stats" : statistics_records
 				} #channel tag left away
 
 				events.append(singleWord)
@@ -317,16 +365,16 @@ def extract_save_images(input_filename, output_filepath):
 	y, sr = librosa.load(wave_file) #input_filename
 	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
 
-	voice_report_str, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
+	voice_report_str1, voice_report_str2, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
 
 	save_pitches(f0, pitch, output_filepath)
 
-	return voice_report_str, f0, rms, pitch, intensity, duration
+	return voice_report_str1, voice_report_str2, f0, rms, pitch, intensity, duration
 
 
 def extract_save_praat(wave_file, output_filepath):
 
-	snd = parselmouth.Sound(wave_file)
+	snd = parselmouth.Sound(wave_file) #TODO make global in class
 	intensity = snd.to_intensity()
 
 	fig = plt.figure()
@@ -344,12 +392,17 @@ def extract_save_praat(wave_file, output_filepath):
 	f0min = 60
 	f0max = 300
 
-	pitch = call(snd, "To Pitch", 0.0, f0min, f0max) 
-	pulses = call([snd, pitch], "To PointProcess (cc)")
-	voice_report_str = call([snd, pitch, pulses], "Voice report", 0.0, 0.0, 75, 600, 1.3, 1.6, 0.03, 0.45)
-	duration = call(snd, "Get total duration") 
+	pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
+	pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
+	duration = call(snd, "Get total duration") #TODO make global in class 
 
-	return voice_report_str, pitch, intensity, duration
+	#TODO use this for single word, and distances to any word.
+	voice_report_str1 = call([snd, pitch, pulses], "Voice report", 0.0, duration / 2, 75, 600, 1.3, 1.6, 0.03, 0.45)
+	voice_report_str2 = call([snd, pitch, pulses], "Voice report", duration / 2, duration, 75, 600, 1.3, 1.6, 0.03, 0.45)
+
+
+
+	return voice_report_str1, voice_report_str2, pitch, intensity, duration
 
 
 
@@ -430,7 +483,7 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 
 	id = request_recognition(record_file_path, alias_name)
 
-	voice_report, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
+	voice_report_str1, voice_report_str2, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
 
 	req = check_server_recognition(id)
 
@@ -438,6 +491,12 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
 
 	save_json_products(spectrum_dir_path, json_report, full_string)
+
+	with open(spectrum_dir_path + '/info1.txt', 'w') as outfile:
+		outfile.write(voice_report_str1)
+
+	with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
+		outfile.write(voice_report_str2)
 
 
 
