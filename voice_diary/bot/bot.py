@@ -146,7 +146,7 @@ def get_full_stats(sequence):
 			 
 
 
-def make_json_report(req, f0, rms, pitch, intensity, duration):
+def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	intensity = intensity.values.T
 	
@@ -164,7 +164,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration):
 	prev_word_end = 0.0
 
 
-	snd = parselmouth.Sound(wave_file) #TODO make global in class
+	snd = parselmouth.Sound(wav_file) #TODO make global in class
 
 	f0min = 60
 	f0max = 600
@@ -513,11 +513,12 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 	id = request_recognition(record_file_path, alias_name)
 
 	full_report, f0, rms, pitch, intensity, duration = extract_save_images(record_file_path, spectrum_dir_path) 
+	wav_file = f"{spectrum_dir_path}/pcm.wav"
 
 	req = check_server_recognition(id)
 
 	full_string = json.dumps(req, ensure_ascii=False, indent=2)
-	json_report = make_json_report(req, f0, rms, pitch, intensity, duration)
+	json_report = make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
 
 	save_json_products(spectrum_dir_path, json_report, full_string)
 
