@@ -105,20 +105,22 @@ def stats(sequence, type):
 
 	import statistics #TODO mean, median, mode #function to calculate for all
 
+	sub_sequence = sequence.fillna(np.nan, 0)
+
 	if type == "mean":
-		return statistics.mean(sequence)
+		return statistics.mean(sub_sequence)
 
 	if type == "mode":
-		return statistics.mode(sequence)
+		return statistics.mode(sub_sequence)
 
 	if type == "median":
-		return statistics.median(sequence)
+		return statistics.median(sub_sequence)
 
 	if type == "min":
-		return min(sequence)
+		return min(sub_sequence)
 	
 	if type == "max":
-		return max(sequence)
+		return max(sub_sequence)
 
 	print("WARNING: wrong statistic value: ", type)
 	return 0.0
