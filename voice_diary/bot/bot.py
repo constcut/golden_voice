@@ -126,6 +126,9 @@ def stats(sequence, type):
 	if type == "max":
 		return max(sub_sequence)
 
+	if type == "stddev":
+		return statistics.stdev(sub_sequence)
+
 	print("WARNING: wrong statistic value: ", type)
 	return 0.0
 
@@ -140,7 +143,8 @@ def get_full_stats(sequence):
 			 "mode": stats(sequence, type="mode"),
 			 "median": stats(sequence, type="median"),
 			 "min": stats(sequence, type="min"),
-			 "max": stats(sequence, type="max")}
+			 "max": stats(sequence, type="max"),
+			 "SD" : stats(sequence, type="stddev")}
 
 	return full_stats
 			 
