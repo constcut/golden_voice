@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import parselmouth
-
+from parselmouth.praat import call
 
 import seaborn as sns
 
@@ -168,16 +168,16 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	prev_word_end = 0.0
 
 	#https://github.com/novoic/surfboard
-	from surfboard.sound import Waveform
-	import numpy as np
-	sound = Waveform(path=wav_file, sample_rate=44100)
+	#from surfboard.sound import Waveform
+	#import numpy as np
+	#sound = Waveform(path=wav_file, sample_rate=44100)
 
-	f0_contour = sound.f0_contour()
-	shimmers = sound.shimmers()
-	jitters = sound.jitters()
-	formants = sound.formants()
+	#f0_contour = sound.f0_contour()
+	#shimmers = sound.shimmers()
+	#jitters = sound.jitters()
+	#formants = sound.formants()
 
-	print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
+	#print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
 
 	chunkId = 0
 	for chunk in req['response']['chunks']:
@@ -220,8 +220,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
 					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
-
-				from parselmouth.praat import call
 
 				report_string = "" #call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
 
