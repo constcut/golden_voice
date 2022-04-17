@@ -163,9 +163,17 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	events = []
 	prev_word_end = 0.0
 
-
 	#https://github.com/novoic/surfboard
+	from surfboard.sound import Waveform
+	import numpy as np
+	sound = Waveform(path=wav_file, sample_rate=44100)
 
+	f0_contour = sound.f0_contour()
+	shimmers = sound.shimmers()
+	jitters = sound.jitters()
+	formants = sound.formants()
+
+	print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
 
 	chunkId = 0
 	for chunk in req['response']['chunks']:
@@ -378,7 +386,7 @@ def extract_save_images(input_filename, output_filepath):
 	if os.path.exists(output_filepath + '/pcm.wav'):
 		os.remove(output_filepath +"/pcm.wav")
 
-	command = f"ffmpeg -i {input_filename} -ar 16000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
+	command = f"ffmpeg -i {input_filename} -ar 48000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
 	_ = check_call(command.split())
 
 	wave_file = output_filepath + "/pcm.wav"
