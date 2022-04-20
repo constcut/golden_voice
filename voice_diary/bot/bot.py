@@ -179,6 +179,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	#print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
 
+
+	#TODO full stats for a file
+
+
 	chunkId = 0
 	for chunk in req['response']['chunks']:
 
