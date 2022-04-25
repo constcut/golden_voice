@@ -11,6 +11,8 @@
 
 4) make config inside of class
 
+++ Intensity from surf ++ formants from praat ++ stats cuts into cross matrix
+
 ---------------------------------------------------------------
 
 x) function to parse directory
