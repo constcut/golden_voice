@@ -170,6 +170,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	words_freq = {}
 
 	de_personalization = False #TODO to config
+	compact_mode = False #TODO to config
 
 	tokens = {}
 	tokens_count = 0
@@ -276,6 +277,12 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				if de_personalization:
 					current_word = '-'
+
+				if compact_mode:
+					f0_cut = []
+					rms_cut = []
+					pitch_cut = []
+					intens_cut = []
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 				"startTime": start, "endTime": end, 
