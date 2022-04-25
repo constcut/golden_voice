@@ -200,7 +200,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
 						1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
-	#TODO maybe formants in time?
+	#TODO maybe formants in time? snd.to_formant_burg
 
 	#TODO rework around
 
@@ -254,7 +254,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
 					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
 
-				report_string = "" #call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
+				report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
+						1.3, 1.6, 0.03, 0.45)
 
 				#TODO to sub function
 				import pymorphy2
