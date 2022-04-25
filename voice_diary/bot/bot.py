@@ -292,7 +292,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 			single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,
 							"text": alt["text"]}
 			
-			full_text += alt["text"] + "\n"
+			full_text += alt["text"] + ". "
 
 			chunks.append(single_chunk)
 
