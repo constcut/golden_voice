@@ -194,10 +194,12 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	f0max = 600
 
 	pitch_for_praat = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-	pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
+	pulses = call([snd, pitch_for_praat], "To PointProcess (cc)") #TODO make global in class
 
 	full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
 						1.3, 1.6, 0.03, 0.45) #TODO make configurable
+
+	#TODO maybe formants in time?
 
 	#TODO rework around
 
@@ -324,8 +326,11 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 			if de_personalization:
 					chunk_text = '-'
 
+			chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
+						1.3, 1.6, 0.03, 0.45) #TODO make configurable
+
 			single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,
-							"text": chunk_text}
+							"text": chunk_text, "praat_report": chunk_report}
 			
 			full_text += chunk_text + ". "
 
