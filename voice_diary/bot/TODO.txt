@@ -1,11 +1,5 @@
 
-0) Обезличивание информации (privacy_level="full info"\"no words"\"no tokens"\"only stats")
-
-	0) Токенизация слов - в WORD добавляется token_id
-		-В общую информацию добавляется словарь tokens
-	
-	1) - уничтожение данных о словах, удаление полей word, full_text, chunk_text
-
+0) Compact mode
 
 1) Praat info, surfboard - для каждого слова
 
