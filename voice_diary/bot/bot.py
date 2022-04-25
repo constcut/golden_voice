@@ -211,6 +211,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	#TODO we can store each start and end for cross matrix 
 
+	all_starts = []
+	all_ends = []
+
 	chunkId = 0
 	for chunk in req['response']['chunks']:
 
@@ -223,6 +226,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				start = float(word['startTime'][:-1])
 				end = float(word['endTime'][:-1])
+
+				all_starts.append(start)
+				all_ends.append(end)
 
 				if first_start == -1.0:
 					first_start = start
@@ -351,10 +357,34 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	if de_personalization == True:
 		tokens = {}
 
+	use_cross_matrix = True #to config
+
+	cross_stats = {}
+
+	if use_cross_matrix:
+		for i in range(0, len(all_starts) - 1):
+			for j in range(i + 1, len(all_ends)):
+				cross_start = all_starts[i]
+				cross_end = all_ends[j]
+
+				#We can add here anything else yet its enough
+
+				cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
+									cross_start, cross_end, f0min, f0max,
+									1.3, 1.6, 0.03, 0.45) 
+
+				cross_element = {"praat_report": cross_report, "start" : cross_start,
+								 "end": cross_end, "first_word_idx": i, "last_word_idx": j}
+
+				cross_stats.append(cross_element)
+
+
+
 	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 				    "words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 					"jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants,
-					"HNR": global_hnr, "praat_report": full_report}
+					"HNR": global_hnr, "praat_report": full_report,
+					"cross_stats": cross_stats}
 
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
