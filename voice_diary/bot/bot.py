@@ -167,6 +167,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	events = []
 	prev_word_end = 0.0
 
+	chunks = []
+
 	#https://github.com/novoic/surfboard
 	#from surfboard.sound import Waveform
 	#import numpy as np
@@ -179,8 +181,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	#print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
 
-
 	#TODO full stats for a file
+	#!!!!!!!!!!!!!!!!!! TODO TODO TODO 
 
 
 	chunkId = 0
@@ -189,10 +191,15 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 		altId = 0
 		for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts
 
+			first_start = -1.0
+
 			for word in alt['words']:
 
 				start = float(word['startTime'][:-1])
 				end = float(word['endTime'][:-1])
+
+				if first_start == -1.0:
+					first_start = start
 
 				silence_start = prev_word_end
 				silence_end = start
@@ -218,8 +225,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				f0_cut = make_cut(f0_step, start, end, f0)
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
 				intens_cut = make_cut(intensity_step, start, end, intensity)
-				#TODO only stats
-
 				rms_cut = make_cut(rms_step, start, end, rms)
 
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
@@ -233,8 +238,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				p = morph.parse(word['word'])[0]
 				morph_tab = p.tag
 
-				print("FOR WORD: ", word['word'], " we got ", morph_tab)
-
 				part_of_speech = morph_tab.POS
 				aspect = morph_tab.aspect 
 				case = p.tag.case    
@@ -246,7 +249,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				tense = p.tag.tense
 				transitivity = p.tag.transitivity
 				voice = p.tag.voice       
-
 
 				morph_analysis = {"part_of_speech" : part_of_speech, "aspect" : aspect, "case" : case,
 				"gender": gender, "involement": involement, "mood":mood, "number": number, 
@@ -263,6 +265,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				} #channel tag left away
 
 				events.append(singleWord)
+
+			#TODO FROM first_start till prev_word_end
 
 			altId += 1
 
