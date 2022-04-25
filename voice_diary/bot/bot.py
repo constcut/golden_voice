@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+#acutally not:)
+
 from cmath import pi
 import os
 import datetime
@@ -25,12 +28,8 @@ from cloud_storage import upload_file
 
 
 #TODO 1: to class
-#TODO 2: поиск листа булевых элементов карточки
-# поиск цифровых, поиск перечислительных
-#
-#заполнение цифровых, цифрой, которая идёт после ключевого слова, до следующего слова
-#
-#поиск 
+#TODO 2: search for keywords from diary cards
+
 
 with open('key.json', 'r') as file:
     config = json.load(file)
@@ -42,7 +41,7 @@ def request_recognition(record_file_path, alias_name):
 	
 	upload_file(record_file_path,  alias_name)
 
-	filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name #TODO или даже хранить алиас без расширения
+	filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name 
 
 	POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
 
@@ -83,7 +82,7 @@ def check_server_recognition(id):
 		if req['done']: break
 		print("Not ready")
 
-		time.sleep(10) #TODO рассчитывать от длины изначального аудио
+		time.sleep(10) #TODO calc
 
 	return req
 
@@ -212,10 +211,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				silence_end = start
 
 				pause_RMS = make_cut(rms_step, silence_start, silence_end, rms)
-				#сжимать данные
 				pause_intens = make_cut(intensity_step, silence_start, silence_end, intensity)
-				#TODO only stats
-				
+
 				pause_RMS = get_full_stats(pause_RMS)
 				pause_intens = get_full_stats(pause_intens)
 
@@ -625,4 +622,6 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 #bot.infinity_polling()
 #print("Bot is done")
 
-local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+#local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+
+local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "localtest")
