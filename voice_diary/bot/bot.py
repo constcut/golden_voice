@@ -187,11 +187,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	#print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
 
-	#TODO full stats for a file
-	#!!!!!!!!!!!!!!!!!! TODO TODO TODO 
-
 	full_stats = {"f0":get_full_stats(f0), "pitch": get_full_stats(pitch),
-					"rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
+				  "rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
 
 	full_text = ""
 
@@ -296,7 +293,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				events.append(singleWord)
 
-				if token_id in words_freq: #TODO rewrite using token_id, so we got freq event there are no words
+				if token_id in words_freq:
 					words_freq[token_id] += 1
 				else:
 					words_freq[token_id] = 1
