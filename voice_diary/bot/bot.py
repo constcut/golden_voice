@@ -169,7 +169,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	chunks = []
 	words_freq = {}
 
-	de_personalization = False
+	de_personalization = False #TODO to config
+
+	tokens = {}
+	tokens_count = 0
 
 	#https://github.com/novoic/surfboard
 	#from surfboard.sound import Waveform
@@ -260,11 +263,18 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				"gender": gender, "involement": involement, "mood":mood, "number": number, 
 				"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
 
+				token_id = 0
+
+				if current_word not in tokens:
+					tokens[current_word] = tokens_count + 1
+					tokens_count += 1
+					token_id = tokens_count
+				else:
+					token_id = tokens[current_word]
+
 				current_word = word["word"]
 				if de_personalization:
 					current_word = '-'
-
-				#TODO token_id
 
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 				"startTime": start, "endTime": end, 
@@ -273,14 +283,15 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				#,"dB": list(intens_cut)
 				,"stats" : statistics_records,  "info": report_string
 				,"morph" : morph_analysis
+				,"token_id" : token_id
 				} #channel tag left away
 
 				events.append(singleWord)
 
-				if word["word"] in words_freq: #TODO rewrite using token_id, so we got freq event there are no words
-					words_freq[word["word"]] += 1
+				if token_id in words_freq: #TODO rewrite using token_id, so we got freq event there are no words
+					words_freq[token_id] += 1
 				else:
-					words_freq[word["word"]] = 1
+					words_freq[token_id] = 1
 
 			#FILL chunk
 
@@ -307,8 +318,11 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 		chunkId += 1
 
-	root_element = {"events": events, "full_stats": full_stats,
-					"chunks": chunks, "words_freq": words_freq, "full_text": full_text}
+	if de_personalization == True:
+		tokens = {}
+
+	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
+				    "words_freq": words_freq, "full_text": full_text, "tokens": tokens}
 
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
