@@ -181,11 +181,14 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	import numpy as np
 	sound = Waveform(path=wav_file, sample_rate=44100)
 
-	f0_contour = sound.f0_contour() #TODO + intencity
+	swipe_contour = sound.f0_contour() #TODO + intencity
 	global_shimmers = sound.shimmers()
 	global_jitters = sound.jitters()
 	global_formants = sound.formants()
 	global_hnr = sound.hnr()
+
+	swipe_contour = list(swipe_contour[0])
+	swipe_step = duration / len(swipe_contour)
 
 	#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
 	snd = parselmouth.Sound(wav_file)
@@ -250,9 +253,11 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				pitch_cut = make_cut(pitch_step, start, end, pitch)
 				intens_cut = make_cut(intensity_step, start, end, intensity)
 				rms_cut = make_cut(rms_step, start, end, rms)
+				swipe_cut = make_cut(swipe_step, start, end, swipe_contour)
 
 				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
-					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
+					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut),
+					"swipe": get_full_stats(swipe_cut)}
 
 				report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
 						1.3, 1.6, 0.03, 0.45)
