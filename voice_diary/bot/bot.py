@@ -184,6 +184,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	#TODO full stats for a file
 	#!!!!!!!!!!!!!!!!!! TODO TODO TODO 
 
+	full_stats = {"f0":get_full_stats(f0), "pitch": get_full_stats(pitch),
+					"rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
+
 
 	chunkId = 0
 	for chunk in req['response']['chunks']:
@@ -272,7 +275,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 		chunkId += 1
 
-	root_element = {"events": events}
+	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks}
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
 	return json_report
