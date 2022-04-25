@@ -182,20 +182,11 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	sound = Waveform(path=wav_file, sample_rate=44100)
 
 	f0_contour = sound.f0_contour()
-	shimmers = sound.shimmers()
-	jitters = sound.jitters()
-	formants = sound.formants()
+	global_shimmers = sound.shimmers()
+	global_jitters = sound.jitters()
+	global_formants = sound.formants()
 
 	print("SURFBOARD")
-
-	print(len(f0_contour[0]), len(shimmers), len(jitters), len(formants), ' ! All types of length')
-	
-	print("Shimmers", shimmers)
-	print("Jitters", jitters)
-
-	print("SURFBOARD")
-
-	print("formants", formants)
 
 	print("SURFBOARD")
 
@@ -338,7 +329,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 		tokens = {}
 
 	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
-				    "words_freq": words_freq, "full_text": full_text, "tokens": tokens}
+				    "words_freq": words_freq, "full_text": full_text, "tokens": tokens,
+					 "jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants}
 
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
