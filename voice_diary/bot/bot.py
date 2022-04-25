@@ -227,12 +227,39 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				report_string = "" #call([snd, pitch_full, pulses_full], "Voice report", start, end, 60, 600, 1.3, 1.6, 0.03, 0.45)
 
+				#TODO to sub function
+				import pymorphy2
+				morph = pymorphy2.MorphAnalyzer()
+				p = morph.parse(word['word'])[0]
+				morph_tab = p.tag
+
+				print("FOR WORD: ", word['word'], " we got ", morph_tab)
+
+				part_of_speech = morph_tab.POS
+				aspect = morph_tab.aspect 
+				case = p.tag.case    
+				gender = p.tag.gender
+				involement = p.tag.involvement
+				mood = p.tag.mood
+				number = p.tag.number
+				person = p.tag.person
+				tense = p.tag.tense
+				transitivity = p.tag.transitivity
+				voice = p.tag.voice       
+
+
+				morph_analysis = {"part_of_speech" : part_of_speech, "aspect" : aspect, "case" : case,
+				"gender": gender, "involement": involement, "mood":mood, "number": number, 
+				"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
+
+
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
-				"pYin": list(f0_cut), "RMS": list(rms_cut), "pPitch": list(pitch_cut) 
+				"pitch_yin": list(f0_cut), "RMS": list(rms_cut), "pitch_praat": list(pitch_cut) 
 				#,"dB": list(intens_cut)
 				,"stats" : statistics_records,  "info": report_string
+				,"morph" : morph_analysis
 				} #channel tag left away
 
 				events.append(singleWord)
