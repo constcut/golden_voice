@@ -181,18 +181,25 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	import numpy as np
 	sound = Waveform(path=wav_file, sample_rate=44100)
 
-	f0_contour = sound.f0_contour()
+	f0_contour = sound.f0_contour() #TODO + intencity
 	global_shimmers = sound.shimmers()
 	global_jitters = sound.jitters()
 	global_formants = sound.formants()
 	global_hnr = sound.hnr()
 
-	print("SURFBOARD")
-	#HNR
+	#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
+	snd = parselmouth.Sound(wav_file)
 
-	#USE ANOTHER PITCH + ANOTHER intencity
-	print("SURFBOARD")
+	f0min = 60
+	f0max = 600
 
+	pitch_for_praat = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
+	pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
+
+	full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
+						1.3, 1.6, 0.03, 0.45) #TODO make configurable
+
+	#TODO rework around
 
 	full_stats = {"f0":get_full_stats(f0), "pitch": get_full_stats(pitch),
 				  "rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
@@ -334,7 +341,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 				    "words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 					"jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants,
-					"HNR": global_hnr}
+					"HNR": global_hnr, "praat_report": full_report}
 
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
@@ -492,7 +499,7 @@ def extract_save_images(input_filename, output_filepath):
 	wave_file = output_filepath + "/pcm.wav"
 
 	y, sr = librosa.load(wave_file) #input_filename
-	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO загружать Wav
+	f0, rms = extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO отвязать рассчёты от картинок
 
 	report, pitch, intensity, duration = extract_save_praat(wave_file, output_filepath)
 
@@ -520,8 +527,6 @@ def extract_save_praat(wave_file, output_filepath):
 
 	f0min = 60
 	f0max = 600
-
-	from parselmouth.praat import call
 
 	pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
 	pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
