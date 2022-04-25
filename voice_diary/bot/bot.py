@@ -196,6 +196,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	pitch_for_praat = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
 	pulses = call([snd, pitch_for_praat], "To PointProcess (cc)") #TODO make global in class
 
+	#TODO parse report into dictionary
 	full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
 						1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
@@ -646,4 +647,4 @@ def local_recognition(spectrum_dir_path, record_file_path, alias_name):
 
 #local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
 
-local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "localtest")
+local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
