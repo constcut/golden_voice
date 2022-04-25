@@ -175,16 +175,30 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	tokens_count = 0
 
 	#https://github.com/novoic/surfboard
-	#from surfboard.sound import Waveform
-	#import numpy as np
-	#sound = Waveform(path=wav_file, sample_rate=44100)
 
-	#f0_contour = sound.f0_contour()
-	#shimmers = sound.shimmers()
-	#jitters = sound.jitters()
-	#formants = sound.formants()
+	#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
+	from surfboard.sound import Waveform
+	import numpy as np
+	sound = Waveform(path=wav_file, sample_rate=44100)
 
-	#print(len(f0_contour), len(shimmers), len(jitters), len(formants), ' ! All types of length')
+	f0_contour = sound.f0_contour()
+	shimmers = sound.shimmers()
+	jitters = sound.jitters()
+	formants = sound.formants()
+
+	print("SURFBOARD")
+
+	print(len(f0_contour[0]), len(shimmers), len(jitters), len(formants), ' ! All types of length')
+	
+	print("Shimmers", shimmers)
+	print("Jitters", jitters)
+
+	print("SURFBOARD")
+
+	print("formants", formants)
+
+	print("SURFBOARD")
+
 
 	full_stats = {"f0":get_full_stats(f0), "pitch": get_full_stats(pitch),
 				  "rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
