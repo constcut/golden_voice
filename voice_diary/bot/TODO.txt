@@ -3,7 +3,7 @@
 
 0) Praat info to dictionary
 
-1) Refactoring to class
+1) Refactoring to class !!! + попробовать собрать всё в 1 файл, для генерации exe - если это возможно
 
 2) Sepparate librosa \ praat data from plots 
 
