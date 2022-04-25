@@ -187,7 +187,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	global_formants = sound.formants()
 
 	print("SURFBOARD")
+	#HNR
 
+	#USE ANOTHER PITCH + ANOTHER intencity
 	print("SURFBOARD")
 
 
