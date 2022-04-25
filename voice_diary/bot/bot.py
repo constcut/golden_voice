@@ -208,6 +208,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	full_text = ""
 
+	#TODO we can store each start and end for cross matrix 
+
 	chunkId = 0
 	for chunk in req['response']['chunks']:
 
