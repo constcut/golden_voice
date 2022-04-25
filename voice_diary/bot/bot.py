@@ -205,9 +205,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	#TODO maybe formants in time? snd.to_formant_burg
 
-	#TODO rework around
-
-	full_stats = {"f0":get_full_stats(f0), "pitch": get_full_stats(pitch),
+	full_stats = {"pyin_pitch":get_full_stats(f0), "praat_pitch": get_full_stats(pitch),
+				  "swipe_pitch" : get_full_stats(swipe_contour),
 				  "rms":get_full_stats(rms), "intensity":get_full_stats(intensity)}
 
 	full_text = ""
@@ -255,9 +254,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				rms_cut = make_cut(rms_step, start, end, rms)
 				swipe_cut = make_cut(swipe_step, start, end, swipe_contour)
 
-				statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
+				statistics_records = {"pyin_pitch":get_full_stats(f0_cut), "praat_pitch": get_full_stats(pitch_cut),
 					"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut),
-					"swipe": get_full_stats(swipe_cut)}
+					"swipe_pitch": get_full_stats(swipe_cut)}
 
 				report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
 						1.3, 1.6, 0.03, 0.45)
@@ -307,7 +306,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
-				"pitch_yin": list(f0_cut), "RMS": list(rms_cut), "pitch_praat": list(pitch_cut) 
+				"pyin_pitch": list(f0_cut), "RMS": list(rms_cut),
+				"praat_pitch": list(pitch_cut), "swipe_pitch" : list(swipe_cut)
 				#,"dB": list(intens_cut)
 				,"stats" : statistics_records,  "info": report_string
 				,"morph" : morph_analysis
@@ -327,9 +327,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 			pitch_cut = make_cut(pitch_step, first_start, prev_word_end, pitch)
 			intens_cut = make_cut(intensity_step, first_start, prev_word_end, intensity)
 			rms_cut = make_cut(rms_step, first_start, prev_word_end, rms)
+			swipe_cut = make_cut(swipe_step, start, end, swipe_contour)
 
-			statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
-				"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
+			statistics_records = {"pyin_pitch":get_full_stats(f0_cut), "praat_pitch": get_full_stats(pitch_cut),
+				"swipe_pitch": get_full_stats(swipe_cut), "rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
 
 			chunk_text = alt["text"]
 			if de_personalization:
