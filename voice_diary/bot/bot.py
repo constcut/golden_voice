@@ -269,7 +269,20 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				events.append(singleWord)
 
-			#TODO FROM first_start till prev_word_end
+			#FILL chunk
+
+			f0_cut = make_cut(f0_step, first_start, prev_word_end, f0)
+			pitch_cut = make_cut(pitch_step, first_start, prev_word_end, pitch)
+			intens_cut = make_cut(intensity_step, first_start, prev_word_end, intensity)
+			rms_cut = make_cut(rms_step, first_start, prev_word_end, rms)
+
+			statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
+				"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
+
+			single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,
+							"text": alt["text"]}
+
+			chunks.append(single_chunk)
 
 			altId += 1
 
