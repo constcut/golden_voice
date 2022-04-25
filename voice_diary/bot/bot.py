@@ -214,7 +214,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	all_starts = []
 	all_ends = []
 
+	total_words = 0
+
 	chunkId = 0
+
 	for chunk in req['response']['chunks']:
 
 		altId = 0
@@ -316,7 +319,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				,"stats" : statistics_records,  "info": report_string
 				,"morph" : morph_analysis
 				,"token_id" : token_id
+				,"word_idx" : total_words
 				} #channel tag left away
+
+				total_words += 1
 
 				events.append(singleWord)
 
