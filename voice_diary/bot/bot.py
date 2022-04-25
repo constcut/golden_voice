@@ -174,8 +174,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 	tokens = {}
 	tokens_count = 0
 
-	#https://github.com/novoic/surfboard
-
 	#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
 	from surfboard.sound import Waveform
 	import numpy as np
