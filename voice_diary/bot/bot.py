@@ -169,6 +169,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	chunks = []
 
+	words_freq = {}
+
 	#https://github.com/novoic/surfboard
 	#from surfboard.sound import Waveform
 	#import numpy as np
@@ -269,6 +271,13 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				events.append(singleWord)
 
+				if word["word"] in words_freq:
+					words_freq[word["word"]] += 1
+				else:
+					words_freq[word["word"]] = 1
+
+				#TODO words frequency
+
 			#FILL chunk
 
 			f0_cut = make_cut(f0_step, first_start, prev_word_end, f0)
@@ -288,7 +297,9 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 		chunkId += 1
 
-	root_element = {"events": events, "full_stats": full_stats, "chunks": chunks}
+	root_element = {"events": events, "full_stats": full_stats,
+					"chunks": chunks, "words_freq": words_freq}
+					
 	json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
 	return json_report
