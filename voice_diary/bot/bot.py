@@ -265,6 +265,8 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				token_id = 0
 
+				current_word = word["word"]
+
 				if current_word not in tokens:
 					tokens[current_word] = tokens_count + 1
 					tokens_count += 1
@@ -272,7 +274,6 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				else:
 					token_id = tokens[current_word]
 
-				current_word = word["word"]
 				if de_personalization:
 					current_word = '-'
 
