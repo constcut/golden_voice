@@ -359,7 +359,7 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	use_cross_matrix = True #to config
 
-	cross_stats = {}
+	cross_stats = []
 
 	if use_cross_matrix:
 		for i in range(0, len(all_starts) - 1):
