@@ -166,10 +166,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 	events = []
 	prev_word_end = 0.0
-
 	chunks = []
-
 	words_freq = {}
+
+	de_personalization = False
 
 	#https://github.com/novoic/surfboard
 	#from surfboard.sound import Waveform
@@ -260,8 +260,13 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 				"gender": gender, "involement": involement, "mood":mood, "number": number, 
 				"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
 
+				current_word = word["word"]
+				if de_personalization:
+					current_word = '-'
 
-				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": word['word'], 
+				#TODO token_id
+
+				singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 				"startTime": start, "endTime": end, 
 				"confidence": word['confidence'], 
 				"pitch_yin": list(f0_cut), "RMS": list(rms_cut), "pitch_praat": list(pitch_cut) 
@@ -272,12 +277,10 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 
 				events.append(singleWord)
 
-				if word["word"] in words_freq:
+				if word["word"] in words_freq: #TODO rewrite using token_id, so we got freq event there are no words
 					words_freq[word["word"]] += 1
 				else:
 					words_freq[word["word"]] = 1
-
-				#TODO words frequency
 
 			#FILL chunk
 
@@ -289,10 +292,14 @@ def make_json_report(req, f0, rms, pitch, intensity, duration, wav_file):
 			statistics_records = {"f0":get_full_stats(f0_cut), "pitch": get_full_stats(pitch_cut),
 				"rms":get_full_stats(rms_cut), "intensity":get_full_stats(intens_cut)}
 
+			chunk_text = alt["text"]
+			if de_personalization:
+					chunk_text = '-'
+
 			single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,
-							"text": alt["text"]}
+							"text": chunk_text}
 			
-			full_text += alt["text"] + ". "
+			full_text += chunk_text + ". "
 
 			chunks.append(single_chunk)
 
