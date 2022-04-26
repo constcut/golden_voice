@@ -268,6 +268,9 @@ class ReportGenerator:
 					start = float(word['startTime'][:-1])
 					end = float(word['endTime'][:-1])
 
+					word_duration = end - start
+					letters_speed = word_duration / len(word['word'])
+
 					all_starts.append(start)
 					all_ends.append(end)
 
@@ -338,6 +341,7 @@ class ReportGenerator:
 					,"morph" : morph_analysis
 					,"token_id" : token_id
 					,"word_idx" : total_words
+					,"letters_speed" : letters_speed
 					} #channel tag left away
 
 					total_words += 1
