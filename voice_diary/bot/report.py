@@ -616,7 +616,7 @@ class ReportGenerator:
 
 		wave_file = output_filepath + "/pcm.wav"
 
-		y, sr = librosa.load(wave_file)
+		y, sr = librosa.load(wave_file) #TODO turn on\off all 3 sequences
 
 		if skip_plots:
 			output_filepath = ""
