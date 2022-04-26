@@ -4,6 +4,7 @@
 from cmath import pi
 import os
 import datetime
+from sympy import true
 
 import telebot
 import json
@@ -550,7 +551,7 @@ class ReportGenerator:
 
 
 
-	def extract_save_images(self, input_filename, output_filepath):
+	def extract_save_images(self, input_filename, output_filepath, skip_plots=False):
 		
 		if os.path.exists(output_filepath + '/pcm.wav'):
 			os.remove(output_filepath +"/pcm.wav")
@@ -560,12 +561,16 @@ class ReportGenerator:
 
 		wave_file = output_filepath + "/pcm.wav"
 
-		y, sr = librosa.load(wave_file) #input_filename
-		f0, rms = self.extract_save_librosa(y, sr, output_filepath + '/rosaInfo.png') #TODO отвязать рассчёты от картинок
+		y, sr = librosa.load(wave_file)
 
+		if skip_plots:
+			output_filepath = ""
+
+		f0, rms = self.extract_save_librosa(y, sr, output_filepath) #TODO отвязать рассчёты от картинок
 		report, pitch, intensity, duration = self.extract_save_praat(wave_file, output_filepath)
 
-		self.save_pitches(f0, pitch, output_filepath)
+		if skip_plots == False:
+			self.save_pitches(f0, pitch, output_filepath)
 
 		return report, f0, rms, pitch, intensity, duration
 
@@ -575,18 +580,22 @@ class ReportGenerator:
 		snd = parselmouth.Sound(wave_file) #TODO make global in class
 		intensity = snd.to_intensity()
 
-		fig = plt.figure()
 		pitch = snd.to_pitch()
-		self.draw_pitch_praat(pitch)
 
-		plt.twinx()
-		self.draw_intensity_praat(intensity)
-		plt.xlim([snd.xmin, snd.xmax])
+		if output_filepath != "":
+			fig = plt.figure()
+			
+			self.draw_pitch_praat(pitch)
 
-		fig.set_size_inches(12, 9)
-		
-		plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
+			plt.twinx()
+			self.draw_intensity_praat(intensity)
+			plt.xlim([snd.xmin, snd.xmax])
 
+			fig.set_size_inches(12, 9)
+			
+			plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight') #TODO consistence with librosa, here path, there file name
+
+		#TODO move whole thing under another function
 		f0min = 60
 		f0max = 600
 
@@ -600,42 +609,46 @@ class ReportGenerator:
 
 
 
-	def extract_save_librosa(self, y,  sr, output_filename):
+	def extract_save_librosa(self, y,  sr, output_filepath):
 
 		S, phase = librosa.magphase(librosa.stft(y))
 		rms = librosa.feature.rms(S=S)
-		fig, ax = plt.subplots(nrows=3, sharex=True)
 
 		times = librosa.times_like(rms)
-
-		ax[0].semilogy(times, rms[0], label='RMS Energy')
-		ax[0].set(xticks=[])
-		#ax[0].legend()
-		ax[0].label_outer()
-
-		librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
-								y_axis='log', x_axis='time', ax=ax[1])
 
 		f0, voiced_flag, voiced_probs = librosa.pyin(y,
 			fmin=librosa.note_to_hz('C2'),
 			fmax=librosa.note_to_hz('C7'))
 
-		ax[1].plot(times, f0, color='green', linewidth=3)
-		#ax[1].legend(loc='upper right')			
-		ax[1].set(title='log Power spectrogram')
+		if output_filepath != "":
+			fig, ax = plt.subplots(nrows=3, sharex=True)
 
-		o_env = librosa.onset.onset_strength(y=y, sr=sr)
-		times = librosa.times_like(o_env, sr=sr)
-		onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
+			ax[0].semilogy(times, rms[0], label='RMS Energy')
+			ax[0].set(xticks=[])
+			#ax[0].legend()
+			ax[0].label_outer()
 
-		ax[2].plot(times, o_env)
-		ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
-				linestyle='--')
-		#ax[2].legend()
+			librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
+									y_axis='log', x_axis='time', ax=ax[1])
 
-		fig.set_size_inches(12, 9)
+			
 
-		plt.savefig(output_filename, bbox_inches='tight')
+			ax[1].plot(times, f0, color='green', linewidth=3)
+			#ax[1].legend(loc='upper right')			
+			ax[1].set(title='log Power spectrogram')
+
+			o_env = librosa.onset.onset_strength(y=y, sr=sr)
+			times = librosa.times_like(o_env, sr=sr)
+			onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
+
+			ax[2].plot(times, o_env)
+			ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
+					linestyle='--')
+			#ax[2].legend()
+
+			fig.set_size_inches(12, 9)
+
+			plt.savefig(output_filepath + '/rosaInfo.png', bbox_inches='tight')
 
 		return f0, rms #voiced_flag, voiced_probs
 
@@ -683,7 +696,8 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path) 
+		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=True)  #spectrum_dir_path
+		
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
 
 		images_saved_moment = datetime.datetime.now()
