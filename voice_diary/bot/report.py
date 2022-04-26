@@ -120,7 +120,11 @@ class ReportGenerator:
 			return statistics.mean(sub_sequence)
 
 		if type == "mode":
-			return statistics.mode(sub_sequence)
+			try:
+				return statistics.mode(sub_sequence)
+			except:
+				return 0 #TODO, review
+
 
 		if type == "median":
 			return statistics.median(sub_sequence)
@@ -748,6 +752,6 @@ class ReportGenerator:
 r = ReportGenerator('key.json')
 #r.start_bot()
 
-r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
+#r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
 
-#local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+r.local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
