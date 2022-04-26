@@ -371,7 +371,7 @@ class ReportGenerator:
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
-				single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records, #TODO words rate, start, end!!!
+				single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,  
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
 								"text": chunk_text, "praat_report": chunk_report}
 				
@@ -589,7 +589,7 @@ class ReportGenerator:
 
 	def extract_save_praat(self, wave_file, output_filepath):
 
-		snd = parselmouth.Sound(wave_file) #TODO make global in class
+		snd = parselmouth.Sound(wave_file) #TODO make global in class?
 		intensity = snd.to_intensity()
 
 		pitch = snd.to_pitch()
@@ -605,7 +605,7 @@ class ReportGenerator:
 
 			fig.set_size_inches(12, 9)
 			
-			plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight') #TODO consistence with librosa, here path, there file name
+			plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
 
 		#TODO move whole thing under another function
 		f0min = 60
