@@ -485,11 +485,11 @@ class ReportGenerator:
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
 		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
 
-		self.save_json_products(self._config['dir'], json_report, full_string)
+		self.save_json_products(spectrum_dir_path, json_report, full_string)
 
 		message_text = self.merge_text_from_request(req)
 			
-		self.send_message_and_reports(self._config['dir'], message, message_text)
+		self.send_message_and_reports(spectrum_dir_path, message, message_text)
 
 
 
