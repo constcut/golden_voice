@@ -44,6 +44,7 @@ class ReportGenerator:
 		self.use_cross_matrix = True
 		self.de_personalization = False
 		self.skip_plots = True
+		self.include_sequences = False
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -310,11 +311,19 @@ class ReportGenerator:
 
 					prev_word_end = end
 
-					f0_cut = self.make_sequence_cut(f0_step, start, end, f0) #TODO dont copy, use numpy slices
-					pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  #TODO dont copy, use numpy slices
-					intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) #TODO dont copy, use numpy slices
-					rms_cut = self.make_sequence_cut(rms_step, start, end, rms) #TODO dont copy, use numpy slices
-					swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour) #TODO dont copy, use numpy slices
+					f0_cut = []
+					pitch_cut = []
+					intens_cut = []
+					rms_cut = []
+					swipe_cut = []
+					#TODO + volume
+
+					if self.include_sequences:
+						f0_cut = self.make_sequence_cut(f0_step, start, end, f0) #TODO dont copy, use numpy slices
+						pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  #TODO dont copy, use numpy slices
+						intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) #TODO dont copy, use numpy slices
+						rms_cut = self.make_sequence_cut(rms_step, start, end, rms) #TODO dont copy, use numpy slices
+						swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour) #TODO dont copy, use numpy slices
 
 					statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
 						"rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut),
@@ -621,7 +630,7 @@ class ReportGenerator:
 		return report, f0, rms, pitch, intensity, duration
 
 
-	def extract_save_praat(self, wave_file, output_filepath):
+	def extract_save_praat(self, wave_file, output_filepath): #TODO принимать аргументы для отрисовки, а не генерировать возвращаемые значения
 
 		snd = parselmouth.Sound(wave_file) #TODO move whole thing under another function
 		intensity = snd.to_intensity()
@@ -651,6 +660,7 @@ class ReportGenerator:
 
 		full_report = call([snd, pitch, pulses], "Voice report", 0, duration, 60, 600, 1.3, 1.6, 0.03, 0.45)
 		
+
 		return full_report, pitch, intensity, duration
 
 
