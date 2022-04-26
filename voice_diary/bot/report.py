@@ -555,7 +555,7 @@ class ReportGenerator:
 		if os.path.exists(output_filepath + '/pcm.wav'):
 			os.remove(output_filepath +"/pcm.wav")
 
-		command = f"ffmpeg -i {input_filename} -ar 48000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {input_filename} -ar 48000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
 		_ = check_call(command.split())
 
 		wave_file = output_filepath + "/pcm.wav"
