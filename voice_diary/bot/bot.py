@@ -475,8 +475,10 @@ class ReportGenerator:
 
 		req = self.check_server_recognition(id)
 
+		wav_file = path_user_logs + "/pcm.wav"
+
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration)
+		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
 
 		self.save_json_products(self._config['dir'], json_report, full_string)
 
@@ -688,14 +690,19 @@ class ReportGenerator:
 		#	outfile.write(voice_report_str2)
 
 	def start_bot(self):
+
 		self.set_handlers()
+
+		print("Starting bot")
 		self.bot.infinity_polling()
+		print("Bot is finished")
 
 
 
 r = ReportGenerator('key.json')
 
-
+r.start_bot()
 
 #r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
+
 #local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
