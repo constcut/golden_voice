@@ -6,3 +6,4 @@ matplotlib
 seaborn
 pyTelegramBotAPI
 surfboard
+pymorphy2
