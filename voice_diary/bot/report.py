@@ -43,7 +43,7 @@ class ReportGenerator:
 
 		self.use_cross_matrix = True
 		self.de_personalization = False
-		self.skip_plots = False
+		self.skip_plots = True
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -449,7 +449,7 @@ class ReportGenerator:
 		print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds, " micro")
 		print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds, " micro")
 		print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds, " micro")
-		print("Reshape sequences, ", dump_spent.seconds, "s ", dump_spent.microseconds, " micro")
+		print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds, " micro")
 			
 		return json_report
 
