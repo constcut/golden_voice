@@ -99,7 +99,7 @@ class ReportGenerator:
 		idx_start = int(start / step_size)
 		idx_end = int(end / step_size)
 
-		for i in range(idx_start, idx_end + 1):
+		for i in range(idx_start, idx_end + 1): #TODO slices
 			cut.append(sequence[i])
 
 		return cut

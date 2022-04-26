@@ -3,11 +3,14 @@
 
 0) Praat info to dictionary
 
-2) Sepparate librosa \ praat data from plots 
+1) Посчитать время производства репорта
 
-3) make plots Optional
+2) Sepparate librosa \ praat data from plots + -
+    + загружать praat только один раз
 
-4) make config inside of class
+3) make config inside of class + все флаги
+
+4) cut slices numpy - избежать дублирования данных при разрезке
 
 ++ Intensity from surf ++ formants from praat ++ stats cuts into cross matrix
 
