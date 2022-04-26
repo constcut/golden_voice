@@ -480,7 +480,7 @@ class ReportGenerator:
 
 		req = self.check_server_recognition(id)
 
-		wav_file = path_user_logs + "/pcm.wav"
+		wav_file = spectrum_dir_path + "/pcm.wav"
 
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
 		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
