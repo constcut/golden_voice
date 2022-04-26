@@ -634,7 +634,7 @@ class ReportGenerator:
 		return f0, rms #voiced_flag, voiced_probs
 
 
-	def add_handlers(self):
+	def set_handlers(self):
 
 		@self.bot.message_handler(commands=['start', 'help'])
 		def send_welcome(message):
@@ -687,14 +687,15 @@ class ReportGenerator:
 		#with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
 		#	outfile.write(voice_report_str2)
 
+	def start_bot(self):
+		self.set_handlers()
+		self.bot.infinity_polling()
 
-
-#print("Starting bot")
-#bot.infinity_polling() #TODO внутрь класса
-#print("Bot is done")
 
 
 r = ReportGenerator('key.json')
 
-r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
+
+
+#r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
 #local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
