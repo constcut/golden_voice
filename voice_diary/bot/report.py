@@ -41,7 +41,7 @@ class ReportGenerator:
 
 		self.bot = telebot.TeleBot(self._config["key"])
 
-		self.use_cross_matrix = True
+		self.use_cross_matrix = False
 		self.de_personalization = False
 		self.skip_plots = True
 		self.include_sequences = False
@@ -605,7 +605,7 @@ class ReportGenerator:
 
 
 
-
+	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
 	def extract_save_images(self, input_filename, output_filepath, skip_plots=False):
 		
 		if os.path.exists(output_filepath + '/pcm.wav'):
