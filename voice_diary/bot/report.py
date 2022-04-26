@@ -371,7 +371,8 @@ class ReportGenerator:
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
-				single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,
+				single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records, #TODO words rate, start, end!!!
+								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
 								"text": chunk_text, "praat_report": chunk_report}
 				
 				full_text += chunk_text + ". "
