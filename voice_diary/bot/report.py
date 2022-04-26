@@ -136,7 +136,10 @@ class ReportGenerator:
 			return max(sub_sequence)
 
 		if type == "stddev":
-			return statistics.stdev(sub_sequence)
+			try:
+				return statistics.stdev(sub_sequence)
+			except:
+				return 0 #TODO, review
 
 		print("WARNING: wrong statistic value: ", type)
 		return 0.0
