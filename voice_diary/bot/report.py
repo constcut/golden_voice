@@ -41,6 +41,9 @@ class ReportGenerator:
 
 		self.bot = telebot.TeleBot(self._config["key"])
 
+		self.use_cross_matrix = False
+		self.de_personalization = False
+
 
 	def request_recognition(self, record_file_path, alias_name):
 		
@@ -188,6 +191,11 @@ class ReportGenerator:
 
 	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
 
+		import datetime
+
+		start_moment = datetime.datetime.now()
+
+
 		#==========================================Prepare basic information sequences==========================================
 		intensity = intensity.values.T
 		
@@ -204,6 +212,8 @@ class ReportGenerator:
 		#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
 		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
 
+		reshape_sequences_moment =  datetime.datetime.now()
+
 		from surfboard.sound import Waveform
 		sound = Waveform(path=wav_file, sample_rate=44100)
 
@@ -215,6 +225,8 @@ class ReportGenerator:
 
 		swipe_contour = list(swipe_contour[0])
 		swipe_step = duration / len(swipe_contour)
+
+		surf_moment =  datetime.datetime.now()
 
 		snd = parselmouth.Sound(wav_file)
 
@@ -230,6 +242,7 @@ class ReportGenerator:
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
+		praat_moment =  datetime.datetime.now()
 		#==========================================Prepare basic information sequences==========================================
 
 		events = []
@@ -365,7 +378,7 @@ class ReportGenerator:
 					"swipe_pitch": self.get_full_statistics(swipe_cut), "rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut)}
 
 				chunk_text = alt["text"]
-				if de_personalization:
+				if self.de_personalization:
 						chunk_text = '-'
 
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
@@ -383,14 +396,15 @@ class ReportGenerator:
 
 			chunkId += 1
 
-		if de_personalization == True:
+		if self.de_personalization == True:
 			tokens = {}
 
-		use_cross_matrix = True #to config
 
 		cross_stats = []
 
-		if use_cross_matrix:
+		all_chnunks_and_events_moment = datetime.datetime.now()
+
+		if self.use_cross_matrix:
 			for i in range(0, len(all_starts) - 1):
 				for j in range(i + 1, len(all_ends)):
 					cross_start = all_starts[i]
@@ -407,7 +421,7 @@ class ReportGenerator:
 
 					cross_stats.append(cross_element)
 
-
+		cross_matrix__moment = datetime.datetime.now()
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
@@ -417,6 +431,25 @@ class ReportGenerator:
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
+		full_report_generated = datetime.datetime.now()
+
+		total_spent = full_report_generated - start_moment
+		print("Total on sent: ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+
+		rehape_spent = reshape_sequences_moment - start_moment
+		surf_spent = surf_moment - reshape_sequences_moment
+		praat_spemt = praat_moment - surf_moment
+		all_chunks_spent = all_chnunks_and_events_moment - praat_moment
+		cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
+		dump_spent = full_report_generated - cross_matrix__moment
+
+		print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds, " micro")
+		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds, " micro")
+		print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds, " micro")
+		print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds, " micro")
+		print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds, " micro")
+		print("Reshape sequences, ", dump_spent.seconds, "s ", dump_spent.microseconds, " micro")
+			
 		return json_report
 
 
