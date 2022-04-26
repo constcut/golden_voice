@@ -153,6 +153,30 @@ class ReportGenerator:
 		return full_stats
 				
 
+	def make_morph_analysis(self, word):
+		import pymorphy2
+		morph = pymorphy2.MorphAnalyzer()
+		p = morph.parse(word)[0]
+		morph_tab = p.tag
+
+		part_of_speech = morph_tab.POS
+		aspect = morph_tab.aspect 
+		case = p.tag.case    
+		gender = p.tag.gender
+		involement = p.tag.involvement
+		mood = p.tag.mood
+		number = p.tag.number
+		person = p.tag.person
+		tense = p.tag.tense
+		transitivity = p.tag.transitivity
+		voice = p.tag.voice       
+
+		morph_analysis = {"part_of_speech" : part_of_speech, "aspect" : aspect, "case" : case,
+		"gender": gender, "involement": involement, "mood":mood, "number": number, 
+		"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
+
+		return morph_analysis
+
 
 	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
 
@@ -274,27 +298,7 @@ class ReportGenerator:
 					report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45)
 
-					#TODO to sub function
-					import pymorphy2
-					morph = pymorphy2.MorphAnalyzer()
-					p = morph.parse(word['word'])[0]
-					morph_tab = p.tag
-
-					part_of_speech = morph_tab.POS
-					aspect = morph_tab.aspect 
-					case = p.tag.case    
-					gender = p.tag.gender
-					involement = p.tag.involvement
-					mood = p.tag.mood
-					number = p.tag.number
-					person = p.tag.person
-					tense = p.tag.tense
-					transitivity = p.tag.transitivity
-					voice = p.tag.voice       
-
-					morph_analysis = {"part_of_speech" : part_of_speech, "aspect" : aspect, "case" : case,
-					"gender": gender, "involement": involement, "mood":mood, "number": number, 
-					"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
+					morph_analysis = self.make_morph_analysis(word['word'])
 
 					token_id = 0
 
