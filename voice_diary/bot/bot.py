@@ -156,6 +156,7 @@ class ReportGenerator:
 
 	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
 
+		#==========================================Prepare basic information sequences==========================================
 		intensity = intensity.values.T
 		
 		f0_step = duration / len(f0)
@@ -168,20 +169,10 @@ class ReportGenerator:
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		events = []
-		prev_word_end = 0.0
-		chunks = []
-		words_freq = {}
-
-		de_personalization = False #TODO to config
-		compact_mode = False #TODO to config
-
-		tokens = {}
-		tokens_count = 0
-
 		#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
+		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
+
 		from surfboard.sound import Waveform
-		import numpy as np
 		sound = Waveform(path=wav_file, sample_rate=44100)
 
 		swipe_contour = sound.f0_contour() #TODO + intencity
@@ -193,7 +184,6 @@ class ReportGenerator:
 		swipe_contour = list(swipe_contour[0])
 		swipe_step = duration / len(swipe_contour)
 
-		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
 		snd = parselmouth.Sound(wav_file)
 
 		f0min = 60
@@ -202,19 +192,30 @@ class ReportGenerator:
 		pitch_for_praat = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
 		pulses = call([snd, pitch_for_praat], "To PointProcess (cc)") #TODO make global in class
 
+		#TODO maybe formants in time? snd.to_formant_burg
+
 		#TODO parse report into dictionary
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45) #TODO make configurable
 
-		#TODO maybe formants in time? snd.to_formant_burg
+		#==========================================Prepare basic information sequences==========================================
+
+		events = []
+		prev_word_end = 0.0
+		chunks = []
+		words_freq = {}
+
+		de_personalization = False #TODO to config
+		compact_mode = False #TODO to config
+
+		tokens = {}
+		tokens_count = 0
 
 		full_stats = {"pyin_pitch":self.get_full_statistics(f0), "praat_pitch": self.get_full_statistics(pitch),
 					"swipe_pitch" : self.get_full_statistics(swipe_contour),
 					"rms":self.get_full_statistics(rms), "intensity":self.get_full_statistics(intensity)}
 
 		full_text = ""
-
-		#TODO we can store each start and end for cross matrix 
 
 		all_starts = []
 		all_ends = []
@@ -686,8 +687,6 @@ class ReportGenerator:
 		with open(spectrum_dir_path + '/info_.txt', 'w') as outfile:
 			outfile.write(full_report)
 
-		#with open(spectrum_dir_path + '/info2.txt', 'w') as outfile:
-		#	outfile.write(voice_report_str2)
 
 	def start_bot(self):
 
