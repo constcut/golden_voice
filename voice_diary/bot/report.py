@@ -36,13 +36,14 @@ class ReportGenerator:
 
 	def __init__(self, config_name):
 
-		with open('key.json', 'r') as file:
+		with open(config_name, 'r') as file:
 			self._config = json.load(file)
 
 		self.bot = telebot.TeleBot(self._config["key"])
 
-		self.use_cross_matrix = False
+		self.use_cross_matrix = True
 		self.de_personalization = False
+		self.skip_plots = False
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -215,7 +216,7 @@ class ReportGenerator:
 		reshape_sequences_moment =  datetime.datetime.now()
 
 		from surfboard.sound import Waveform
-		sound = Waveform(path=wav_file, sample_rate=44100)
+		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
 
 		swipe_contour = sound.f0_contour() #TODO + intencity
 		global_shimmers = sound.shimmers()
@@ -293,8 +294,8 @@ class ReportGenerator:
 					silence_start = prev_word_end
 					silence_end = start
 
-					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms)
-					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)
+					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) #TODO dont copy, use numpy slices
+					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)#TODO dont copy, use numpy slices
 
 					pause_RMS = self.get_full_statistics(pause_RMS)
 					pause_intens = self.get_full_statistics(pause_intens)
@@ -309,11 +310,11 @@ class ReportGenerator:
 
 					prev_word_end = end
 
-					f0_cut = self.make_sequence_cut(f0_step, start, end, f0)
-					pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)
-					intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity)
-					rms_cut = self.make_sequence_cut(rms_step, start, end, rms)
-					swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour)
+					f0_cut = self.make_sequence_cut(f0_step, start, end, f0) #TODO dont copy, use numpy slices
+					pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  #TODO dont copy, use numpy slices
+					intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) #TODO dont copy, use numpy slices
+					rms_cut = self.make_sequence_cut(rms_step, start, end, rms) #TODO dont copy, use numpy slices
+					swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour) #TODO dont copy, use numpy slices
 
 					statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
 						"rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut),
@@ -368,11 +369,11 @@ class ReportGenerator:
 
 				#FILL chunk
 
-				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
-				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
-				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
-				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
-				swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour)
+				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0) #TODO dont copy, use numpy slices
+				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)#TODO dont copy, use numpy slices
+				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)#TODO dont copy, use numpy slices
+				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)#TODO dont copy, use numpy slices
+				swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour)#TODO dont copy, use numpy slices
 
 				statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
 					"swipe_pitch": self.get_full_statistics(swipe_cut), "rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut)}
@@ -741,7 +742,7 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=True)  #spectrum_dir_path
+		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
 		
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
 
