@@ -675,20 +675,48 @@ class ReportGenerator:
 
 	def local_recognition(self, spectrum_dir_path, record_file_path, alias_name):
 
+		import datetime
+
+		start_moment = datetime.datetime.now()
+
 		id = self.request_recognition(record_file_path, alias_name)
+
+		request_sent_moment = datetime.datetime.now()
 
 		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path) 
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
 
-		req = self.check_server_recognition(id)
+		images_saved_moment = datetime.datetime.now()
 
+		req = self.check_server_recognition(id)
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
+
+		recognition_received_moment = datetime.datetime.now()
+
 		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
+
+		full_report_generated = datetime.datetime.now()
 
 		self.save_json_products(spectrum_dir_path, json_report, full_string)
 
 		with open(spectrum_dir_path + '/info_.txt', 'w') as outfile:
 			outfile.write(full_report)
+
+		measure_time = True
+
+		if measure_time:
+
+			spent_on_send = request_sent_moment - start_moment
+			spent_on_imaged = images_saved_moment - request_sent_moment
+			spent_on_received = recognition_received_moment - images_saved_moment
+			spent_on_report = full_report_generated - recognition_received_moment
+			total_spent = full_report_generated - start_moment
+
+			print("Spent on send: ", spent_on_send.seconds, "s ", spent_on_send.microseconds, " micro")
+			print("Spent on imaged: ", spent_on_imaged.seconds, "s ", spent_on_imaged.microseconds, " micro")
+			print("Spent on received: ", spent_on_received.seconds, "s ", spent_on_received.microseconds, " micro")
+			print("Spent on report: ", spent_on_report.seconds, "s ", spent_on_report.microseconds, " micro")
+			print("Total spent ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
 
 		print("Done!")
 
