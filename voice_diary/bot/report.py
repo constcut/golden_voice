@@ -400,7 +400,7 @@ class ReportGenerator:
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 						"jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants,
 						"HNR": global_hnr, "praat_report": full_report,
-						"cross_stats": cross_stats}
+						"cross_stats": cross_stats, "duration": duration}
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
