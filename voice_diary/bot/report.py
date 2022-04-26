@@ -65,7 +65,7 @@ class ReportGenerator:
 
 		req = requests.post(POST, headers=header, json=body)
 		data = req.json()
-		print(data)
+		#print(data) #Log of received data
 
 		id = data['id']
 		return id
