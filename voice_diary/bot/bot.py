@@ -45,7 +45,7 @@ class ReportGenerator:
 		
 		upload_file(record_file_path,  alias_name)
 
-		filelink = 'https://storage.yandexcloud.net/' + config["bucket"]  + '/' + alias_name 
+		filelink = 'https://storage.yandexcloud.net/' + self._config["bucket"]  + '/' + alias_name 
 
 		POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
 
