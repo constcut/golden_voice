@@ -589,7 +589,7 @@ class ReportGenerator:
 
 	def extract_save_praat(self, wave_file, output_filepath):
 
-		snd = parselmouth.Sound(wave_file) #TODO make global in class?
+		snd = parselmouth.Sound(wave_file) #TODO move whole thing under another function
 		intensity = snd.to_intensity()
 
 		pitch = snd.to_pitch()
@@ -607,7 +607,7 @@ class ReportGenerator:
 			
 			plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
 
-		#TODO move whole thing under another function
+		
 		f0min = 60
 		f0max = 600
 
