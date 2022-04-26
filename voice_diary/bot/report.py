@@ -610,7 +610,7 @@ class ReportGenerator:
 
 		ax[0].semilogy(times, rms[0], label='RMS Energy')
 		ax[0].set(xticks=[])
-		ax[0].legend()
+		#ax[0].legend()
 		ax[0].label_outer()
 
 		librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
@@ -621,8 +621,7 @@ class ReportGenerator:
 			fmax=librosa.note_to_hz('C7'))
 
 		ax[1].plot(times, f0, color='green', linewidth=3)
-		ax[1].legend(loc='upper right')
-								
+		#ax[1].legend(loc='upper right')			
 		ax[1].set(title='log Power spectrogram')
 
 		o_env = librosa.onset.onset_strength(y=y, sr=sr)
@@ -632,7 +631,7 @@ class ReportGenerator:
 		ax[2].plot(times, o_env)
 		ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
 				linestyle='--')
-		ax[2].legend()
+		#ax[2].legend()
 
 		fig.set_size_inches(12, 9)
 
@@ -690,6 +689,8 @@ class ReportGenerator:
 
 		with open(spectrum_dir_path + '/info_.txt', 'w') as outfile:
 			outfile.write(full_report)
+
+		print("Done!")
 
 
 	def start_bot(self):
