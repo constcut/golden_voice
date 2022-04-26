@@ -444,7 +444,7 @@ class ReportGenerator:
 		full_report_generated = datetime.datetime.now()
 
 		total_spent = full_report_generated - start_moment
-		print("Total on sent: ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+		print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
 
 		rehape_spent = reshape_sequences_moment - start_moment
 		surf_spent = surf_moment - reshape_sequences_moment
