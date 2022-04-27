@@ -186,6 +186,11 @@ class ReportGenerator:
 		return morph_analysis
 
 
+	def parse_praat_info(self, info_text):
+		#TODO
+		return {}
+
+
 	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
 
 		import datetime
@@ -863,6 +868,6 @@ class ReportGenerator:
 
 
 r = ReportGenerator('key.json')
-#r.start_bot()
+r.start_bot()
 
-r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "unitest")
+#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "unitest")
