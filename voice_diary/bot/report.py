@@ -4,7 +4,6 @@
 from cmath import pi
 import os
 import datetime
-from sympy import true
 
 import telebot
 import json
@@ -207,9 +206,12 @@ class ReportGenerator:
 		intensity_step = duration / len(intensity)
 
 		pitch = pitch.selected_array['frequency']
-
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
+
+		#pitch = np.array(pitch)
+		#intensity = np.array(intensity)
+		#rms = np.array(rms)
 
 		#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
 		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
