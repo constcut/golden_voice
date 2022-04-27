@@ -99,14 +99,10 @@ class ReportGenerator:
 
 	def make_sequence_cut(self, step_size, start, end, sequence):
 		
-		cut = []
 		idx_start = int(start / step_size)
 		idx_end = int(end / step_size)
 
-		for i in range(idx_start, idx_end + 1): #TODO slices
-			cut.append(sequence[i])
-
-		return cut
+		return sequence[idx_start: idx_end]
 
 
 
@@ -209,9 +205,10 @@ class ReportGenerator:
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		#pitch = np.array(pitch)
-		#intensity = np.array(intensity)
-		#rms = np.array(rms)
+		pitch = np.array(pitch)
+		intensity = np.array(intensity)
+		rms = np.array(rms)
+		f0 = np.array(f0)
 
 		#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
 		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
@@ -227,7 +224,8 @@ class ReportGenerator:
 		global_formants = sound.formants()
 		global_hnr = sound.hnr()
 
-		swipe_contour = list(swipe_contour[0])
+		swipe_contour = np.array(swipe_contour[0])
+
 		swipe_step = duration / len(swipe_contour)
 
 		surf_moment =  datetime.datetime.now()
@@ -255,7 +253,6 @@ class ReportGenerator:
 		words_freq = {}
 
 		de_personalization = False #TODO to config
-		compact_mode = False #TODO to config
 
 		tokens = {}
 		tokens_count = 0
@@ -313,12 +310,12 @@ class ReportGenerator:
 
 					prev_word_end = end
 
-					f0_cut = []
-					pitch_cut = []
-					intens_cut = []
-					rms_cut = []
-					swipe_cut = []
-					#TODO + volume
+					f0_cut = np.array([])
+					pitch_cut = np.array([])
+					intens_cut = np.array([])
+					rms_cut = np.array([])
+					swipe_cut = np.array([])
+					#TODO + volume v2
 
 					if self.include_sequences:
 						f0_cut = self.make_sequence_cut(f0_step, start, end, f0) #TODO dont copy, use numpy slices
@@ -347,21 +344,18 @@ class ReportGenerator:
 					else:
 						token_id = tokens[current_word]
 
-					if de_personalization:
+					if de_personalization: #TODO CONFIG
 						current_word = '-'
 
-					if compact_mode:
-						f0_cut = []
-						rms_cut = []
-						pitch_cut = []
-						intens_cut = []
 
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 					"startTime": start, "endTime": end, 
 					"confidence": word['confidence'], 
-					"pyin_pitch": list(f0_cut), "RMS": list(rms_cut),
-					"praat_pitch": list(pitch_cut), "swipe_pitch" : list(swipe_cut)
-					#,"dB": list(intens_cut)
+					"pyin_pitch": np.array2string(f0_cut),
+					"RMS": np.array2string(rms_cut), #TODO or use list? test speed
+					"praat_pitch": np.array2string(pitch_cut),
+					"swipe_pitch" : np.array2string(swipe_cut)
+					#,"dB": np.array2string(intens_cut)
 					,"stats" : statistics_records,  "info": report_string
 					,"morph" : morph_analysis
 					,"token_id" : token_id
