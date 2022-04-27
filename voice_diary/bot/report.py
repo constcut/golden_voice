@@ -592,7 +592,7 @@ class ReportGenerator:
 		request_string = "применен навык"
 		skills_pos = text.find(request_string)
 		if skills_pos != -1:
-			return "Зафиксированно применения навыка\[ов]" + text[meds_pos:]
+			return "Зафиксированно применения навыка\[ов]" + text[skills_pos + len(request_string):]
 
 		request_string = "заполнить поле"
 		field_pos = text.find(request_string)
@@ -600,10 +600,14 @@ class ReportGenerator:
 		request_string_2 = "значением"
 		value_pos = text.find(request_string_2)
 
-		if field_pos != -1 and value_pos != -1:
+		if field_pos != -1 and value_pos != -1: #Если значение не задано - то это просто бинарное поле
 			field_name = text[field_pos + len(request_string): value_pos - 1]
 			value_text = text[value_pos + len(request_string_2): ]
 			return "Поле: " + field_name +" заполненно значением " + value_text
+
+		if field_pos != -1 and value_pos == -1:
+			field_name = text[field_pos + len(request_string): value_pos - 1]
+			return "Поле: " + field_name + " отмечено"
 
 		return ""
 
