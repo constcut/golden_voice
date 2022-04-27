@@ -867,7 +867,6 @@ class ReportGenerator:
 
 
 r = ReportGenerator('key.json')
-r.start_bot()
+#r.start_bot()
 
-#r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
-#r.local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "unitest")
