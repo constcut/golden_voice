@@ -609,6 +609,8 @@ class ReportGenerator:
 			field_name = text[field_pos + len(request_string): value_pos - 1]
 			return "Поле: " + field_name + " отмечено"
 
+		#Рецепт - игредиенты и приготовление
+
 		return ""
 
 
