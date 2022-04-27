@@ -547,6 +547,25 @@ class ReportGenerator:
 			
 		self.send_message_and_reports(spectrum_dir_path, message, message_text)
 
+		commands_string = self.detect_commands(message_text)
+		if commands_string != '':
+			self.bot.reply_to(message, commands_string)
+			
+
+
+	def detect_commands(self, text):
+
+		create_aim_pos = text.find("создать задачу")
+		if create_aim_pos != -1:
+			return "Создается задача с именем: " + text[create_aim_pos:]
+
+		start_aim_pos = text.find("начать задачу")
+		if start_aim_pos != -1:
+			return "Начата задача с именем: " + text[start_aim_pos:]
+
+		finish_aim_pos = text.find("завершить задачу")
+		if finish_aim_pos != -1:
+			return "Начата задача с именем: " + text[finish_aim_pos:]
 
 
 	def send_delayed_text(self, message):
@@ -802,8 +821,7 @@ class ReportGenerator:
 
 
 r = ReportGenerator('key.json')
-#r.start_bot()
+r.start_bot()
 
 #r.local_recognition('/home/punnalyse/local', '/home/punnalyse/local/local.ogg', "newtest")
-
-r.local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
+#r.local_recognition('C:/Users/constcut/Desktop/local', 'C:/Users/constcut/Desktop/local/local.ogg', "localtest")
