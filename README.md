@@ -8,3 +8,5 @@ pip3 install boto3 librosa praat-parselmouth numpy matplotlib seaborn pyTelegram
 
 
 There are issues with surfboard (numba) on python 3.9 or higher, recomended to use 3.8
+
+Time had to by correct to send https request on Y server
