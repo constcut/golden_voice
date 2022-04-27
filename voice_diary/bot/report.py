@@ -555,6 +555,8 @@ class ReportGenerator:
 
 	def detect_commands(self, text):
 
+		text = text.lower()
+
 		create_aim_pos = text.find("создать задачу")
 		if create_aim_pos != -1:
 			return "Создается задача с именем: " + text[create_aim_pos:]
@@ -562,10 +564,24 @@ class ReportGenerator:
 		start_aim_pos = text.find("начать задачу")
 		if start_aim_pos != -1:
 			return "Начата задача с именем: " + text[start_aim_pos:]
+			#TODO datetime - в словарь
 
 		finish_aim_pos = text.find("завершить задачу")
 		if finish_aim_pos != -1:
-			return "Начата задача с именем: " + text[finish_aim_pos:]
+			return "Завершена задача с именем: " + text[finish_aim_pos:]
+			#TODO datetime - из словаря + разница
+
+		eat_pos = text.find('я съел')
+		if eat_pos != -1:
+			return "Записан продукт[ы] питания: " + text[eat_pos:]
+
+		drink_pos = text.find('я выпил')
+		if drink_pos != -1:
+			return "Записан напиток: " + text[drink_pos:]
+
+		meds_pos = text.find('я принял')
+		if meds_pos != -1:
+			return "Записан препарат: "  + text[meds_pos:]
 
 
 	def send_delayed_text(self, message):
