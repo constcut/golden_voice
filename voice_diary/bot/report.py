@@ -547,9 +547,9 @@ class ReportGenerator:
 			
 		self.send_message_and_reports(spectrum_dir_path, message, message_text)
 
-		commands_string = self.detect_commands(message_text)
-		if commands_string != '':
-			self.bot.reply_to(message, commands_string)
+		commands_response = self.detect_commands(message_text)
+		if commands_response != '':
+			self.bot.reply_to(message, commands_response)
 			
 
 
@@ -557,31 +557,55 @@ class ReportGenerator:
 
 		text = text.lower()
 
-		create_aim_pos = text.find("создать задачу")
+		request_string = "создать задачу"
+		create_aim_pos = text.find(request_string)
 		if create_aim_pos != -1:
-			return "Создается задача с именем: " + text[create_aim_pos:]
+			return "Создается задача с именем: " + text[create_aim_pos + len(request_string):]
 
-		start_aim_pos = text.find("начать задачу")
+		request_string = "начать задачу"
+		start_aim_pos = text.find(request_string)
 		if start_aim_pos != -1:
-			return "Начата задача с именем: " + text[start_aim_pos:]
+			return "Начата задача с именем: " + text[start_aim_pos + len(request_string):]
 			#TODO datetime - в словарь
 
-		finish_aim_pos = text.find("завершить задачу")
+		request_string = "завершить задачу"
+		finish_aim_pos = text.find(request_string)
 		if finish_aim_pos != -1:
-			return "Завершена задача с именем: " + text[finish_aim_pos:]
+			return "Завершена задача с именем: " + text[finish_aim_pos + len(request_string):]
 			#TODO datetime - из словаря + разница
 
-		eat_pos = text.find('я съел')
+		request_string = "я съел"
+		eat_pos = text.find(request_string)
 		if eat_pos != -1:
-			return "Записан продукт[ы] питания: " + text[eat_pos:]
+			return "Записан продукт[ы] питания: " + text[eat_pos + len(request_string):]
 
-		drink_pos = text.find('я выпил')
+		request_string = "я выпил"
+		drink_pos = text.find(request_string)
 		if drink_pos != -1:
-			return "Записан напиток: " + text[drink_pos:]
+			return "Записан напиток: " + text[drink_pos + len(request_string):]
 
-		meds_pos = text.find('я принял')
+		request_string = "я принял"
+		meds_pos = text.find(request_string)
 		if meds_pos != -1:
-			return "Записан препарат: "  + text[meds_pos:]
+			return "Записан препарат: "  + text[meds_pos + len(request_string):]
+
+		request_string = "применен навык"
+		skills_pos = text.find(request_string)
+		if skills_pos != -1:
+			return "Зафиксированно применения навыка\[ов]" + text[meds_pos:]
+
+		request_string = "заполнить поле"
+		field_pos = text.find(request_string)
+
+		request_string_2 = "значением"
+		value_pos = text.find(request_string_2)
+
+		if field_pos != -1 and value_pos != -1:
+			field_name = text[field_pos + len(request_string): value_pos - 1]
+			value_text = text[value_pos + len(request_string_2): ]
+			return "Поле: " + field_name +" заполненно значением " + value_text
+
+		return ""
 
 
 	def send_delayed_text(self, message):
