@@ -223,7 +223,7 @@ class ReportGenerator:
 					#print("Positions: ", name_pos, " ", sep_pos)
 
 				else:
-					sep_pos = info_text.find("\n")
+					sep_pos = info_text.find("\n", name_pos)
 					field_value = info_text[name_pos + len(field_name): sep_pos]
 
 				field_value = field_value.strip()
