@@ -5,18 +5,16 @@ HTTPS сервер
 
 =====================================================================================================
 
-2) Sepparate librosa \ praat data from plots + -
+1) Sepparate librosa \ praat data from plots + -
     + загружать praat только один раз
 
-3) make config inside of class + все флаги
+2) make config inside of class + все флаги
 
     Отключение генерации каждого типа - praat, librosa, surfboard (+добавить intensity)
 
-4) cut slices numpy - избежать дублирования данных при разрезке
+3) Intensity from surf ++ formants from praat ++ stats cuts into cross matrix
 
-++ Intensity from surf ++ formants from praat ++ stats cuts into cross matrix
-
-++ Option to save whole pitch and intensity - turned off by default
+4) Option to save whole pitch and intensity - turned off by default
 
 ---------------------------------------------------------------
 
