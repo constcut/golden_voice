@@ -708,9 +708,12 @@ class ReportGenerator:
 
 
 
-	def save_pitches(self, f0, pitch, output_filepath):
+	def save_pitches(self, seq_dict, output_filepath):
 
 		fig = plt.figure()
+
+		f0 = seq_dict["librosa_pitch"]
+		pitch = seq_dict["praat_pitch"]
 
 		times = librosa.times_like(f0)
 		plt.plot(times, f0, color='green', linewidth=5)
@@ -733,43 +736,28 @@ class ReportGenerator:
 	def extract_save_images(self, seq_dict):
 		#TODO rename all
 		self.extract_save_librosa(seq_dict, self._config["dir"]) 
-		#self.extract_save_praat(seq_dict, self._config["dir"])
-		#self.save_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
+		self.extract_save_praat(seq_dict, self._config["dir"])
+		self.save_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
 
 
 
-	def extract_save_praat(self, wave_file, output_filepath): #TODO принимать аргументы для отрисовки, а не генерировать возвращаемые значения
+	def extract_save_praat(self, seq_dict, output_filepath): 
 
-		snd = parselmouth.Sound(wave_file) #TODO move whole thing under another function
-		intensity = snd.to_intensity()
+		snd = seq_dict["praat_sound"]
+		intensity = seq_dict["praat_intensity"]
 
-		pitch = snd.to_pitch()
+		pitch = seq_dict["praat_pitch"] #OR! snd.to_pitch()
 
-		if output_filepath != "":
-			fig = plt.figure()
-			
-			self.draw_pitch_praat(pitch)
-
-			plt.twinx()
-			self.draw_intensity_praat(intensity)
-			plt.xlim([snd.xmin, snd.xmax])
-
-			fig.set_size_inches(12, 9)
-			
-			plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
-
+		fig = plt.figure()
 		
-		f0min = 60
-		f0max = 600
+		self.draw_pitch_praat(pitch)
 
-		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
-		duration = call(snd, "Get total duration") #TODO make global in class 
+		plt.twinx()
+		self.draw_intensity_praat(intensity)
+		plt.xlim([snd.xmin, snd.xmax])
 
-		full_report = call([snd, pitch, pulses], "Voice report", 0, duration, 60, 600, 1.3, 1.6, 0.03, 0.45)
-		
-
-		return full_report, pitch, intensity, duration
+		fig.set_size_inches(12, 9)
+		plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
 
 
 
