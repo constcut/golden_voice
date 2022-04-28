@@ -297,6 +297,8 @@ class ReportGenerator:
 
 		pitch_for_praat = seq_dict["praat_pitch"]
 		pulses = seq_dict["praat_pulses"]
+		f0min = 60
+		f0max = 600
 
 
 		#TODO parse report into dictionary
