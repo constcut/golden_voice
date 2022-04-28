@@ -297,7 +297,7 @@ class ReportGenerator:
 
 		pitch_for_praat = seq_dict["praat_pitch"]
 		pulses = seq_dict["praat_pulses"]
-		f0min = 60
+		f0min = 60 #TODO move under seq_dict or better config
 		f0max = 600
 
 
@@ -494,8 +494,9 @@ class ReportGenerator:
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
-						"jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants,
-						"HNR": global_hnr, "praat_report": praat_dict,
+						"jitters": seq_dict["global_jitters"], "shimmers": seq_dict["global_shimmers"],
+						"formants": seq_dict["global_formants"],
+						"HNR": seq_dict["global_hnr"], "praat_report": praat_dict,
 						"cross_stats": cross_stats, "duration": duration}
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
