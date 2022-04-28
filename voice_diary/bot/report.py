@@ -43,7 +43,7 @@ class ReportGenerator:
 		self.use_cross_matrix = False
 		self.de_personalization = False
 		self.skip_plots = True
-		self.include_sequences = False
+		self.include_sequences = True
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -188,6 +188,9 @@ class ReportGenerator:
 
 	def parse_praat_info(self, info_text):
 
+		if info_text.find("--undefined--") != -1:
+			return {"error": "praat info undefined"}
+
 		fields = [["duration:","seconds"], ["Median pitch:","Hz"], ["Mean pitch:","Hz"],
 		["Standard deviation:","Hz"], ["Minimum pitch:","Hz"], ["Maximum pitch:","Hz"],
 		["Number of pulses:",""], ["Number of periods:", ""], ["Mean period:","seconds"],
@@ -237,8 +240,6 @@ class ReportGenerator:
 				#use_full_names = True #TODO to config
 				#if use_full_names:
 					#dict_key += field_sepparator
-
-				print("DEBUF attempt to ", field_name, " and ", field_value)
 
 				praat_dict[field_name] = float(field_value)
 
