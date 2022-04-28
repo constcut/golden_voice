@@ -276,21 +276,17 @@ class ReportGenerator:
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE of list
+		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE of list? Just slices
 		intensity = np.array(intensity)
 		rms = np.array(rms)
 		f0 = np.array(f0)
 
-
 		swipe_contour = np.array(seq_dict["swipe_contour"][0])
 		swipe_step = duration / len(swipe_contour)
-
 		intense_contour = np.array(seq_dict["intense_contour"][0]) #TODO full fill
 
 		reshape_sequences_moment =  datetime.datetime.now()
-
 		surf_moment =  datetime.datetime.now()
-
 
 		snd = seq_dict["praat_sound"]
 
@@ -840,7 +836,7 @@ class ReportGenerator:
 
 		#1: export from ogg to PCM here
 
-		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path
+		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path + осторожней тут
 			os.remove(spectrum_dir_path +"/pcm.wav")
 
 			command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
