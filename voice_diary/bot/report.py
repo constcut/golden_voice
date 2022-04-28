@@ -217,11 +217,14 @@ class ReportGenerator:
 
 				if field_sepparator != "":
 
-					sep_pos = info_text.find(field_sepparator)
+					sep_pos = info_text.find(field_sepparator, name_pos)
 					field_value = info_text[name_pos + len(field_name): sep_pos - 1]
-				
-				else: 
-					field_value = info_text[name_pos + len(field_name):]
+
+					#print("Positions: ", name_pos, " ", sep_pos)
+
+				else:
+					sep_pos = info_text.find("\n")
+					field_value = info_text[name_pos + len(field_name): sep_pos]
 
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
@@ -474,6 +477,8 @@ class ReportGenerator:
 					cross_stats.append(cross_element)
 
 		cross_matrix__moment = datetime.datetime.now()
+
+		praat_dict = self.parse_praat_info(full_report)
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
@@ -909,6 +914,6 @@ class ReportGenerator:
 
 
 r = ReportGenerator('key.json')
-r.start_bot()
+#r.start_bot()
 
-#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "unitest")
+r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "unitest")
