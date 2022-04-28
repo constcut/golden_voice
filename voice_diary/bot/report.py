@@ -42,7 +42,7 @@ class ReportGenerator:
 
 		self.use_cross_matrix = False
 		self.de_personalization = False
-		self.skip_plots = True
+		self.skip_plots = False
 		self.include_sequences = True
 
 
@@ -780,7 +780,7 @@ class ReportGenerator:
 		f0 = seq_dict["librosa_pitch"]
 		S = seq_dict["librosa_S"]
 
-		fig, ax = plt.subplots(nrows=3, sharex=True)
+		fig, ax = plt.subplots(nrows=2, sharex=True)
 
 		ax[0].semilogy(times, rms[0], label='RMS Energy')
 		ax[0].set(xticks=[])
