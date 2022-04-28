@@ -227,6 +227,12 @@ class ReportGenerator:
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
 				
+				dict_key = field_name
+
+				use_full_names = True #TODO to config
+				if use_full_names:
+					dict_key += field_sepparator
+
 				praat_dict[field_name] = float(field_value)
 
 				#TODO exceptions everywhere..!
