@@ -254,6 +254,8 @@ class ReportGenerator:
 
 		start_moment = datetime.datetime.now()
 
+		#TODO receive all f0/intense as dictionary
+		#Check each field exists, if not - avoid calculation of stats, and cutting sequence
 
 		#==========================================Prepare basic information sequences==========================================
 		intensity = intensity.values.T
@@ -267,7 +269,7 @@ class ReportGenerator:
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE
+		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE of list
 		intensity = np.array(intensity)
 		rms = np.array(rms)
 		f0 = np.array(f0)
@@ -280,15 +282,19 @@ class ReportGenerator:
 		from surfboard.sound import Waveform
 		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
 
-		swipe_contour = sound.f0_contour() #TODO + intencity
+		swipe_contour = sound.f0_contour()
+		intense_contour = sound.intensity()  #TODO SPREAD everywhere
+
 		global_shimmers = sound.shimmers()
 		global_jitters = sound.jitters()
 		global_formants = sound.formants()
 		global_hnr = sound.hnr()
 
 		swipe_contour = np.array(swipe_contour[0])
-
 		swipe_step = duration / len(swipe_contour)
+
+		intense_contour = np.array(intense_contour[0]) #TODO rename to clear types: librosa\praat\surfboard
+		#TODO add to report
 
 		surf_moment =  datetime.datetime.now()
 

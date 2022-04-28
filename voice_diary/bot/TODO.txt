@@ -12,7 +12,9 @@ HTTPS сервер
 
     Отключение генерации каждого типа - praat, librosa, surfboard (+добавить intensity)
 
-3) Intensity from surf ++ formants from praat ++ stats cuts into cross matrix
+3) Intensity from surf 
+    ++ formants from praat 
+    ++ stats cuts into cross matrix
 
 4) Option to save whole pitch and intensity - turned off by default
 
