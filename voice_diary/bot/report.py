@@ -281,9 +281,10 @@ class ReportGenerator:
 		rms = np.array(rms)
 		f0 = np.array(f0)
 
-		swipe_contour = np.array(seq_dict["swipe_contour"][0])
-		swipe_step = duration / len(swipe_contour)
-		intense_contour = np.array(seq_dict["intense_contour"][0]) #TODO full fill
+		swipe_pitch = np.array(seq_dict["swipe_pitch"][0])
+		swipe_step = duration / len(swipe_pitch)
+		surf_intensity = np.array(seq_dict["surf_intensity"][0]) #TODO full fill
+		surf_intens_step = duration / len(surf_intensity)
 
 		reshape_sequences_moment =  datetime.datetime.now()
 		surf_moment =  datetime.datetime.now()
@@ -314,8 +315,9 @@ class ReportGenerator:
 		tokens_count = 0
 
 		full_stats = {"pyin_pitch":self.get_full_statistics(f0), "praat_pitch": self.get_full_statistics(pitch),
-					"swipe_pitch" : self.get_full_statistics(swipe_contour),
-					"rms":self.get_full_statistics(rms), "intensity":self.get_full_statistics(intensity)}
+					"swipe_pitch" : self.get_full_statistics(swipe_pitch),
+					"rms":self.get_full_statistics(rms), "intensity":self.get_full_statistics(intensity),
+					"surf intensity": self.get_full_statistics(surf_intensity)}
 
 		full_text = ""
 
@@ -350,16 +352,19 @@ class ReportGenerator:
 					silence_start = prev_word_end
 					silence_end = start
 
-					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) #TODO dont copy, use numpy slices
-					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)#TODO dont copy, use numpy slices
+					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
+					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)
+					pause_surf_intens = self.make_sequence_cut(surf_intens_step, silence_start, silence_end, surf_intensity)
 
 					pause_RMS = self.get_full_statistics(pause_RMS)
 					pause_intens = self.get_full_statistics(pause_intens)
+					pause_surf_intens = self.get_full_statistics(pause_surf_intens)
 
-					silence_report = ""
+					silence_report = "" # TODO praat info? or get rid
 
 					single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
-									"RMS": pause_RMS, "Intensity": pause_intens, "info": silence_report}; #, "dB": list(pause_intens)
+									"RMS": pause_RMS, "Intensity": pause_intens,
+									"Surf Intencity": pause_surf_intens, "info": silence_report};
 
 					
 					events.append(single_pause)
@@ -371,18 +376,19 @@ class ReportGenerator:
 					intens_cut = np.array([])
 					rms_cut = np.array([])
 					swipe_cut = np.array([])
-					#TODO + volume v2
+					surf_intens_cut = np.array([])
 
 					if self.include_sequences:
-						f0_cut = self.make_sequence_cut(f0_step, start, end, f0) #TODO dont copy, use numpy slices
-						pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  #TODO dont copy, use numpy slices
-						intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) #TODO dont copy, use numpy slices
-						rms_cut = self.make_sequence_cut(rms_step, start, end, rms) #TODO dont copy, use numpy slices
-						swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour) #TODO dont copy, use numpy slices
+						f0_cut = self.make_sequence_cut(f0_step, start, end, f0) 
+						pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  
+						intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) 
+						rms_cut = self.make_sequence_cut(rms_step, start, end, rms) 
+						swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_pitch) 
+						surf_intens_cut = self.make_sequence_cut(surf_intens_step, start, end, surf_intensity)
 
 					statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
 						"rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut),
-						"swipe_pitch": self.get_full_statistics(swipe_cut)}
+						"swipe_pitch": self.get_full_statistics(swipe_cut), "surf intensity": self.get_full_statistics(surf_intens_cut)}
 
 					report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45)
@@ -430,14 +436,16 @@ class ReportGenerator:
 
 				#FILL chunk
 
-				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0) #TODO dont copy, use numpy slices
-				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)#TODO dont copy, use numpy slices
-				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)#TODO dont copy, use numpy slices
-				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)#TODO dont copy, use numpy slices
-				swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_contour)#TODO dont copy, use numpy slices
+				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
+				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
+				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
+				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
+				swipe_cut = self.make_sequence_cut(swipe_step, first_start, prev_word_end, swipe_pitch)
+				surf_intens_cut = self.make_sequence_cut(surf_intens_step, first_start, prev_word_end, surf_intensity)
 
 				statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
-					"swipe_pitch": self.get_full_statistics(swipe_cut), "rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut)}
+					"swipe_pitch": self.get_full_statistics(swipe_cut), "rms":self.get_full_statistics(rms_cut), 
+					"intensity":self.get_full_statistics(intens_cut), "surf intensity": self.get_full_statistics(surf_intens_cut)}
 
 				chunk_text = alt["text"]
 				if self.de_personalization:
@@ -828,7 +836,10 @@ class ReportGenerator:
 		#LIBROSA
 		y, sr = librosa.load(wav_file)
 
-		S, phase = librosa.magphase(librosa.stft(y)) #TODO can be avoided?
+		#TODO can be avoided, if no plots!
+		S, phase = librosa.magphase(librosa.stft(y)) 
+		#librosa.feature.rms(y=y)
+
 		rms = librosa.feature.rms(S=S)
 
 		times = librosa.times_like(rms)
@@ -850,11 +861,13 @@ class ReportGenerator:
 		f0min = 60
 		f0max = 600
 
-		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
-		duration = call(snd, "Get total duration") #TODO make global in class 
+		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  
+		pulses = call([snd, pitch], "To PointProcess (cc)") 
+		duration = call(snd, "Get total duration")
 
-		#TODO maybe formants in time? snd.to_formant_burg
+		formants = snd.to_formant_burg()
+
+		print("Formants ", len(formants), " ", formants)
 
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
@@ -869,16 +882,17 @@ class ReportGenerator:
 		from surfboard.sound import Waveform #SAME THING UPPER, IF WE TURN OFF ANY, WE DON"T HAVE TO INSTALL THEM
 		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
 
-		swipe_contour = sound.f0_contour()
-		intense_contour = sound.intensity()  #TODO SPREAD everywhere
+		swipe_pitch = sound.f0_contour()
+		surf_intensity = sound.intensity()  #TODO SPREAD everywhere
 
 		global_shimmers = sound.shimmers()
 		global_jitters = sound.jitters()
 		global_formants = sound.formants()
 		global_hnr = sound.hnr()
 
-		seq_dict["swipe_contour"] = swipe_contour
-		seq_dict["intense_contour"] = intense_contour
+		seq_dict["swipe_pitch"] = swipe_pitch
+		seq_dict["surf_intensity"] = surf_intensity
+
 		seq_dict["global_jitters"] = global_jitters
 		seq_dict["global_shimmers"] = global_shimmers
 		seq_dict["global_formants"] = global_formants
