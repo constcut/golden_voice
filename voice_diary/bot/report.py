@@ -884,9 +884,50 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
-		
+		#1: export from ogg to PCM here
+
+		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path
+			os.remove(spectrum_dir_path +"/pcm.wav")
+
+			command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
+		_ = check_call(command.split())
+
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
+
+		#2: generate sequences from each of 3 ways, all ways configurable (later)
+
+		#LIBROSA
+		y, sr = librosa.load(wav_file)
+
+		S, phase = librosa.magphase(librosa.stft(y))
+		rms = librosa.feature.rms(S=S)
+
+		times = librosa.times_like(rms)
+
+		f0, voiced_flag, voiced_probs = librosa.pyin(y,
+			fmin=librosa.note_to_hz('C2'),
+			fmax=librosa.note_to_hz('C7'))
+
+		#PRAAT
+
+		snd = parselmouth.Sound(wav_file) 
+		intensity = snd.to_intensity()
+
+		f0min = 60
+		f0max = 600
+
+		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
+		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
+		duration = call(snd, "Get total duration") #TODO make global in class 
+
+		#pitch = snd.to_pitch() #it was used only for make plots
+
+
+		#3: use dictionary with sequences to put it into json report
+
+		#4: use dictionary with seqs, to make images
+		#full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
+		
 
 		images_saved_moment = datetime.datetime.now()
 
@@ -900,9 +941,6 @@ class ReportGenerator:
 		full_report_generated = datetime.datetime.now()
 
 		self.save_json_products(spectrum_dir_path, json_report, full_string)
-
-		with open(spectrum_dir_path + '/info_.txt', 'w') as outfile:
-			outfile.write(full_report)
 
 		measure_time = True
 
