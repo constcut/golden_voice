@@ -220,7 +220,8 @@ class ReportGenerator:
 					sep_pos = info_text.find(field_sepparator, name_pos)
 					field_value = info_text[name_pos + len(field_name): sep_pos - 1]
 
-					#print("Positions: ", name_pos, " ", sep_pos)
+					if field_value == "Shimmer (local, dB):":
+						print("DEBUG: ", name_pos, " ", sep_pos)
 
 				else:
 					sep_pos = info_text.find("\n", name_pos)
@@ -229,8 +230,7 @@ class ReportGenerator:
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
 				
-				print("Field ", field_name, " value ", field_value)
-				praat_dict[field_name] = field_value #TODO to float?
+				praat_dict[field_name] = field_value #TODO float!
 
 		return praat_dict
 
@@ -483,7 +483,7 @@ class ReportGenerator:
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 						"jitters": global_jitters, "shimmers": global_shimmers, "formants": global_formants,
-						"HNR": global_hnr, "praat_report": full_report,
+						"HNR": global_hnr, "praat_report": praat_dict,
 						"cross_stats": cross_stats, "duration": duration}
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
