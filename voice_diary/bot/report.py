@@ -843,14 +843,21 @@ class ReportGenerator:
 
 
 	def extract_features(self, wav_file):
+
 		seq_dict = {}
+
+		start_moment =  datetime.datetime.now()
 
 		#LIBROSA
 		y, sr = librosa.load(wav_file)
 
+		librosa_loaded_moment =  datetime.datetime.now()
+
 		#TODO can be avoided, if no plots!
 		S, phase = librosa.magphase(librosa.stft(y)) 
 		#librosa.feature.rms(y=y)
+
+		librosa_stft_moment =  datetime.datetime.now()
 
 		rms = librosa.feature.rms(S=S)
 
@@ -864,6 +871,8 @@ class ReportGenerator:
 		seq_dict["librosa_rms"] = rms
 		seq_dict["librosa_times"] = times
 		seq_dict["librosa_S"] = S #TODO can be avoided if not plots?
+
+		librosa_done_moment = datetime.datetime.now()
 
 		#PRAAT
 
@@ -888,6 +897,7 @@ class ReportGenerator:
 		seq_dict["praat_sound"] = snd
 		seq_dict["praat_pulses"] = pulses
 
+		praat_done_moment = datetime.datetime.now()
 
 		#SURFBOARD
 
@@ -917,6 +927,24 @@ class ReportGenerator:
 		seq_dict["global_shimmers"] = global_shimmers
 		seq_dict["global_formants"] = global_formants
 		seq_dict["global_hnr"] = global_hnr
+
+		surf_done_moment = datetime.datetime.now()
+
+		librosa_load_spent = librosa_loaded_moment - start_moment
+		librosa_stft_spent = librosa_stft_moment - librosa_loaded_moment
+		librosa_rest_spent = librosa_done_moment - librosa_loaded_moment
+		praat_spent = praat_done_moment - librosa_done_moment
+		surf_spent = surf_done_moment - praat_done_moment
+		total_spent = surf_done_moment - start_moment
+
+		print("Total ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+
+		print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds, " micro")
+		print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds, " micro")
+		print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds, " micro")
+
+		print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds, " micro")
+		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds, " micro")
 
 		return seq_dict
 
