@@ -187,8 +187,49 @@ class ReportGenerator:
 
 
 	def parse_praat_info(self, info_text):
-		#TODO
-		return {}
+
+		fields = [["duration:","seconds"], ["Median pitch:","Hz"], ["Mean pitch:","Hz"],
+		["Standard deviation:","Hz"], ["Minimum pitch:","Hz"], ["Maximum pitch:","Hz"],
+		["Number of pulses:",""], ["Number of periods:", ""], ["Mean period:","seconds"],
+		["Standard deviation of period:", "seconds"], ["Fraction of locally unvoiced frames:", "%"],
+		["Number of voice breaks:",""],["Degree of voice breaks:", "%"],
+		["Jitter (local):", "%"], ["Jitter (local, absolute):", "seconds"],
+		["Jitter (rap):", "%"], ["Jitter (ppq5):", "%"], ["Jitter (ddp):", "%"],
+		["Shimmer (local):", "%"], ["Shimmer (local, dB):", "dB"], 
+		["Shimmer (apq3):", "%"], ["Shimmer (apq5):", "%"],
+		["Shimmer (apq11):", "%"], ["Shimmer (apq11):", "%"],
+		["Shimmer (dda):", "%"], ["Mean autocorrelation:", ""],
+		["Mean noise-to-harmonics ratio:",""],
+		["Mean harmonics-to-noise ratio:", "dB"]]
+
+		praat_dict = {}
+
+		for field_info in fields:
+
+			field_name = field_info[0]
+			field_sepparator = field_info[1]
+
+			name_pos = info_text.find(field_name)
+
+			if name_pos != -1:
+
+				field_value = ""
+
+				if field_sepparator != "":
+
+					sep_pos = info_text.find(field_sepparator)
+					field_value = info_text[name_pos + len(field_name): sep_pos - 1]
+				
+				else: 
+					field_value = info_text[name_pos + len(field_name):]
+
+				field_value = field_value.strip()
+				field_name = field_name[:-1]
+				
+				print("Field ", field_name, " value ", field_value)
+				praat_dict[field_name] = field_value #TODO to float?
+
+		return praat_dict
 
 
 	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
