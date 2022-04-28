@@ -267,7 +267,7 @@ class ReportGenerator:
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		pitch = np.array(pitch)
+		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE
 		intensity = np.array(intensity)
 		rms = np.array(rms)
 		f0 = np.array(f0)
