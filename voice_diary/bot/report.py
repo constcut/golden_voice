@@ -45,6 +45,11 @@ class ReportGenerator:
 		self.skip_plots = False
 		self.include_sequences = True
 
+		#TODO save_full_sequences
+		#TODO use_praat_pitch
+		#TODO use_praat_intensity
+		#TODO : use, librosa 1,2; surf 1,2
+
 
 	def request_recognition(self, record_file_path, alias_name):
 		
@@ -499,14 +504,15 @@ class ReportGenerator:
 
 		praat_dict = self.parse_praat_info(full_report)
 
-		#steps = {""}
+		steps = {"librosa_pitch_step": f0_step, "rms_step": rms_step, "praat_putch_step": pitch_step,
+				 "intensity_step": intensity_step, "swipe_step": swipe_step, "surf_intens_step" : surf_intens_step }
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 						"jitters": seq_dict["global_jitters"], "shimmers": seq_dict["global_shimmers"],
 						"formants": seq_dict["global_formants"],
 						"HNR": seq_dict["global_hnr"], "praat_report": praat_dict,
-						"cross_stats": cross_stats, "duration": duration}
+						"cross_stats": cross_stats, "duration": duration, "steps_sizes": steps}
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
@@ -871,9 +877,9 @@ class ReportGenerator:
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
 
-		formants = snd.to_formant_burg()
-
-		print("Formants ", len(formants), " ", formants) # nFormants
+		#formants = snd.to_formant_burg()
+		#print("Formants ", len(formants), " ", formants) # nFormants
+		#TOOO BIG :(
 
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
@@ -890,6 +896,14 @@ class ReportGenerator:
 
 		swipe_pitch = sound.f0_contour()
 		surf_intensity = sound.intensity()  #TODO SPREAD everywhere
+
+		formants_sequence = sound.formants_slidingwindow()
+		print("Formants sequence: ", len(formants_sequence), " and signle ",
+			len(formants_sequence[0]))
+
+		#SAVE IT!
+
+		#TODO try change window size, librosa like is ok, we save data x2
 
 		global_shimmers = sound.shimmers()
 		global_jitters = sound.jitters()
@@ -979,4 +993,7 @@ r = ReportGenerator('key.json')
 #r.start_bot()
 
 #TODO learn to use recognition from file, to avoid need send it to server each time
-r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
+
+#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
+
+r.extract_features(r._config["dir"] + "/pcm.wav")
