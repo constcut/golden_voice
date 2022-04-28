@@ -283,7 +283,10 @@ class ReportGenerator:
 
 		swipe_pitch = np.array(seq_dict["swipe_pitch"][0])
 		swipe_step = duration / len(swipe_pitch)
-		surf_intensity = np.array(seq_dict["surf_intensity"][0]) #TODO full fill
+
+		surf_intensity = np.array(seq_dict["surf_intensity"][0])
+		surf_intensity = surf_intensity.astype(float)
+
 		surf_intens_step = duration / len(surf_intensity)
 
 		reshape_sequences_moment =  datetime.datetime.now()
@@ -417,6 +420,7 @@ class ReportGenerator:
 					"RMS": list(rms_cut), #TODO or use list? test speed
 					"praat_pitch": list(pitch_cut),
 					"swipe_pitch" : list(swipe_cut)
+					#surf_intensity
 					#,"dB": np.array2string(intens_cut)
 					,"stats" : statistics_records,  "info": self.parse_praat_info(report_string)
 					,"morph" : morph_analysis
@@ -494,6 +498,8 @@ class ReportGenerator:
 		cross_matrix__moment = datetime.datetime.now()
 
 		praat_dict = self.parse_praat_info(full_report)
+
+		#steps = {""}
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
@@ -867,7 +873,7 @@ class ReportGenerator:
 
 		formants = snd.to_formant_burg()
 
-		print("Formants ", len(formants), " ", formants)
+		print("Formants ", len(formants), " ", formants) # nFormants
 
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
@@ -972,4 +978,5 @@ class ReportGenerator:
 r = ReportGenerator('key.json')
 #r.start_bot()
 
+#TODO learn to use recognition from file, to avoid need send it to server each time
 r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
