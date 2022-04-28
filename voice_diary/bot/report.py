@@ -282,39 +282,22 @@ class ReportGenerator:
 		rms = np.array(rms)
 		f0 = np.array(f0)
 
-		#TODO check package exists to just avoid its calculation if not installed but nor ruin everything
-		#TODO work aroun it better - sepparate praat and librosa from images, generate them as option
+
+		swipe_contour = np.array(seq_dict["swipe_contour"][0])
+		swipe_step = duration / len(swipe_contour)
+
+		intense_contour = np.array(seq_dict["intense_contour"][0]) #TODO full fill
 
 		reshape_sequences_moment =  datetime.datetime.now()
 
-		from surfboard.sound import Waveform
-		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
-
-		swipe_contour = sound.f0_contour()
-		intense_contour = sound.intensity()  #TODO SPREAD everywhere
-
-		global_shimmers = sound.shimmers()
-		global_jitters = sound.jitters()
-		global_formants = sound.formants()
-		global_hnr = sound.hnr()
-
-		swipe_contour = np.array(swipe_contour[0])
-		swipe_step = duration / len(swipe_contour)
-
-		intense_contour = np.array(intense_contour[0]) #TODO rename to clear types: librosa\praat\surfboard
-		#TODO add to report
-
 		surf_moment =  datetime.datetime.now()
 
-		snd = parselmouth.Sound(wav_file)
 
-		f0min = 60
-		f0max = 600
+		snd = seq_dict["praat_sound"]
 
-		pitch_for_praat = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-		pulses = call([snd, pitch_for_praat], "To PointProcess (cc)") #TODO make global in class
+		pitch_for_praat = seq_dict["praat_pitch"]
+		pulses = seq_dict["praat_pulses"]
 
-		#TODO maybe formants in time? snd.to_formant_burg
 
 		#TODO parse report into dictionary
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
@@ -927,8 +910,22 @@ class ReportGenerator:
 		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
 		duration = call(snd, "Get total duration") #TODO make global in class 
 
+		#TODO maybe formants in time? snd.to_formant_burg
+
 		#pitch = snd.to_pitch() #it was used only for make plots
 
+		#SURFBOARD
+
+		from surfboard.sound import Waveform
+		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
+
+		swipe_contour = sound.f0_contour()
+		intense_contour = sound.intensity()  #TODO SPREAD everywhere
+
+		global_shimmers = sound.shimmers()
+		global_jitters = sound.jitters()
+		global_formants = sound.formants()
+		global_hnr = sound.hnr()
 
 		#3: use dictionary with sequences to put it into json report
 
@@ -936,12 +933,21 @@ class ReportGenerator:
 
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
+		seq_dict["duration"] = duration
+
+		seq_dict["praat_sound"] = snd
+		seq_dict["praat_pulses"] = pulses
 		#TODO save everything needed for praat in make json report
 
 		seq_dict["librosa_pitch"] = f0
 		seq_dict["librosa_rms"] = rms
 
-		seq_dict["duration"] = duration
+		seq_dict["swipe_contour"] = swipe_contour
+		seq_dict["intense_contour"] = intense_contour
+		seq_dict["global_jitters"] = global_jitters
+		seq_dict["global_shimmers"] = global_shimmers
+		seq_dict["global_formants"] = global_formants
+		seq_dict["global_hnr"] = global_hnr
 
 		seq_dict["wav_file"] = wav_file
 
