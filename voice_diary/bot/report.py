@@ -248,7 +248,7 @@ class ReportGenerator:
 		return praat_dict
 
 
-	def make_json_report(self, req, f0, rms, pitch, intensity, duration, wav_file):
+	def make_json_report(self, req, seq_dict):
 
 		import datetime
 
@@ -259,7 +259,14 @@ class ReportGenerator:
 
 		#CHECK POINT
 		#==========================================Prepare basic information sequences==========================================
-		intensity = intensity.values.T
+		duration = seq_dict["duration"]
+		intensity = seq_dict["praat_intensity"].values.T #Check copy avoided
+		pitch = seq_dict["praat_pitch"]
+
+		f0 = seq_dict["librosa_pitch"] #rename to librosa pitch TODO
+		rms = seq_dict["librosa_rms"]
+
+		wav_file = seq_dict["wav_file"] #TODO remove with moving surfboard outside
 		
 		f0_step = duration / len(f0)
 		rms_step = duration / len(rms[0])
@@ -925,10 +932,23 @@ class ReportGenerator:
 
 		#3: use dictionary with sequences to put it into json report
 
+		seq_dict = {}
+
+		seq_dict["praat_pitch"] = pitch
+		seq_dict["praat_intensity"] = intensity
+		#TODO save everything needed for praat in make json report
+
+		seq_dict["librosa_pitch"] = f0
+		seq_dict["librosa_rms"] = rms
+
+		seq_dict["duration"] = duration
+
+		seq_dict["wav_file"] = wav_file
+
+
 		#4: use dictionary with seqs, to make images
 		#full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
 		
-
 		images_saved_moment = datetime.datetime.now()
 
 		req = self.check_server_recognition(id)
@@ -936,7 +956,7 @@ class ReportGenerator:
 
 		recognition_received_moment = datetime.datetime.now()
 
-		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
+		json_report = self.make_json_report(req, seq_dict)
 
 		full_report_generated = datetime.datetime.now()
 
