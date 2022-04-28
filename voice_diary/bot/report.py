@@ -404,7 +404,7 @@ class ReportGenerator:
 					"praat_pitch": np.array2string(pitch_cut),
 					"swipe_pitch" : np.array2string(swipe_cut)
 					#,"dB": np.array2string(intens_cut)
-					,"stats" : statistics_records,  "info": report_string
+					,"stats" : statistics_records,  "info": self.parse_praat_info(report_string)
 					,"morph" : morph_analysis
 					,"token_id" : token_id
 					,"word_idx" : total_words
@@ -440,7 +440,7 @@ class ReportGenerator:
 
 				single_chunk = {"chunkId": chunkId, "altId": altId, "stats": statistics_records,  
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
-								"text": chunk_text, "praat_report": chunk_report}
+								"text": chunk_text, "praat_report": self.parse_praat_info(chunk_report)}
 				
 				full_text += chunk_text + ". "
 
@@ -470,7 +470,7 @@ class ReportGenerator:
 										cross_start, cross_end, f0min, f0max,
 										1.3, 1.6, 0.03, 0.45) 
 
-					cross_element = {"praat_report": cross_report, "start" : cross_start,
+					cross_element = {"praat_report": self.parse_praat_info(cross_report), "start" : cross_start,
 									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
 
 					cross_stats.append(cross_element)
