@@ -257,6 +257,7 @@ class ReportGenerator:
 		#TODO receive all f0/intense as dictionary
 		#Check each field exists, if not - avoid calculation of stats, and cutting sequence
 
+		#CHECK POINT
 		#==========================================Prepare basic information sequences==========================================
 		intensity = intensity.values.T
 		
