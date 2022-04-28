@@ -822,6 +822,70 @@ class ReportGenerator:
 			print("Audio saved")
 
 
+	def extract_features(self, wav_file):
+		seq_dict = {}
+
+		#LIBROSA
+		y, sr = librosa.load(wav_file)
+
+		S, phase = librosa.magphase(librosa.stft(y)) #TODO can be avoided?
+		rms = librosa.feature.rms(S=S)
+
+		times = librosa.times_like(rms)
+
+		f0, voiced_flag, voiced_probs = librosa.pyin(y,
+			fmin=librosa.note_to_hz('C2'),
+			fmax=librosa.note_to_hz('C7'))
+
+		seq_dict["librosa_pitch"] = f0
+		seq_dict["librosa_rms"] = rms
+		seq_dict["librosa_times"] = times
+		seq_dict["librosa_S"] = S #TODO can be avoided if not plots?
+
+		#PRAAT
+
+		snd = parselmouth.Sound(wav_file) 
+		intensity = snd.to_intensity()
+
+		f0min = 60
+		f0max = 600
+
+		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
+		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
+		duration = call(snd, "Get total duration") #TODO make global in class 
+
+		#TODO maybe formants in time? snd.to_formant_burg
+
+		seq_dict["praat_pitch"] = pitch
+		seq_dict["praat_intensity"] = intensity
+		seq_dict["duration"] = duration
+
+		seq_dict["praat_sound"] = snd
+		seq_dict["praat_pulses"] = pulses
+
+
+		#SURFBOARD
+
+		from surfboard.sound import Waveform #SAME THING UPPER, IF WE TURN OFF ANY, WE DON"T HAVE TO INSTALL THEM
+		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
+
+		swipe_contour = sound.f0_contour()
+		intense_contour = sound.intensity()  #TODO SPREAD everywhere
+
+		global_shimmers = sound.shimmers()
+		global_jitters = sound.jitters()
+		global_formants = sound.formants()
+		global_hnr = sound.hnr()
+
+		seq_dict["swipe_contour"] = swipe_contour
+		seq_dict["intense_contour"] = intense_contour
+		seq_dict["global_jitters"] = global_jitters
+		seq_dict["global_shimmers"] = global_shimmers
+		seq_dict["global_formants"] = global_formants
+		seq_dict["global_hnr"] = global_hnr
+
+		return seq_dict
+
 
 
 	def local_recognition(self, spectrum_dir_path, record_file_path, alias_name):
@@ -844,81 +908,10 @@ class ReportGenerator:
 
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
 
-		#2: generate sequences from each of 3 ways, all ways configurable (later)
-		#TODO move under sub-function
+		seq_dict = self.extract_features(wav_file)
 
-		#LIBROSA
-		y, sr = librosa.load(wav_file)
-
-		S, phase = librosa.magphase(librosa.stft(y)) #TODO can be avoided?
-		rms = librosa.feature.rms(S=S)
-
-		times = librosa.times_like(rms)
-
-		f0, voiced_flag, voiced_probs = librosa.pyin(y,
-			fmin=librosa.note_to_hz('C2'),
-			fmax=librosa.note_to_hz('C7'))
-
-		#PRAAT
-
-		snd = parselmouth.Sound(wav_file) 
-		intensity = snd.to_intensity()
-
-		f0min = 60
-		f0max = 600
-
-		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  #TODO make global in class
-		pulses = call([snd, pitch], "To PointProcess (cc)") #TODO make global in class
-		duration = call(snd, "Get total duration") #TODO make global in class 
-
-		#TODO maybe formants in time? snd.to_formant_burg
-
-		#pitch = snd.to_pitch() #it was used only for make plots
-
-		#SURFBOARD
-
-		from surfboard.sound import Waveform
-		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
-
-		swipe_contour = sound.f0_contour()
-		intense_contour = sound.intensity()  #TODO SPREAD everywhere
-
-		global_shimmers = sound.shimmers()
-		global_jitters = sound.jitters()
-		global_formants = sound.formants()
-		global_hnr = sound.hnr()
-
-		#3: use dictionary with sequences to put it into json report
-
-		seq_dict = {}
-
-		seq_dict["praat_pitch"] = pitch
-		seq_dict["praat_intensity"] = intensity
-		seq_dict["duration"] = duration
-
-		seq_dict["praat_sound"] = snd
-		seq_dict["praat_pulses"] = pulses
-		#TODO save everything needed for praat in make json report
-
-		seq_dict["librosa_pitch"] = f0
-		seq_dict["librosa_rms"] = rms
-		seq_dict["librosa_times"] = times
-		seq_dict["librosa_S"] = S #TODO can be avoided?
-
-		seq_dict["swipe_contour"] = swipe_contour
-		seq_dict["intense_contour"] = intense_contour
-		seq_dict["global_jitters"] = global_jitters
-		seq_dict["global_shimmers"] = global_shimmers
-		seq_dict["global_formants"] = global_formants
-		seq_dict["global_hnr"] = global_hnr
-
-
-		#4: use dictionary with seqs, to make images
-		#full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
-		
 		if self.skip_plots == False:
 			self.extract_save_images(seq_dict) #TODO возможно надо сохранять ещё директорию, но вначале возьмём из конфига
-		#self.extract_save_images
 
 		images_saved_moment = datetime.datetime.now()
 
