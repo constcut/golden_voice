@@ -860,12 +860,13 @@ class ReportGenerator:
 		librosa_stft_moment =  datetime.datetime.now()
 
 		rms = librosa.feature.rms(S=S)
-
 		times = librosa.times_like(rms)
 
-		f0, voiced_flag, voiced_probs = librosa.pyin(y,
-			fmin=librosa.note_to_hz('C2'),
-			fmax=librosa.note_to_hz('C7'))
+		f0 = librosa.yin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
+
+		#f0, voiced_flag, voiced_probs = librosa.pyin(y,
+		#	fmin=librosa.note_to_hz('C2'),
+		#	fmax=librosa.note_to_hz('C7'))
 
 		seq_dict["librosa_pitch"] = f0
 		seq_dict["librosa_rms"] = rms
@@ -886,7 +887,7 @@ class ReportGenerator:
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
 
-		#formants = snd.to_formant_burg()
+		formants = snd.to_formant_burg()
 		#print("Formants ", len(formants), " ", formants) # nFormants
 		#TOOO BIG :(
 
@@ -907,9 +908,9 @@ class ReportGenerator:
 		swipe_pitch = sound.f0_contour()
 		surf_intensity = sound.intensity()  #TODO SPREAD everywhere
 
-		formants_sequence = sound.formants_slidingwindow()
-		print("Formants sequence: ", len(formants_sequence), " and signle ",
-			len(formants_sequence[0]))
+		#formants_sequence = sound.formants_slidingwindow()
+		#print("Formants sequence: ", len(formants_sequence), " and signle ",
+		#	len(formants_sequence[0]))
 
 		#SAVE IT!
 
@@ -937,14 +938,14 @@ class ReportGenerator:
 		surf_spent = surf_done_moment - praat_done_moment
 		total_spent = surf_done_moment - start_moment
 
-		print("Total ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+		print("Total ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
 
-		print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds, " micro")
-		print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds, " micro")
-		print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds, " micro")
+		print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds / 1000.0, " ms")
+		print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds / 1000.0, " ms")
+		print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds / 1000.0, " ms")
 
-		print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds, " micro")
-		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds, " micro")
+		print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds / 1000.0, " ms")
+		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds / 1000.0, " ms")
 
 		return seq_dict
 
