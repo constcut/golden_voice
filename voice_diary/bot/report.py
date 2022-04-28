@@ -413,10 +413,10 @@ class ReportGenerator:
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 					"startTime": start, "endTime": end, 
 					"confidence": word['confidence'], 
-					"pyin_pitch": np.array2string(f0_cut),
-					"RMS": np.array2string(rms_cut), #TODO or use list? test speed
-					"praat_pitch": np.array2string(pitch_cut),
-					"swipe_pitch" : np.array2string(swipe_cut)
+					"pyin_pitch": list(f0_cut),
+					"RMS": list(rms_cut), #TODO or use list? test speed
+					"praat_pitch": list(pitch_cut),
+					"swipe_pitch" : list(swipe_cut)
 					#,"dB": np.array2string(intens_cut)
 					,"stats" : statistics_records,  "info": self.parse_praat_info(report_string)
 					,"morph" : morph_analysis
