@@ -217,20 +217,19 @@ class ReportGenerator:
 
 				if field_sepparator != "":
 
-					sep_pos = info_text.find(field_sepparator, name_pos)
+					sep_pos = info_text.find(field_sepparator, name_pos + len(field_name))
 					field_value = info_text[name_pos + len(field_name): sep_pos - 1]
 
-					if field_value == "Shimmer (local, dB):":
-						print("DEBUG: ", name_pos, " ", sep_pos)
-
 				else:
-					sep_pos = info_text.find("\n", name_pos)
+					sep_pos = info_text.find("\n", name_pos + len(field_name))
 					field_value = info_text[name_pos + len(field_name): sep_pos]
 
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
 				
-				praat_dict[field_name] = field_value #TODO float!
+				praat_dict[field_name] = float(field_value)
+
+				#TODO exceptions everywhere..!
 
 		return praat_dict
 
