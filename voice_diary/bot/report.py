@@ -266,8 +266,7 @@ class ReportGenerator:
 		f0 = seq_dict["librosa_pitch"] #rename to librosa pitch TODO
 		rms = seq_dict["librosa_rms"]
 
-		wav_file = seq_dict["wav_file"] #TODO remove with moving surfboard outside
-		
+		#TODO maybe cover under seq_dict and use cut in another way
 		f0_step = duration / len(f0)
 		rms_step = duration / len(rms[0])
 		pitch_step = duration / len(pitch)
@@ -731,28 +730,12 @@ class ReportGenerator:
 
 
 	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
-	def extract_save_images(self, input_filename, output_filepath, skip_plots=False):
-		
-		if os.path.exists(output_filepath + '/pcm.wav'):
-			os.remove(output_filepath +"/pcm.wav")
+	def extract_save_images(self, seq_dict):
+		#TODO rename all
+		self.extract_save_librosa(seq_dict, self._config["dir"]) 
+		#self.extract_save_praat(seq_dict, self._config["dir"])
+		#self.save_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {input_filename} -ar 48000 -ac 2 -ab 192K -f wav {output_filepath}/pcm.wav" #Optional converting to wav #update SR
-		_ = check_call(command.split())
-
-		wave_file = output_filepath + "/pcm.wav"
-
-		y, sr = librosa.load(wave_file) #TODO turn on\off all 3 sequences
-
-		if skip_plots:
-			output_filepath = ""
-
-		f0, rms = self.extract_save_librosa(y, sr, output_filepath) #TODO отвязать рассчёты от картинок
-		report, pitch, intensity, duration = self.extract_save_praat(wave_file, output_filepath)
-
-		if skip_plots == False:
-			self.save_pitches(f0, pitch, output_filepath)
-
-		return report, f0, rms, pitch, intensity, duration
 
 
 	def extract_save_praat(self, wave_file, output_filepath): #TODO принимать аргументы для отрисовки, а не генерировать возвращаемые значения
@@ -790,48 +773,38 @@ class ReportGenerator:
 
 
 
-	def extract_save_librosa(self, y,  sr, output_filepath):
+	def extract_save_librosa(self, seq_dict, output_filepath):
 
-		S, phase = librosa.magphase(librosa.stft(y))
-		rms = librosa.feature.rms(S=S)
+		rms = seq_dict["librosa_rms"]
+		times = seq_dict["librosa_times"]
+		f0 = seq_dict["librosa_pitch"]
+		S = seq_dict["librosa_S"]
 
-		times = librosa.times_like(rms)
+		fig, ax = plt.subplots(nrows=3, sharex=True)
 
-		f0, voiced_flag, voiced_probs = librosa.pyin(y,
-			fmin=librosa.note_to_hz('C2'),
-			fmax=librosa.note_to_hz('C7'))
+		ax[0].semilogy(times, rms[0], label='RMS Energy')
+		ax[0].set(xticks=[])
+		ax[0].label_outer()
 
-		if output_filepath != "":
-			fig, ax = plt.subplots(nrows=3, sharex=True)
+		#Can be avoided?
+		librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
+								y_axis='log', x_axis='time', ax=ax[1])
 
-			ax[0].semilogy(times, rms[0], label='RMS Energy')
-			ax[0].set(xticks=[])
-			#ax[0].legend()
-			ax[0].label_outer()
+		ax[1].plot(times, f0, color='green', linewidth=3)			
+		ax[1].set(title='log Power spectrogram')
 
-			librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
-									y_axis='log', x_axis='time', ax=ax[1])
+		''' #Avoided on-sets-we don't really need them for speech maybe for singing
+		o_env = librosa.onset.onset_strength(y=y, sr=sr)
+		times = librosa.times_like(o_env, sr=sr)
+		onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
 
-			
+		ax[2].plot(times, o_env)
+		ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
+				linestyle='--')
 
-			ax[1].plot(times, f0, color='green', linewidth=3)
-			#ax[1].legend(loc='upper right')			
-			ax[1].set(title='log Power spectrogram')
-
-			o_env = librosa.onset.onset_strength(y=y, sr=sr)
-			times = librosa.times_like(o_env, sr=sr)
-			onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
-
-			ax[2].plot(times, o_env)
-			ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
-					linestyle='--')
-			#ax[2].legend()
-
-			fig.set_size_inches(12, 9)
-
-			plt.savefig(output_filepath + '/rosaInfo.png', bbox_inches='tight')
-
-		return f0, rms #voiced_flag, voiced_probs
+		'''
+		fig.set_size_inches(12, 9)
+		plt.savefig(output_filepath + '/rosaInfo.png', bbox_inches='tight')
 
 
 	def set_handlers(self):
@@ -888,11 +861,12 @@ class ReportGenerator:
 		wav_file = f"{spectrum_dir_path}/pcm.wav"
 
 		#2: generate sequences from each of 3 ways, all ways configurable (later)
+		#TODO move under sub-function
 
 		#LIBROSA
 		y, sr = librosa.load(wav_file)
 
-		S, phase = librosa.magphase(librosa.stft(y))
+		S, phase = librosa.magphase(librosa.stft(y)) #TODO can be avoided?
 		rms = librosa.feature.rms(S=S)
 
 		times = librosa.times_like(rms)
@@ -944,6 +918,8 @@ class ReportGenerator:
 
 		seq_dict["librosa_pitch"] = f0
 		seq_dict["librosa_rms"] = rms
+		seq_dict["librosa_times"] = times
+		seq_dict["librosa_S"] = S #TODO can be avoided?
 
 		seq_dict["swipe_contour"] = swipe_contour
 		seq_dict["intense_contour"] = intense_contour
@@ -952,12 +928,14 @@ class ReportGenerator:
 		seq_dict["global_formants"] = global_formants
 		seq_dict["global_hnr"] = global_hnr
 
-		seq_dict["wav_file"] = wav_file
-
 
 		#4: use dictionary with seqs, to make images
 		#full_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path, skip_plots=self.skip_plots)  #spectrum_dir_path
 		
+		if self.skip_plots == False:
+			self.extract_save_images(seq_dict) #TODO возможно надо сохранять ещё директорию, но вначале возьмём из конфига
+		#self.extract_save_images
+
 		images_saved_moment = datetime.datetime.now()
 
 		req = self.check_server_recognition(id)
