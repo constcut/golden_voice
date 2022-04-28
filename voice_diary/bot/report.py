@@ -218,10 +218,15 @@ class ReportGenerator:
 				if field_sepparator != "":
 
 					sep_pos = info_text.find(field_sepparator, name_pos + len(field_name))
-					field_value = info_text[name_pos + len(field_name): sep_pos - 1]
+					next_line_pos = info_text.find("\n", name_pos)
+
+					if sep_pos > next_line_pos:
+						field_value = "0"
+					else:
+						field_value = info_text[name_pos + len(field_name): sep_pos - 1]
 
 				else:
-					sep_pos = info_text.find("\n", name_pos + len(field_name))
+					sep_pos = info_text.find("\n", name_pos)
 					field_value = info_text[name_pos + len(field_name): sep_pos]
 
 				field_value = field_value.strip()
@@ -229,9 +234,11 @@ class ReportGenerator:
 				
 				dict_key = field_name
 
-				use_full_names = True #TODO to config
-				if use_full_names:
-					dict_key += field_sepparator
+				#use_full_names = True #TODO to config
+				#if use_full_names:
+					#dict_key += field_sepparator
+
+				print("DEBUF attempt to ", field_name, " and ", field_value)
 
 				praat_dict[field_name] = float(field_value)
 
