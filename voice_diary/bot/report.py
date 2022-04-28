@@ -585,7 +585,7 @@ class ReportGenerator:
 
 		id = self.request_recognition(record_file_path, alias_name)
 
-		voice_report, f0, rms, pitch, intensity, duration = self.extract_save_images(record_file_path, spectrum_dir_path) 
+		voice_report, f0, rms, pitch, intensity, duration = self.save_images(record_file_path, spectrum_dir_path) 
 
 		self.save_images_info(spectrum_dir_path, message, voice_report)
 
@@ -704,7 +704,7 @@ class ReportGenerator:
 
 
 
-	def save_pitches(self, seq_dict, output_filepath):
+	def plot_pitches(self, seq_dict, output_filepath):
 
 		fig = plt.figure()
 
@@ -729,15 +729,15 @@ class ReportGenerator:
 
 
 	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
-	def extract_save_images(self, seq_dict):
+	def save_images(self, seq_dict):
 		#TODO rename all
-		self.extract_save_librosa(seq_dict, self._config["dir"]) 
-		self.extract_save_praat(seq_dict, self._config["dir"])
-		self.save_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
+		self.plot_librosa(seq_dict, self._config["dir"]) 
+		self.plot_praat(seq_dict, self._config["dir"])
+		self.plot_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
 
 
 
-	def extract_save_praat(self, seq_dict, output_filepath): 
+	def plot_praat(self, seq_dict, output_filepath): 
 
 		snd = seq_dict["praat_sound"]
 		intensity = seq_dict["praat_intensity"]
@@ -757,7 +757,7 @@ class ReportGenerator:
 
 
 
-	def extract_save_librosa(self, seq_dict, output_filepath):
+	def plot_librosa(self, seq_dict, output_filepath):
 
 		rms = seq_dict["librosa_rms"]
 		times = seq_dict["librosa_times"]
@@ -911,7 +911,7 @@ class ReportGenerator:
 		seq_dict = self.extract_features(wav_file)
 
 		if self.skip_plots == False:
-			self.extract_save_images(seq_dict) #TODO возможно надо сохранять ещё директорию, но вначале возьмём из конфига
+			self.save_images(seq_dict) #TODO возможно надо сохранять ещё директорию, но вначале возьмём из конфига
 
 		images_saved_moment = datetime.datetime.now()
 
