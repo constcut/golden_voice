@@ -848,7 +848,7 @@ class ReportGenerator:
 
 		start_moment =  datetime.datetime.now()
 
-		#LIBROSA
+		#LIBROSA load_librosa_if_needed
 		y, sr = librosa.load(wav_file)
 
 		librosa_loaded_moment =  datetime.datetime.now()
@@ -886,6 +886,7 @@ class ReportGenerator:
 		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
+		#TODO отключение каждого отдельно - питч, интенсивность, форманты
 
 		#https://www.fon.hum.uva.nl/praat/manual/Time_step_settings___.html#:~:text=As%20described%20in%20Sound%3A%20To%20Intensity...%2C%20Praat's,step%20will%20be%2010.6666667%20milliseconds.
 
@@ -902,7 +903,7 @@ class ReportGenerator:
 
 		praat_done_moment = datetime.datetime.now()
 
-		#SURFBOARD
+		#SURFBOARD load_surfboard_if_needed
 
 		from surfboard.sound import Waveform #SAME THING UPPER, IF WE TURN OFF ANY, WE DON"T HAVE TO INSTALL THEM
 		sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
