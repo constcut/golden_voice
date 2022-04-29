@@ -887,6 +887,8 @@ class ReportGenerator:
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
 
+		#https://www.fon.hum.uva.nl/praat/manual/Time_step_settings___.html#:~:text=As%20described%20in%20Sound%3A%20To%20Intensity...%2C%20Praat's,step%20will%20be%2010.6666667%20milliseconds.
+
 		formants = snd.to_formant_burg()
 		#print("Formants ", len(formants), " ", formants) # nFormants
 		#TOOO BIG :(
