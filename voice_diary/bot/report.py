@@ -46,6 +46,7 @@ class ReportGenerator:
 		self.include_sequences = True
 
 		self.use_surf = False
+		self.use_rosa = False
 
 		#TODO save_full_sequences
 		#TODO use_praat_pitch
@@ -255,39 +256,37 @@ class ReportGenerator:
 		return praat_dict
 
 
+
 	def make_json_report(self, req, seq_dict):
 
 		import datetime
 
 		start_moment = datetime.datetime.now()
 
-		#TODO receive all f0/intense as dictionary
-		#Check each field exists, if not - avoid calculation of stats, and cutting sequence
-
-		#CHECK POINT
-		#==========================================Prepare basic information sequences==========================================
+		#==========================================
 		duration = seq_dict["duration"]
 		intensity = seq_dict["praat_intensity"].values.T #Check copy avoided
 		pitch = seq_dict["praat_pitch"]
 
-		f0 = seq_dict["librosa_pitch"] #rename to librosa pitch TODO
-		rms = seq_dict["librosa_rms"]
+		if self.use_rosa:
+			f0 = seq_dict["librosa_pitch"] 
+			rms = seq_dict["librosa_rms"]
+			f0_step = duration / len(f0)
+			rms_step = duration / len(rms[0])
+			rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		#TODO maybe cover under seq_dict and use cut in another way
-		f0_step = duration / len(f0)
-		rms_step = duration / len(rms[0])
 		pitch_step = duration / len(pitch)
 		intensity_step = duration / len(intensity)
 
 		pitch = pitch.selected_array['frequency']
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
-		rms = rms.reshape(rms.shape[0] * rms.shape[1])
-
+		
 		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE of list? Just slices
 		intensity = np.array(intensity)
-		rms = np.array(rms)
-		f0 = np.array(f0)
 
+		if self.use_rosa:
+			rms = np.array(rms)
+			f0 = np.array(f0)
 
 		if self.use_surf:
 
@@ -327,22 +326,22 @@ class ReportGenerator:
 		tokens = {}
 		tokens_count = 0
 
-		full_stats = {"pyin_pitch":self.get_full_statistics(f0), "praat_pitch": self.get_full_statistics(pitch),
-					  "rms":self.get_full_statistics(rms), "intensity":self.get_full_statistics(intensity),}
+		full_stats = {"praat_pitch": self.get_full_statistics(pitch),
+					  "intensity":self.get_full_statistics(intensity)}
+
+		if self.use_rosa:
+			full_stats["rms"] = self.get_full_statistics(rms)
+			full_stats["pyin_pitch"] = self.get_full_statistics(f0)
 
 		if self.use_surf:
-
 			full_stats["surf intensity"] = self.get_full_statistics(surf_intensity)
 			full_stats["swipe_pitch"] = self.get_full_statistics(swipe_pitch)
 		
 
 		full_text = ""
-
 		all_starts = []
 		all_ends = []
-
 		total_words = 0
-
 		chunkId = 0
 
 		for chunk in req['response']['chunks']:
@@ -369,13 +368,16 @@ class ReportGenerator:
 					silence_start = prev_word_end
 					silence_end = start
 
-					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
+					if self.use_surf:
+						pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
 					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)
 
 					if self.use_surf:
 						pause_surf_intens = self.make_sequence_cut(surf_intens_step, silence_start, silence_end, surf_intensity)
 
-					pause_RMS = self.get_full_statistics(pause_RMS)
+					if self.use_rosa:
+						pause_RMS = self.get_full_statistics(pause_RMS)
+					
 					pause_intens = self.get_full_statistics(pause_intens)
 
 					if self.use_surf:
@@ -384,44 +386,53 @@ class ReportGenerator:
 					silence_report = "" # TODO praat info? or get rid
 
 					single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end, 
-									"RMS": pause_RMS, "Intensity": pause_intens,
+									 "Intensity": pause_intens,
 									 "info": silence_report}
+
+					if self.use_rosa:		
+						single_pause["RMS"] = pause_RMS 		
 
 					if self.use_surf:
 						single_pause["Surf Intencity"] = pause_surf_intens
 						
-
-					
 					events.append(single_pause)
 
 					prev_word_end = end
 
-					f0_cut = np.array([])
+					if self.use_rosa:	
+						f0_cut = np.array([])
+						rms_cut = np.array([])
+					
 					pitch_cut = np.array([])
 					intens_cut = np.array([])
-					rms_cut = np.array([])
-
+					
 					if self.use_surf:
 						swipe_cut = np.array([])
 						surf_intens_cut = np.array([])
 
 					if self.include_sequences:
-						f0_cut = self.make_sequence_cut(f0_step, start, end, f0) 
+
+						if self.use_rosa:	
+							f0_cut = self.make_sequence_cut(f0_step, start, end, f0) 
+							rms_cut = self.make_sequence_cut(rms_step, start, end, rms) 
+
 						pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  
 						intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) 
-						rms_cut = self.make_sequence_cut(rms_step, start, end, rms) 
-
+						
 						if self.use_surf:
 							swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_pitch) 
 							surf_intens_cut = self.make_sequence_cut(surf_intens_step, start, end, surf_intensity)
 
-					statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
-						"rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut)}
-
+					statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
+										  "intensity":self.get_full_statistics(intens_cut)}
 
 					if self.use_surf:
 						statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
 						statistics_records["surf intensity"] = self.get_full_statistics(surf_intens_cut)
+
+					if self.use_rosa:	
+						statistics_records["rms"] = self.get_full_statistics(rms_cut)
+						statistics_records["pyin_pitch"] = self.get_full_statistics(f0_cut)
 
 
 					report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
@@ -446,8 +457,6 @@ class ReportGenerator:
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 					"startTime": start, "endTime": end, 
 					"confidence": word['confidence'], 
-					"pyin_pitch": list(f0_cut),
-					"RMS": list(rms_cut), 
 					"praat_pitch": list(pitch_cut)
 					,"stats" : statistics_records,  "info": self.parse_praat_info(report_string)
 					,"morph" : morph_analysis
@@ -455,6 +464,11 @@ class ReportGenerator:
 					,"word_idx" : total_words
 					,"letters_speed" : letters_speed
 					} #channel tag left away
+
+
+					if self.use_rosa:	 
+						singleWord["pyin_pitch"] = list(f0_cut)
+						singleWord["RMS"] = list(rms_cut)
 
 
 					if self.use_surf:
