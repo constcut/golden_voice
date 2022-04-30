@@ -422,7 +422,7 @@ class ReportGenerator:
 					if self.use_surf:
 						statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
 						statistics_records["surf intensity"] = self.get_full_statistics(surf_intens_cut)
-						
+
 
 					report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45)
@@ -480,8 +480,7 @@ class ReportGenerator:
 
 				
 				statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
-					"swipe_pitch": self.get_full_statistics(swipe_cut), "rms":self.get_full_statistics(rms_cut), 
-					"intensity":self.get_full_statistics(intens_cut), "surf intensity": self.get_full_statistics(surf_intens_cut)}
+									  "rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut),}
 
 
 				if self.use_surf:
@@ -540,14 +539,22 @@ class ReportGenerator:
 		praat_dict = self.parse_praat_info(full_report)
 
 		steps = {"librosa_pitch_step": f0_step, "rms_step": rms_step, "praat_putch_step": pitch_step,
-				 "intensity_step": intensity_step, "swipe_step": swipe_step, "surf_intens_step" : surf_intens_step }
+				 "intensity_step": intensity_step }
+
+		if self.use_surf:
+			steps[ "swipe_step"] = swipe_step
+			steps[ "surf_intens_step"] = surf_intens_step
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
-						"jitters": seq_dict["global_jitters"], "shimmers": seq_dict["global_shimmers"],
-						"formants": seq_dict["global_formants"],
-						"HNR": seq_dict["global_hnr"], "praat_report": praat_dict,
+						"praat_report": praat_dict,
 						"cross_stats": cross_stats, "duration": duration, "steps_sizes": steps}
+
+		if self.use_surf:
+			root_element["jitters"] = seq_dict["global_jitters"]
+			root_element["shimmers"] = seq_dict["global_shimmers"]
+			root_element["formants"] = seq_dict["global_formants"]
+			root_element["HNR"] = seq_dict["global_hnr"]
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
 
