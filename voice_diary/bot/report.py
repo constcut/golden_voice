@@ -916,10 +916,10 @@ class ReportGenerator:
 
 		#LIBROSA if extractr_from_librosa:
 
+		librosa_loaded_moment =  datetime.datetime.now()
+
 		if self.use_rosa:
 			y, sr = librosa.load(wav_file)
-
-			librosa_loaded_moment =  datetime.datetime.now()
 
 			#TODO can be avoided, if no plots!
 			S, phase = librosa.magphase(librosa.stft(y)) 
