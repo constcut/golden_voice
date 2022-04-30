@@ -816,10 +816,14 @@ class ReportGenerator:
 
 	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
 	def save_images(self, seq_dict):
-		#TODO rename all
-		self.plot_librosa(seq_dict, self._config["dir"]) 
+
+		if self.use_rosa:
+			self.plot_librosa(seq_dict, self._config["dir"])
+			
 		self.plot_praat(seq_dict, self._config["dir"])
-		self.plot_pitches(seq_dict, self._config["dir"]) #TODO заменить self._config["dir"]
+
+		if self.use_rosa:
+			self.plot_pitches(seq_dict, self._config["dir"])
 
 
 
@@ -917,6 +921,7 @@ class ReportGenerator:
 		#LIBROSA if extractr_from_librosa:
 
 		librosa_loaded_moment =  datetime.datetime.now()
+		librosa_stft_moment =  datetime.datetime.now() #TODO remove all
 
 		if self.use_rosa:
 			y, sr = librosa.load(wav_file)
@@ -924,9 +929,7 @@ class ReportGenerator:
 			#TODO can be avoided, if no plots!
 			S, phase = librosa.magphase(librosa.stft(y)) 
 			#librosa.feature.rms(y=y)
-
-			librosa_stft_moment =  datetime.datetime.now()
-
+			
 			rms = librosa.feature.rms(S=S)
 			times = librosa.times_like(rms)
 
