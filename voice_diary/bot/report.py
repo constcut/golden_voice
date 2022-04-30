@@ -487,14 +487,20 @@ class ReportGenerator:
 
 				#FILL chunk
 
-				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
+				
 				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
 				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
-				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
+				
 
 				
-				statistics_records = {"pyin_pitch":self.get_full_statistics(f0_cut), "praat_pitch": self.get_full_statistics(pitch_cut),
-									  "rms":self.get_full_statistics(rms_cut), "intensity":self.get_full_statistics(intens_cut),}
+				statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
+									  "intensity":self.get_full_statistics(intens_cut),}
+
+				if self.use_rosa:
+					f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
+					rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
+					statistics_records["pyin_pitch"]  =  self.get_full_statistics(f0_cut)
+					statistics_records["rms"] = self.get_full_statistics(rms_cut)
 
 
 				if self.use_surf:
@@ -552,8 +558,12 @@ class ReportGenerator:
 
 		praat_dict = self.parse_praat_info(full_report)
 
-		steps = {"librosa_pitch_step": f0_step, "rms_step": rms_step, "praat_putch_step": pitch_step,
+		steps = {"praat_putch_step": pitch_step,
 				 "intensity_step": intensity_step }
+
+		if self.use_rosa:
+			steps[ "librosa_pitch_step"] = f0_step
+			steps[ "rms_step"] = rms_step
 
 		if self.use_surf:
 			steps[ "swipe_step"] = swipe_step
@@ -905,29 +915,31 @@ class ReportGenerator:
 		start_moment =  datetime.datetime.now()
 
 		#LIBROSA if extractr_from_librosa:
-		y, sr = librosa.load(wav_file)
 
-		librosa_loaded_moment =  datetime.datetime.now()
+		if self.use_rosa:
+			y, sr = librosa.load(wav_file)
 
-		#TODO can be avoided, if no plots!
-		S, phase = librosa.magphase(librosa.stft(y)) 
-		#librosa.feature.rms(y=y)
+			librosa_loaded_moment =  datetime.datetime.now()
 
-		librosa_stft_moment =  datetime.datetime.now()
+			#TODO can be avoided, if no plots!
+			S, phase = librosa.magphase(librosa.stft(y)) 
+			#librosa.feature.rms(y=y)
 
-		rms = librosa.feature.rms(S=S)
-		times = librosa.times_like(rms)
+			librosa_stft_moment =  datetime.datetime.now()
 
-		f0 = librosa.yin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
+			rms = librosa.feature.rms(S=S)
+			times = librosa.times_like(rms)
 
-		#f0, voiced_flag, voiced_probs = librosa.pyin(y,
-		#	fmin=librosa.note_to_hz('C2'),
-		#	fmax=librosa.note_to_hz('C7'))
+			f0 = librosa.yin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
 
-		seq_dict["librosa_pitch"] = f0
-		seq_dict["librosa_rms"] = rms
-		seq_dict["librosa_times"] = times
-		seq_dict["librosa_S"] = S #TODO can be avoided if not plots?
+			#f0, voiced_flag, voiced_probs = librosa.pyin(y,
+			#	fmin=librosa.note_to_hz('C2'),
+			#	fmax=librosa.note_to_hz('C7'))
+
+			seq_dict["librosa_pitch"] = f0
+			seq_dict["librosa_rms"] = rms
+			seq_dict["librosa_times"] = times
+			seq_dict["librosa_S"] = S #TODO can be avoided if not plots?
 
 		librosa_done_moment = datetime.datetime.now()
 
