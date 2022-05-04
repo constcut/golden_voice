@@ -42,7 +42,7 @@ class ReportGenerator:
 
 		self.use_cross_matrix = False
 		self.de_personalization = False
-		self.skip_plots = False
+		self.skip_plots = True
 		self.include_sequences = True
 
 		self.use_surf = False
@@ -451,7 +451,7 @@ class ReportGenerator:
 					
 
 					morph_analysis = [] #
-					
+
 					if self.use_morph_analysis:
 						morph_analysis = self.make_morph_analysis(word['word'])
 
@@ -973,13 +973,17 @@ class ReportGenerator:
 		#PRAAT
 
 		snd = parselmouth.Sound(wav_file) 
-		intensity = snd.to_intensity()
+		
 
 		f0min = 60
 		f0max = 600
 
 		#TODO замерить время каждый из 4х рассчётов
+
+
 		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  
+		intensity = snd.to_intensity()
+
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
 		#TODO отключение каждого отдельно - питч, интенсивность, форманты
@@ -1055,6 +1059,17 @@ class ReportGenerator:
 		return seq_dict
 
 
+	def convert_ogg_to_wav(self, spectrum_dir_path, record_file_path):
+
+		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path + осторожней тут
+			os.remove(spectrum_dir_path +"/pcm.wav")
+
+			command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
+		_ = check_call(command.split())
+
+		wav_file = f"{spectrum_dir_path}/pcm.wav"
+		return wav_file
+
 
 	def local_recognition(self, spectrum_dir_path, record_file_path, alias_name):
 
@@ -1066,15 +1081,8 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		#1: export from ogg to PCM here
-
-		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path + осторожней тут
-			os.remove(spectrum_dir_path +"/pcm.wav")
-
-			command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
-		_ = check_call(command.split())
-
-		wav_file = f"{spectrum_dir_path}/pcm.wav"
+		#1: export from ogg to PCM here - TODO option to use PCM on start
+		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path,)
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -1087,6 +1095,8 @@ class ReportGenerator:
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
 
 		recognition_received_moment = datetime.datetime.now()
+
+		##
 
 		json_report = self.make_json_report(req, seq_dict)
 
@@ -1129,5 +1139,7 @@ r = ReportGenerator('key.json')
 #TODO learn to use recognition from file, to avoid need send it to server each time
 
 r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
+
+#TODO sepparate before id, and after id time - async for http
 
 #r.extract_features(r._config["dir"] + "/pcm.wav")
