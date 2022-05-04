@@ -609,7 +609,7 @@ class ReportGenerator:
 		full_report_generated = datetime.datetime.now()
 
 		total_spent = full_report_generated - start_moment
-		print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+		print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
 
 		rehape_spent = reshape_sequences_moment - start_moment
 		surf_spent = surf_moment - reshape_sequences_moment
@@ -618,12 +618,12 @@ class ReportGenerator:
 		cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
 		dump_spent = full_report_generated - cross_matrix__moment
 
-		print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds, " micro")
-		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds, " micro")
-		print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds, " micro")
-		print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds, " micro")
-		print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds, " micro")
-		print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds, " micro")
+		print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
+		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
+		print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
+		print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds/ 1000.0, " ms")
+		print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
+		print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 			
 		return json_report
 
@@ -1114,11 +1114,11 @@ class ReportGenerator:
 			spent_on_report = full_report_generated - recognition_received_moment
 			total_spent = full_report_generated - start_moment
 
-			print("Spent on send: ", spent_on_send.seconds, "s ", spent_on_send.microseconds, " micro")
-			print("Spent on imaged: ", spent_on_imaged.seconds, "s ", spent_on_imaged.microseconds, " micro")
-			print("Spent on received: ", spent_on_received.seconds, "s ", spent_on_received.microseconds, " micro")
-			print("Spent on report: ", spent_on_report.seconds, "s ", spent_on_report.microseconds, " micro")
-			print("Total spent ", total_spent.seconds, "s ", total_spent.microseconds, " micro")
+			print("Spent on send: ", spent_on_send.seconds, "s ", spent_on_send.microseconds / 1000.0, " ms")
+			print("Spent on imaged: ", spent_on_imaged.seconds, "s ", spent_on_imaged.microseconds / 1000.0, " ms")
+			print("Spent on received: ", spent_on_received.seconds, "s ", spent_on_received.microseconds / 1000.0, " ms")
+			print("Spent on report: ", spent_on_report.seconds, "s ", spent_on_report.microseconds / 1000.0, " ms")
+			print("Total spent ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
 
 		print("Done!")
 
@@ -1145,6 +1145,8 @@ r = ReportGenerator('key.json')
 #2 feature extractionn
 
 #3 сохраненние данных с сервера
+
+#+++ загрузка из файла
 
 #4 общий репорт
 
