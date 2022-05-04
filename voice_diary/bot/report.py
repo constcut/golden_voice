@@ -1138,6 +1138,17 @@ r = ReportGenerator('key.json')
 
 #TODO learn to use recognition from file, to avoid need send it to server each time
 
+#Разбить функцию ниже на 3 крупных сегмента
+
+#1 отправка данных на сервер + опция отправлять wav
+
+#2 feature extractionn
+
+#3 сохраненние данных с сервера
+
+#4 общий репорт
+
+
 r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
 
 #TODO sepparate before id, and after id time - async for http
