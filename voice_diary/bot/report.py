@@ -1158,7 +1158,7 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
-files_dict = {}
+#files_dict = {}
 
 for filename in os.listdir(r._config['temp']):
 
@@ -1176,7 +1176,7 @@ for filename in os.listdir(r._config['temp']):
 		
 		seq_dict = r.extract_features(f) #extract features from mp3
 
-		files_dict[filename] = [id, seq_dict] #TODO async
+		#files_dict[filename] = [id, seq_dict] #TODO async
 
 		req = r.check_server_recognition(id)
 
