@@ -1081,7 +1081,7 @@ class ReportGenerator:
 		if os.path.exists(output_file): #TODO rename spectrum_dir_path + осторожней тут
 			os.remove(output_file)
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" #Optional converting to wav #update SR
+		command = f'ffmpeg -hide_banner -loglevel error -i "{input_file}" -c:a libopus "{output_file}"' #Optional converting to wav #update SR
 		_ = check_call(command.split())
 
 
