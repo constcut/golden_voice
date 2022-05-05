@@ -1081,7 +1081,7 @@ class ReportGenerator:
 		if os.path.exists(output_file): #TODO rename spectrum_dir_path + осторожней тут
 			os.remove(output_file)
 
-		command = f'ffmpeg -hide_banner -loglevel error -i "{input_file}" -c:a libopus "{output_file}"' #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" #Optional converting to wav #update SR
 		_ = check_call(command.split())
 
 
@@ -1168,7 +1168,11 @@ for filename in os.listdir(r._config['temp']):
 
 		print('FILE', f)
 
+		f = f.replace(" ", "%20")
+
 		new_file = r._config['out'] + '/' + filename + '_out.ogg'
+
+		new_file = new_file.replace(" ", "%20")
 
 		r.convert_wav_to_ogg(f, new_file) 
 
