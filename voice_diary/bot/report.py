@@ -40,7 +40,7 @@ class ReportGenerator:
 
 		self.bot = telebot.TeleBot(self._config["key"])
 
-		self.use_cross_matrix = True
+		self.use_cross_matrix = False
 
 		self.de_personalization = False
 		self.skip_plots = True
@@ -1158,7 +1158,7 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
-#files_dict = {}
+files_dict = {}
 
 for filename in os.listdir(r._config['temp']):
 
@@ -1168,14 +1168,16 @@ for filename in os.listdir(r._config['temp']):
 
 		print('FILE', f)
 
-		if f.find(" ") != -1:
-			pass #rename	
+		filename_no_ext = filename[0:filename.find('.') ]
 
 		new_file = r._config['out'] + '/' + filename + '_out.ogg'
 
 		r.convert_wav_to_ogg(f, new_file) 
 
-		id = r.request_recognition(new_file, 'newalias') #r._config['dir'] + '/local.ogg'
+		id = r.request_recognition(new_file, filename_no_ext) #r._config['dir'] + '/local.ogg'
+
+		files_dict[filename] = id
+		continue
 		
 		seq_dict = r.extract_features(f) #extract features from mp3
 
@@ -1197,6 +1199,11 @@ for filename in os.listdir(r._config['temp']):
 		print("File done")
 
 		
+id_texts = json.dumps(files_dict, indent = 4, ensure_ascii=False) 
+with open(r._config['out'] + '/ids.json', 'w') as outfile:
+		outfile.write(id_texts)
+
+#
 
 '''
 wav_file = r._config['dir'] + '/pcm.wav'
