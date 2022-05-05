@@ -1250,13 +1250,30 @@ def async_extract(r):
 
 
 
+def rename_files(r):
 
+	for filename in os.listdir(r._config['temp']):
+
+		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+
+		if os.path.isfile(f):
+			f_replaces = f.replace(" ", "_")
+
+			os.rename(f, f_replaces)
+
+
+
+rename_files(r)
 
 async_load_dir(r)
 
 print("Now continue ASYNC: ")
 
-async_extract(r)	
+async_extract(r)
+
+
+
+
 #
 
 '''
