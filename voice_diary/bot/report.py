@@ -1158,6 +1158,44 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
+files_dict = {}
+
+for filename in os.listdir(r._config['temp']):
+
+	f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+
+	if os.path.isfile(f):
+
+		print('FILE', f)
+
+		new_file = r._config['out'] + '/' + filename + '_out.ogg'
+
+		r.convert_wav_to_ogg(f, new_file) 
+
+		id = r.request_recognition(r._config['dir'] + '/new.ogg', 'newalias') #r._config['dir'] + '/local.ogg'
+
+		files_dict[filename] = id
+
+		seq_dict = r.extract_features(f) #extract features from mp3
+
+		req = r.check_server_recognition(id)
+
+		full_report = r.make_json_report(req, seq_dict)
+		full_text = json.dumps(req, ensure_ascii=False, indent=2)
+
+		reports_pre_name = r._config['out'] + '/' + filename
+
+		with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
+			outfile.write(full_report)
+
+		with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
+			outfile.write(full_text)
+
+		print("File done")
+
+		
+
+'''
 wav_file = r._config['dir'] + '/pcm.wav'
 
 r.convert_wav_to_ogg(r._config['dir'] + '/pcm.wav', r._config['dir'] + '/new.ogg')
@@ -1184,7 +1222,7 @@ full_text = json.dumps(req, ensure_ascii=False, indent=2)
 r.save_json_products(r._config['dir'], full_report, full_text)
 
 print("DONE!")
-
+'''
 
 #r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
 
