@@ -1168,15 +1168,14 @@ for filename in os.listdir(r._config['temp']):
 
 		print('FILE', f)
 
-		f = f.replace(" ", "%20")
+		if f.find(" ") != -1:
+			pass #rename	
 
 		new_file = r._config['out'] + '/' + filename + '_out.ogg'
 
-		new_file = new_file.replace(" ", "%20")
-
 		r.convert_wav_to_ogg(f, new_file) 
 
-		id = r.request_recognition(r._config['dir'] + '/new.ogg', 'newalias') #r._config['dir'] + '/local.ogg'
+		id = r.request_recognition(new_file, 'newalias') #r._config['dir'] + '/local.ogg'
 		
 		seq_dict = r.extract_features(f) #extract features from mp3
 
