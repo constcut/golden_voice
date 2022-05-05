@@ -40,7 +40,7 @@ class ReportGenerator:
 
 		self.bot = telebot.TeleBot(self._config["key"])
 
-		self.use_cross_matrix = False
+		self.use_cross_matrix = True
 
 		self.de_personalization = False
 		self.skip_plots = True
@@ -995,7 +995,7 @@ class ReportGenerator:
 
 		#https://www.fon.hum.uva.nl/praat/manual/Time_step_settings___.html#:~:text=As%20described%20in%20Sound%3A%20To%20Intensity...%2C%20Praat's,step%20will%20be%2010.6666667%20milliseconds.
 
-		formants = snd.to_formant_burg()
+		#formants = snd.to_formant_burg()
 		#print("Formants ", len(formants), " ", formants) # nFormants
 		#TOOO BIG :(
 
@@ -1173,10 +1173,10 @@ for filename in os.listdir(r._config['temp']):
 		r.convert_wav_to_ogg(f, new_file) 
 
 		id = r.request_recognition(r._config['dir'] + '/new.ogg', 'newalias') #r._config['dir'] + '/local.ogg'
-
-		files_dict[filename] = id
-
+		
 		seq_dict = r.extract_features(f) #extract features from mp3
+
+		files_dict[filename] = [id, seq_dict] #TODO async
 
 		req = r.check_server_recognition(id)
 
