@@ -1274,7 +1274,10 @@ def reports_to_csv(r):
 				report_dict["full_stats"]["praat_pitch"]["SD"]
 				report_dict["full_stats"]["intensity"]["SD"]
 				
-				f_name = f.replace(",","_")
+				if "duration" not in report_dict["praat_report"]:
+					continue
+
+				f_name = filename.replace(",","_")
 
 				table.writerow([f_name, report_dict["praat_report"]["duration"], report_dict["praat_report"]["Median pitch"], report_dict["praat_report"]["Mean pitch"], report_dict["praat_report"]["Number of pulses"],
 				report_dict["praat_report"]["Fraction of locally unvoiced frames"], report_dict["praat_report"]["Jitter (local)"], report_dict["praat_report"]["Shimmer (local)"], report_dict["praat_report"]["Mean harmonics-to-noise ratio"],
