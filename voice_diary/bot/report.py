@@ -86,7 +86,9 @@ class ReportGenerator:
 
 		req = requests.post(POST, headers=header, json=body)
 		data = req.json()
-		#print(data) #Log of received data
+
+		print("DEBUG: ")
+		print(data) #Log of received data
 
 		id = data['id']
 		return id
@@ -1074,6 +1076,17 @@ class ReportGenerator:
 		return wav_file
 
 
+	def convert_wav_to_ogg(self, input_file, output_file):
+
+		if os.path.exists(output_file): #TODO rename spectrum_dir_path + осторожней тут
+			os.remove(output_file)
+
+		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" #Optional converting to wav #update SR
+		_ = check_call(command.split())
+
+
+
+
 	def local_recognition(self, spectrum_dir_path, record_file_path, alias_name):
 
 		import datetime
@@ -1145,11 +1158,15 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
-id = r.request_recognition(r._config['dir'] + '/local.ogg', 'newalias')
+wav_file = r._config['dir'] + '/pcm.wav'
+
+r.convert_wav_to_ogg(r._config['dir'] + '/pcm.wav', r._config['dir'] + '/new.ogg')
+
+id = r.request_recognition(r._config['dir'] + '/new.ogg', 'newalias') #r._config['dir'] + '/local.ogg'
 
 #2 feature extractionn
 
-wav_file = r.convert_ogg_to_wav(r._config['dir'] , r._config['dir'] + '/local.ogg')
+#wav_file = r.convert_ogg_to_wav(r._config['dir'] , r._config['dir'] + '/local.ogg')
 
 seq_dict = r.extract_features(wav_file)
 
