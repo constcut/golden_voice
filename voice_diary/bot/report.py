@@ -41,6 +41,7 @@ class ReportGenerator:
 		self.bot = telebot.TeleBot(self._config["key"])
 
 		self.use_cross_matrix = False
+
 		self.de_personalization = False
 		self.skip_plots = True
 		self.include_sequences = True
@@ -52,6 +53,8 @@ class ReportGenerator:
 		self.calc_every_stat = True
 
 		self.use_morph_analysis = False
+
+		self.measure_time = True 
 
 		#TODO save_full_sequences
 		#TODO use_praat_pitch
@@ -1082,7 +1085,7 @@ class ReportGenerator:
 		request_sent_moment = datetime.datetime.now()
 
 		#1: export from ogg to PCM here - TODO option to use PCM on start
-		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path,)
+		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path)
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -1104,9 +1107,9 @@ class ReportGenerator:
 
 		self.save_json_products(spectrum_dir_path, json_report, full_string)
 
-		measure_time = True
+		
 
-		if measure_time:
+		if self.measure_time:
 
 			spent_on_send = request_sent_moment - start_moment
 			spent_on_imaged = images_saved_moment - request_sent_moment
@@ -1142,17 +1145,33 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
+id = r.request_recognition(r._config['dir'] + '/local.ogg', 'newalias')
+
 #2 feature extractionn
+
+wav_file = r.convert_ogg_to_wav(r._config['dir'] , r._config['dir'] + '/local.ogg')
+
+seq_dict = r.extract_features(wav_file)
 
 #3 сохраненние данных с сервера
 
-#+++ загрузка из файла
+req = r.check_server_recognition(id)
+
+#+++ загрузка из файла (распознавание)
 
 #4 общий репорт
 
+full_report = r.make_json_report(req, seq_dict)
+full_text = json.dumps(req, ensure_ascii=False, indent=2)
 
-r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
+r.save_json_products(r._config['dir'], full_report, full_text)
 
-#TODO sepparate before id, and after id time - async for http
+print("DONE!")
+
+
+#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
 
 #r.extract_features(r._config["dir"] + "/pcm.wav")
+
+#1: TODO парсинг директории файлов
+
