@@ -1158,51 +1158,105 @@ r = ReportGenerator('key.json')
 
 #1 отправка данных на сервер + опция отправлять wav
 
-files_dict = {}
+def async_load_dir(r):
 
-for filename in os.listdir(r._config['temp']):
+	files_dict = {}
 
-	f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+	for filename in os.listdir(r._config['temp']):
 
-	if os.path.isfile(f):
+		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
 
-		print('FILE', f)
+		if os.path.isfile(f):
 
-		filename_no_ext = filename[0:filename.find('.') ]
+			print('FILE', f)
 
-		new_file = r._config['out'] + '/' + filename + '_out.ogg'
+			filename_no_ext = filename[0:filename.find('.') ]
 
-		r.convert_wav_to_ogg(f, new_file) 
+			new_file = r._config['out'] + '/' + filename + '_out.ogg'
 
-		id = r.request_recognition(new_file, filename_no_ext) #r._config['dir'] + '/local.ogg'
+			r.convert_wav_to_ogg(f, new_file) 
 
-		files_dict[filename] = id
-		continue
-		
-		seq_dict = r.extract_features(f) #extract features from mp3
+			id = r.request_recognition(new_file, filename_no_ext) #r._config['dir'] + '/local.ogg'
 
-		#files_dict[filename] = [id, seq_dict] #TODO async
+			files_dict[filename] = id
+			continue
+			
+			seq_dict = r.extract_features(f) #extract features from mp3
 
-		req = r.check_server_recognition(id)
+			#files_dict[filename] = [id, seq_dict] #TODO async
 
-		full_report = r.make_json_report(req, seq_dict)
-		full_text = json.dumps(req, ensure_ascii=False, indent=2)
+			req = r.check_server_recognition(id)
 
-		reports_pre_name = r._config['out'] + '/' + filename
+			full_report = r.make_json_report(req, seq_dict)
+			full_text = json.dumps(req, ensure_ascii=False, indent=2)
 
-		with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
-			outfile.write(full_report)
+			reports_pre_name = r._config['out'] + '/' + filename
 
-		with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
-			outfile.write(full_text)
+			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
+				outfile.write(full_report)
 
-		print("File done")
+			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
+				outfile.write(full_text)
 
-		
-id_texts = json.dumps(files_dict, indent = 4, ensure_ascii=False) 
-with open(r._config['out'] + '/ids.json', 'w') as outfile:
-		outfile.write(id_texts)
+			print("File done")
 
+			
+	id_texts = json.dumps(files_dict, indent = 4, ensure_ascii=False) 
+	with open(r._config['out'] + '/ids.json', 'w') as outfile:
+			outfile.write(id_texts)
+
+
+
+
+def async_extract(r):
+
+	files_dict = {}
+
+	with open(r._config['out'] + '/ids.json', 'r') as file:
+		files_dict = json.load(file)
+
+	for filename in os.listdir(r._config['temp']):
+
+		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+
+		if os.path.isfile(f):
+
+			print('FILE: ', f)
+			new_file = r._config['out'] + '/' + filename + '_out.ogg'
+
+			id = files_dict[filename] 
+			
+			seq_dict = r.extract_features(f) 
+
+			req = r.check_server_recognition(id)
+
+			#TODO check chunk or continue
+
+			if 'chunks' not in req['response']:
+				continue
+
+			full_report = r.make_json_report(req, seq_dict)
+			full_text = json.dumps(req, ensure_ascii=False, indent=2)
+
+			reports_pre_name = r._config['out'] + '/' + filename
+
+			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
+				outfile.write(full_report)
+
+			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
+				outfile.write(full_text)
+
+			print("File done")
+
+
+
+
+
+async_load_dir(r)
+
+print("Now continue ASYNC: ")
+
+async_extract(r)	
 #
 
 '''
