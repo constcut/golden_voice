@@ -1219,16 +1219,18 @@ def async_extract(r):
 			if 'chunks' not in req['response']:
 				continue
 
-			full_report = r.make_json_report(req, seq_dict)
 			full_text = json.dumps(req, ensure_ascii=False, indent=2)
 
 			reports_pre_name = r._config['out'] + '/' + filename
 
+			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
+				outfile.write(full_text)
+
+			full_report = r.make_json_report(req, seq_dict)
+			
 			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
 				outfile.write(full_report)
 
-			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
-				outfile.write(full_text)
 
 			print("File done")
 
@@ -1292,9 +1294,9 @@ def reports_to_csv(r):
 
 print("Now continue ASYNC: ")
 
-#async_extract(r)
+async_extract(r) #WHY long runs out of memory?
 
-reports_to_csv(r)
+#reports_to_csv(r)
 
 
 #
