@@ -1162,6 +1162,8 @@ def async_load_dir(r):
 
 	files_dict = {}
 
+	i = 0
+
 	for filename in os.listdir(r._config['temp']):
 
 		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
@@ -1170,7 +1172,8 @@ def async_load_dir(r):
 
 			print('FILE', f)
 
-			filename_no_ext = filename[0:filename.find('.') ]
+			i += 1
+			filename_no_ext =  "idfile" + str(i) #filename[0:filename.find('.') ]
 
 			new_file = r._config['out'] + '/' + filename + '_out.ogg'
 
@@ -1180,25 +1183,6 @@ def async_load_dir(r):
 
 			files_dict[filename] = id
 			continue
-			
-			seq_dict = r.extract_features(f) #extract features from mp3
-
-			#files_dict[filename] = [id, seq_dict] #TODO async
-
-			req = r.check_server_recognition(id)
-
-			full_report = r.make_json_report(req, seq_dict)
-			full_text = json.dumps(req, ensure_ascii=False, indent=2)
-
-			reports_pre_name = r._config['out'] + '/' + filename
-
-			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
-				outfile.write(full_report)
-
-			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
-				outfile.write(full_text)
-
-			print("File done")
 
 			
 	id_texts = json.dumps(files_dict, indent = 4, ensure_ascii=False) 
@@ -1257,21 +1241,57 @@ def rename_files(r):
 		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
 
 		if os.path.isfile(f):
-			f_replaces = f.replace(" ", "_")
 
-			os.rename(f, f_replaces)
+			if f.find(" ") != -1:
+				f_replaces = f.replace(" ", "_")
+				os.rename(f, f_replaces)
+
+				print("Renaming ", f, f_replaces)
 
 
 
-rename_files(r)
+def reports_to_csv(r):
 
-async_load_dir(r)
+
+	import csv
+	with open(r._config['to-csv'] + '/full.csv', 'w', newline='') as csvfile:
+		table = csv.writer(csvfile, delimiter=',')
+
+		table.writerow(["name", "duration", "Median pitch", "Mean pitch", "Number of pulses", "Fraction of locally unvoiced frames", "Jitter (local)", "Shimmer (local)", "Mean harmonics-to-noise ratio", "Pitch SD", "Intensity SD"])
+
+		
+		for filename in os.listdir(r._config['to-csv']):
+
+			f = os.path.join(r._config['to-csv'], filename) 
+			
+			if os.path.isfile(f) and f.find("full_report") != -1:
+
+				print("FILE ", f, " opening")
+
+				with open(f, 'r') as file:
+					report_dict = json.load(file)
+
+				report_dict["full_stats"]["praat_pitch"]["SD"]
+				report_dict["full_stats"]["intensity"]["SD"]
+				
+				f_name = f.replace(",","_")
+
+				table.writerow([f_name, report_dict["praat_report"]["duration"], report_dict["praat_report"]["Median pitch"], report_dict["praat_report"]["Mean pitch"], report_dict["praat_report"]["Number of pulses"],
+				report_dict["praat_report"]["Fraction of locally unvoiced frames"], report_dict["praat_report"]["Jitter (local)"], report_dict["praat_report"]["Shimmer (local)"], report_dict["praat_report"]["Mean harmonics-to-noise ratio"],
+				report_dict["full_stats"]["praat_pitch"]["SD"], report_dict["full_stats"]["intensity"]["SD"]])
+
+				print("FILE ", f_name, " parsed")
+
+
+#rename_files(r)
+
+#async_load_dir(r)
 
 print("Now continue ASYNC: ")
 
-async_extract(r)
+#async_extract(r)
 
-
+reports_to_csv(r)
 
 
 #
