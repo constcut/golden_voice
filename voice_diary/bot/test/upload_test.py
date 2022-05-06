@@ -5,15 +5,37 @@ import requests
 
 local_file_path = 'local_z.ogg'
 
-upload_url = "http://127.0.0.1:8000/new_test.ogg"
 
-data = open(local_file_path, 'rb').read()
-headers = {
-    "Content-Type":"application/binary",
-}
-upload = requests.put(upload_url, data=data, headers=headers)
+def send_using_put():
+
+    upload_url = "http://127.0.0.1:8000/new_test.ogg"
+
+    data = open(local_file_path, 'rb').read()
+    headers = {
+        "Content-Type":"application/binary",
+    }
+    upload = requests.put(upload_url, data=data, headers=headers)
 
 
-print("Upload done: ", upload)
+    print("Upload done: ", upload)
 
-print("DONE!")
+    print("DONE!")
+
+
+
+def send_using_post():
+
+    test_file = open(local_file_path, "rb")
+
+    upload_url = "http://127.0.0.1:8000/new_test_2.ogg"
+
+    test_response = requests.post(upload_url, files = {"form_field_name": test_file})
+
+    print("Upload done: ", test_response)
+
+    print("DONE!")
+
+#send_using_put()
+
+
+send_using_post()
