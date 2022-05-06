@@ -27,15 +27,15 @@ def send_using_post():
 
     test_file = open(local_file_path, "rb")
 
-    upload_url = "http://127.0.0.1:8000/new_test_2.ogg"
+    upload_url = "http://127.0.0.1:8000/"
 
-    test_response = requests.post(upload_url, files = {"form_field_name": test_file})
-
+    test_response = requests.post(upload_url, files = {"file": test_file})
+    
     print("Upload done: ", test_response)
 
     print("DONE!")
 
+
+
 #send_using_put()
-
-
 send_using_post()

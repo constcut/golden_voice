@@ -20,6 +20,9 @@ import shutil
 import mimetypes
 import re
 from io import BytesIO
+
+
+#TODO clean exceeds
  
  
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
@@ -81,7 +84,9 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         print(" do_POST ") #TODO try another python test
 
         """Serve a POST request."""
+
         r, info = self.deal_post_data()
+
         print((r, info, "by: ", self.client_address))
         f = BytesIO()
         f.write(b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
@@ -99,10 +104,12 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         f.write(b"here</a>.</small></body>\n</html>\n")
         length = f.tell()
         f.seek(0)
+        
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.send_header("Content-Length", str(length))
         self.end_headers()
+
         if f:
             self.copyfile(f, self.wfile)
             f.close()
