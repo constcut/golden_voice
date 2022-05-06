@@ -122,6 +122,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         if not content_type:
             return (False, "Content-Type header doesn't contain boundary")
 
+        print("DEBUG: ", content_type.split("="))
+
         boundary = content_type.split("=")[1].encode()
         remainbytes = int(self.headers['content-length'])
         line = self.rfile.readline()
