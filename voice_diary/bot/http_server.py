@@ -38,6 +38,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_PUT(self):
 
         path = self.translate_path(self.path)
+
         if path.endswith('/'):
             self.send_response(405, "Method Not Allowed")
             self.wfile.write("PUT not allowed on a directory\n".encode())
@@ -49,8 +50,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             length = int(self.headers['Content-Length'])
 
             print("Translated path: ", path)
-
-            path += '\\test.ogg'
 
             with open(path, 'wb') as f:
                 f.write(self.rfile.read(length))
@@ -79,7 +78,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
  
     def do_POST(self):
 
-        print(" do_POST ")
+        print(" do_POST ") #TODO try another python test
 
         """Serve a POST request."""
         r, info = self.deal_post_data()
