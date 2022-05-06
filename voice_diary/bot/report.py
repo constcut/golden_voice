@@ -1259,7 +1259,7 @@ def reports_to_csv(r):
 	with open(r._config['to-csv'] + '/full.csv', 'w', newline='') as csvfile:
 		table = csv.writer(csvfile, delimiter=',')
 
-		table.writerow(["name", "duration", "Median pitch", "Mean pitch", "Number of pulses", "Fraction of locally unvoiced frames", "Jitter (local)", "Shimmer (local)", "Mean harmonics-to-noise ratio", "Pitch SD", "Intensity SD"])
+		table.writerow(["name", "text", "duration", "Median pitch", "Mean pitch", "Number of pulses", "Fraction of locally unvoiced frames", "Jitter (local)", "Shimmer (local)", "Mean harmonics-to-noise ratio", "Pitch SD", "Intensity SD"])
 
 		
 		for filename in os.listdir(r._config['to-csv']):
@@ -1281,7 +1281,7 @@ def reports_to_csv(r):
 
 				f_name = filename.replace(",","_")
 
-				table.writerow([f_name, report_dict["praat_report"]["duration"], report_dict["praat_report"]["Median pitch"], report_dict["praat_report"]["Mean pitch"], report_dict["praat_report"]["Number of pulses"],
+				table.writerow([f_name, report_dict["full_text"], report_dict["praat_report"]["duration"], report_dict["praat_report"]["Median pitch"], report_dict["praat_report"]["Mean pitch"], report_dict["praat_report"]["Number of pulses"],
 				report_dict["praat_report"]["Fraction of locally unvoiced frames"], report_dict["praat_report"]["Jitter (local)"], report_dict["praat_report"]["Shimmer (local)"], report_dict["praat_report"]["Mean harmonics-to-noise ratio"],
 				report_dict["full_stats"]["praat_pitch"]["SD"], report_dict["full_stats"]["intensity"]["SD"]])
 
@@ -1292,12 +1292,11 @@ def reports_to_csv(r):
 
 #async_load_dir(r)
 
-print("Now continue ASYNC: ")
 
-async_extract(r) #WHY long runs out of memory?
+#async_extract(r) #WHY long runs out of memory?
 
-#reports_to_csv(r)
-
+reports_to_csv(r)
+print("CSV DONE!")
 
 #
 
