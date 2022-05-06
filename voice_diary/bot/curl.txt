@@ -3,6 +3,14 @@ Put version
 curl --upload-file local2.ogg http://127.0.0.1:8000/ -v
 
 
+Yet fails:
+
+
 Post version
 
 curl -d @local2.ogg http://127.0.0.1:8000/ -v
+
+
+or
+
+curl -X POST -H "Content-Type: multipart/form-data; boundary=----------------------------4ebf00fbcf09" --data-binary @local2.ogg http://127.0.0.1:8000/
