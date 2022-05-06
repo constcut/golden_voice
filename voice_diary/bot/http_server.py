@@ -44,6 +44,9 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         return (True, "Files uploaded")
 
 
+
+print("Starting http server: ")
+
 Handler = CustomHTTPRequestHandler
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print("serving at port", PORT)
