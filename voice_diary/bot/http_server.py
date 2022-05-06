@@ -8,7 +8,10 @@ PORT = 43210
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
-    def do_POST(self):        
+    def do_POST(self):     
+
+        print("do_POST")
+
         r, info = self.deal_post_data()
         print(r, info, "by: ", self.client_address)
         f = io.BytesIO()
@@ -27,6 +30,9 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             f.close()      
 
     def deal_post_data(self):
+
+        print("deal_post_data")
+
         ctype, pdict = cgi.parse_header(self.headers['Content-Type'])
         pdict['boundary'] = bytes(pdict['boundary'], "utf-8")
         pdict['CONTENT-LENGTH'] = int(self.headers['Content-Length'])
