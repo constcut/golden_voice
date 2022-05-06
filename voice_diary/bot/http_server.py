@@ -88,8 +88,9 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         r, info = self.deal_post_data()
 
         print((r, info, "by: ", self.client_address))
-        f = BytesIO()
-        f.write(b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
+
+        f = BytesIO() 
+        f.write(b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">') #TODO return json with id and key
         f.write(b"<html>\n<title>Upload Result Page</title>\n")
         f.write(b"<body>\n<h2>Upload Result Page</h2>\n")
         f.write(b"<hr>\n")
@@ -104,7 +105,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         f.write(b"here</a>.</small></body>\n</html>\n")
         length = f.tell()
         f.seek(0)
-        
+
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.send_header("Content-Length", str(length))
