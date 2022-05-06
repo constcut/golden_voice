@@ -34,6 +34,23 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     """
  
     server_version = "SimpleHTTPWithUpload/" + __version__
+
+    def do_PUT(self):
+        path = self.translate_path(self.path)
+        if path.endswith('/'):
+            self.send_response(405, "Method Not Allowed")
+            self.wfile.write("PUT not allowed on a directory\n".encode())
+            return
+        else:
+            try:
+                os.makedirs(os.path.dirname(path))
+            except FileExistsError: pass
+            length = int(self.headers['Content-Length'])
+            with open(path, 'wb') as f:
+                f.write(self.rfile.read(length))
+            self.send_response(201, "Created")
+            self.end_headers()
+ 
  
     def do_GET(self):
 
