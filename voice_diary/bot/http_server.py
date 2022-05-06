@@ -36,6 +36,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     server_version = "SimpleHTTPWithUpload/" + __version__
 
     def do_PUT(self):
+
         path = self.translate_path(self.path)
         if path.endswith('/'):
             self.send_response(405, "Method Not Allowed")
@@ -46,12 +47,17 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 os.makedirs(os.path.dirname(path))
             except FileExistsError: pass
             length = int(self.headers['Content-Length'])
+
+            print("Translated path: ", path)
+
+            path += '\\test.ogg'
+
             with open(path, 'wb') as f:
                 f.write(self.rfile.read(length))
             self.send_response(201, "Created")
             self.end_headers()
  
- 
+
     def do_GET(self):
 
         print(" do_GET ")

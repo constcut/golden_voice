@@ -11,7 +11,7 @@ data = open(local_file_path, 'rb').read()
 headers = {
     "Content-Type":"application/binary",
 }
-upload = requests.put(upload_url,data=data,headers=headers)
+upload = requests.put(upload_url, data=data, headers=headers)
 
 
 print("Upload done: ", upload)
