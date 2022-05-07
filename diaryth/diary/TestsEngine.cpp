@@ -1,6 +1,9 @@
 #include "TestsEngine.hpp"
 
 #include <QFile>
+#include <QDebug>
+#include <QTextStream>
+#include <QVariantList>
 
 
 using namespace diaryth;

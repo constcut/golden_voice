@@ -6,6 +6,9 @@
 #include <QDate>
 #include <QTime>
 
+#include <QVariant>
+#include <QVariantList>
+
 
 using namespace diaryth;
 

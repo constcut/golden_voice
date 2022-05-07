@@ -45,7 +45,7 @@ namespace diaryth {
         QList<int> onWeekDays;
         QList<int> onMonthDays;
 
-        std::unordered_map<QString, CardField> fields;
+        std::unordered_map<std::string, CardField> fields;
     };
 
     //TODO добавить новый тип names для записи нескольких значений, например список лекарств
@@ -151,8 +151,8 @@ namespace diaryth {
         QString readTextFile(const QString& filename) const;
 
 
-        std::unordered_map<QString, CardEnum> _enums;
-        std::unordered_map<QString, CardGroup> _groups;
+        std::unordered_map<std::string, CardEnum> _enums;
+        std::unordered_map<std::string, CardGroup> _groups;
 
         QString _cardName;
         QString _cardDescription;

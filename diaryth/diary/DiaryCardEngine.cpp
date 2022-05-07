@@ -96,10 +96,10 @@ void DiaryCardEngine::addGroups(const QJsonArray& groupsArray)
             CardField cardField;
             fillFieldProperties(cardField, fieldObj);
 
-            cardGroup.fields[cardField.name] = cardField;
+            cardGroup.fields[cardField.name.toStdString()] = cardField;
         }
 
-        _groups[cardGroup.name] = cardGroup;
+        _groups[cardGroup.name.toStdString()] = cardGroup;
     }
 }
 
@@ -227,7 +227,7 @@ void DiaryCardEngine::addEnums(const QJsonArray& enumsArray)
                 cardEnum.displayNames.append(valueName);
         }
 
-        _enums[cardEnum.name] = cardEnum;
+        _enums[cardEnum.name.toStdString()] = cardEnum;
     }
 }
 
@@ -235,22 +235,22 @@ void DiaryCardEngine::addEnums(const QJsonArray& enumsArray)
 void DiaryCardEngine::setEnumValues(const QString& name, const QList<int>& values,
                                     const QStringList& valuesNames, bool showValues)
 {
-    if (_enums.count(name) == 0) {
+    if (_enums.count(name.toStdString()) == 0) {
         qDebug() << "Failed to find enum to set values: " << name;
         return;
     }
 
-    _enums[name].values = values;
-    _enums[name].valuesNames = valuesNames;
+    _enums[name.toStdString()].values = values;
+    _enums[name.toStdString()].valuesNames = valuesNames;
 
     if (showValues == false)
-        _enums[name].displayNames = valuesNames;
+        _enums[name.toStdString()].displayNames = valuesNames;
     else
     {
-        _enums[name].displayNames.clear();
+        _enums[name.toStdString()].displayNames.clear();
 
         for (int i = 0; i < values.size(); ++i)
-            _enums[name].displayNames.append(
+            _enums[name.toStdString()].displayNames.append(
                          QString::number(values[i]) + " " + valuesNames[i]);
     }
 }
@@ -262,7 +262,7 @@ QStringList DiaryCardEngine::getAllEnumsNames() const
     QStringList allNames;
 
     for (const auto& [enumName, _]: _enums)
-        allNames.append(enumName);
+        allNames.append(enumName.c_str());
 
     return allNames;
 }
@@ -270,37 +270,37 @@ QStringList DiaryCardEngine::getAllEnumsNames() const
 
 QStringList DiaryCardEngine::getEnumNames(const QString& name) const
 {
-    if (_enums.count(name) == 0)
+    if (_enums.count(name.toStdString()) == 0)
         return {};
 
-    return _enums.at(name).valuesNames;
+    return _enums.at(name.toStdString()).valuesNames;
 }
 
 
 QStringList DiaryCardEngine::getEnumDisplayNames(const QString& name) const
 {
-    if (_enums.count(name) == 0)
+    if (_enums.count(name.toStdString()) == 0)
         return {};
 
-    return _enums.at(name).displayNames;
+    return _enums.at(name.toStdString()).displayNames;
 }
 
 
 QList<int> DiaryCardEngine::getEnumValues(const QString& name) const
 {
-    if (_enums.count(name) == 0)
+    if (_enums.count(name.toStdString()) == 0)
         return {};
 
-    return _enums.at(name).values;
+    return _enums.at(name.toStdString()).values;
 }
 
 
 QString DiaryCardEngine::getEnumDescription(const QString& name) const
 {
-    if (_enums.count(name) == 0)
+    if (_enums.count(name.toStdString()) == 0)
         return {};
 
-    return _enums.at(name).description;
+    return _enums.at(name.toStdString()).description;
 }
 
 
@@ -309,7 +309,7 @@ QStringList DiaryCardEngine::getAllGroupsNames() const //Refact generalize
     QStringList allNames;
 
     for (const auto& [groupName, _]: _groups)
-        allNames.append(groupName);
+        allNames.append(groupName.c_str());
 
     return allNames;
 }
@@ -317,46 +317,46 @@ QStringList DiaryCardEngine::getAllGroupsNames() const //Refact generalize
 
 QString DiaryCardEngine::getGroupDescription(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return {};
 
-    return _groups.at(name).description;
+    return _groups.at(name.toStdString()).description;
 }
 
 
 bool DiaryCardEngine::isGroupMandatory(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return false;
 
-    return _groups.at(name).mandatory;
+    return _groups.at(name.toStdString()).mandatory;
 }
 
 
 int DiaryCardEngine::getGroupDaysFrequency(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return 0;
 
-    return _groups.at(name).daysFrequency;
+    return _groups.at(name.toStdString()).daysFrequency;
 }
 
 
 QList<int> DiaryCardEngine::getGroupWeekDays(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return {};
 
-    return _groups.at(name).onWeekDays;
+    return _groups.at(name.toStdString()).onWeekDays;
 }
 
 
 QList<int> DiaryCardEngine::getGroupMonthDays(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return {};
 
-    return _groups.at(name).onMonthDays;
+    return _groups.at(name.toStdString()).onMonthDays;
 }
 
 
@@ -376,10 +376,10 @@ bool DiaryCardEngine::isItGroupDay(const QString& date, const QString& name) con
 
 bool DiaryCardEngine::isItGroupDay(const QDate& date, const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return false;
 
-     const auto& group = _groups.at(name);
+     const auto& group = _groups.at(name.toStdString());
 
      if (group.daysFrequency == 1) //Подумать над другими значениями
          return true;
@@ -400,12 +400,12 @@ bool DiaryCardEngine::isItGroupDay(const QDate& date, const QString& name) const
 
 QStringList DiaryCardEngine::getAllGroupFields(const QString& name) const
 {
-    if (_groups.count(name) == 0)
+    if (_groups.count(name.toStdString()) == 0)
         return {};
 
     QStringList allFields;
-    for (const auto& [fieldName, _]: _groups.at(name).fields)
-        allFields.append(fieldName);
+    for (const auto& [fieldName, _]: _groups.at(name.toStdString()).fields)
+        allFields.append(fieldName.c_str());
 
     return allFields;
 }
@@ -416,7 +416,7 @@ QString DiaryCardEngine::getFieldType(const QString& group, const QString& field
     if (isFieldMissing(group, field))
         return "";
 
-    return _groups.at(group).fields.at(field).type;
+    return _groups.at(group.toStdString()).fields.at(field.toStdString()).type;
 }
 
 
@@ -425,7 +425,7 @@ QString DiaryCardEngine::getFieldDescription(const QString& group, const QString
     if (isFieldMissing(group, field))
         return "";
 
-    return _groups.at(group).fields.at(field).description;
+    return _groups.at(group.toStdString()).fields.at(field.toStdString()).description;
 }
 
 
@@ -434,7 +434,7 @@ QString DiaryCardEngine::getFieldEnum(const QString& group, const QString& field
     if (isFieldMissing(group, field))
         return "";
 
-    return _groups.at(group).fields.at(field).enumName;
+    return _groups.at(group.toStdString()).fields.at(field.toStdString()).enumName;
 }
 
 int DiaryCardEngine::getFieldRangeMin(const QString& group, const QString& field) const
@@ -442,7 +442,7 @@ int DiaryCardEngine::getFieldRangeMin(const QString& group, const QString& field
     if (isFieldMissing(group, field))
         return -1;
 
-    return _groups.at(group).fields.at(field).rangeMin;
+    return _groups.at(group.toStdString()).fields.at(field.toStdString()).rangeMin;
 }
 
 
@@ -451,17 +451,17 @@ int DiaryCardEngine::getFieldRangeMax(const QString& group, const QString& field
     if (isFieldMissing(group, field))
         return -1;
 
-    return _groups.at(group).fields.at(field).rangeMax;
+    return _groups.at(group.toStdString()).fields.at(field.toStdString()).rangeMax;
 }
 
 
 bool DiaryCardEngine::isFieldMissing(const QString& group, const QString& field) const
 {
-    if (_groups.count(group) == 0)
+    if (_groups.count(group.toStdString()) == 0)
         return true;
 
-    const auto& groupObj = _groups.at(group);
-    if (groupObj.fields.count(field) == false)
+    const auto& groupObj = _groups.at(group.toStdString());
+    if (groupObj.fields.count(field.toStdString()) == false)
         return true;
 
     return false;
@@ -471,145 +471,145 @@ bool DiaryCardEngine::isFieldMissing(const QString& group, const QString& field)
 
 void DiaryCardEngine::addNewEnum(const QString& name)
 {
-    if (_enums.count(name)) {
+    if (_enums.count(name.toStdString())) {
         qDebug() << "Warning: attemp to create enum with existing name";
         return;
     }
 
     CardEnum cardEnum;
     cardEnum.name = name;
-    _enums[name] = cardEnum;
+    _enums[name.toStdString()] = cardEnum;
 }
 
 
 void DiaryCardEngine::removeEnum(const QString& name)
 {
-    _enums.erase(name);
+    _enums.erase(name.toStdString());
 }
 
 
 void DiaryCardEngine::addNewGroup(const QString& name)
 {
-    if (_groups.count(name)) {
+    if (_groups.count(name.toStdString())) {
         qDebug() << "Warning: attemp to create enum with existing name";
         return;
     }
 
     CardGroup cardGroup;
     cardGroup.name = name;
-    _groups[name] = cardGroup;
+    _groups[name.toStdString()] = cardGroup;
 }
 
 
 void DiaryCardEngine::removeGroup(const QString& name)
 {
-    _groups.erase(name);
+    _groups.erase(name.toStdString());
 }
 
 
 void DiaryCardEngine::changeEnumDescription(const QString& enumName, const QString& description)
 {
-    if (_enums.count(enumName) == 0) {
+    if (_enums.count(enumName.toStdString()) == 0) {
         qDebug() << "Failed to find enum to change description: " << enumName;
         return;
     }
 
-    _enums[enumName].description = description;
+    _enums[enumName.toStdString()].description = description;
 }
 
 
 void DiaryCardEngine::setGroupDescription(const QString& groupName, const QString& description)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group to change description: " << groupName;
         return;
     }
 
-    _groups[groupName].description = description;
+    _groups[groupName.toStdString()].description = description;
 }
 
 
 void DiaryCardEngine::setGroupMandatory(const QString& groupName, bool value)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group to change mandatory status" << groupName;
         return;
     }
 
-    _groups[groupName].mandatory = value;
+    _groups[groupName.toStdString()].mandatory = value;
 }
 
 
 void DiaryCardEngine::setGroupMonthDays(const QString& groupName, const QList<int>& monthDays)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group to set month days" << groupName;
         return;
     }
 
-    _groups[groupName].onMonthDays = monthDays;
+    _groups[groupName.toStdString()].onMonthDays = monthDays;
 }
 
 
 void DiaryCardEngine::setGroupWeekDays(const QString& groupName, const QList<int>& weekDays)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group to set week days" << groupName;
         return;
     }
 
-    _groups[groupName].onWeekDays = weekDays;
+    _groups[groupName.toStdString()].onWeekDays = weekDays;
 }
 
 
 void DiaryCardEngine::setFieldToGroup(const QString& groupName, const QString& fieldName,
                                       const QString& fieldType)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group " << groupName << " to add field " << fieldName;
         return;
     }
 
-    _groups[groupName].fields[fieldName].name = fieldName;
-    _groups[groupName].fields[fieldName].type = fieldType;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].name = fieldName;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].type = fieldType;
 }
 
 
 void DiaryCardEngine::setEnumFieldToGroup(const QString& groupName, const QString& fieldName,
                                           const QString& enumName)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group " << groupName << " to add enum field " << fieldName;
         return;
     }
 
-    _groups[groupName].fields[fieldName].name = fieldName;
-    _groups[groupName].fields[fieldName].type = "enum";
-    _groups[groupName].fields[fieldName].enumName = enumName;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].name = fieldName;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].type = "enum";
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].enumName = enumName;
 }
 
 
 void DiaryCardEngine::setRangeFieldToGroup(const QString& groupName, const QString& fieldName,
                                            int rangeMin, int rangeMax)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group " << groupName << " to add range field " << fieldName;
         return;
     }
 
-    _groups[groupName].fields[fieldName].name = fieldName;
-    _groups[groupName].fields[fieldName].type = "range";
-    _groups[groupName].fields[fieldName].rangeMin = rangeMin;
-    _groups[groupName].fields[fieldName].rangeMin = rangeMax;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].name = fieldName;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].type = "range";
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].rangeMin = rangeMin;
+    _groups[groupName.toStdString()].fields[fieldName.toStdString()].rangeMin = rangeMax;
 }
 
 
 void DiaryCardEngine::removeGroupField(const QString& groupName, const QString& fieldName)
 {
-    if (_groups.count(groupName) == 0) {
+    if (_groups.count(groupName.toStdString()) == 0) {
         qDebug() << "Failed to find group " << groupName << " to remove field " << fieldName;
         return;
     }
 
-    _groups.erase(fieldName);
+    _groups.erase(fieldName.toStdString());
 }

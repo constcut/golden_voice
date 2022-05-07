@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QAbstractTableModel>
 #include <QDebug>
+#include <QVariant>
 
 
 namespace diaryth {
