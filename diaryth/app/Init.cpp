@@ -207,15 +207,12 @@ int mainInit(int argc, char *argv[])
 
     auto reply = mgr.put(req, f);
 
-    QUrl urlGet("http://127.0.0.1:8000/curl.txt");
-    QNetworkRequest requestGet(urlGet);
-
-    QUrl urlPost("http://127.0.0.1:8000/");
-    QNetworkRequest requestPost(urlPost);
-
-    requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    //TODO
+    //QUrl urlPost("http://127.0.0.1:8000/");
+    //QNetworkRequest requestPost(urlPost);
+    //requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     //auto postReply = mgr.post(requestPost, f);
-    //auto reply = mgr.get(requestGet);
+
 
     QObject::connect(reply, &QNetworkReply::finished, [reply]()
     {
@@ -242,9 +239,19 @@ int mainInit(int argc, char *argv[])
     });
 
 
-
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
         qDebug() << "Reply has no error";
+
+
+    QUrl urlGet("http://127.0.0.1:8000/report/fullusername_1.2.3");
+    QNetworkRequest requestGet(urlGet);
+    auto getReply = mgr.get(requestGet);
+
+    QObject::connect(reply, &QNetworkReply::finished, [getReply]()
+    {
+         QString result = getReply->readAll();
+         qDebug() << result << " GET-REPLY !";
+    });
 
 
     int res = 0;

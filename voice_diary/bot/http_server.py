@@ -42,6 +42,12 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         path = self.translate_path(self.path)
 
+        #Нужно распарсить полный путь, и отделить папку пользователя от самого названия
+        #Однако если эта запись уже существует - выдать на неё ответ с ключем и id не осуществляя никаких других действий
+        #TODO
+        #Сделать 3 подпапки audio\text\image - и отправлять в виде accumerite.ru/audio/USERID_FILENAME.ext
+        #итого USERID\audio\ USERID\text\ USEROD\image\
+
         if path.endswith('/'):
             self.send_response(405, "Method Not Allowed")
             self.wfile.write("PUT not allowed on a directory\n".encode())
@@ -60,7 +66,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Response", '{"json":"field"}')
             self.end_headers()
 
-            f = open("C:/Users/constcut/Desktop/local/zx.json", 'wb')
+            f = open("C:/Users/constcut/Desktop/local/zx.json", 'wb') #TODO при повторной отправке того же имени
             f.write(b'{"done":"+","id":"DONE", "key":"TEST"}')
             f.close()
 
@@ -73,18 +79,33 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
 
 
-
- 
-
     def do_GET(self):
 
-        print(" do_GET ")
+        print(" do_GET ", self.path)
 
-        """Serve a GET request."""
-        f = self.send_head()
+        f = open("C:/Users/constcut/Desktop/local/get.txt", 'wb') #TODO при повторной отправке того же имени
+        f.write(b'{"result":"report"}')
+        f.close()    
+
+        f = open("C:/Users/constcut/Desktop/local/get.txt", 'rb')
+
+        self.send_response(200)
+        ctype = self.guess_type(self.path)
+        self.send_header("Content-type", ctype)
+        fs = os.fstat(f.fileno())
+        self.send_header("Content-Length", str(fs[6]))
+        self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+        self.end_headers()
+
         if f:
             self.copyfile(f, self.wfile)
             f.close()
+
+        #"""Serve a GET request."""
+        #f = self.send_head()
+        #if f:
+        #    self.copyfile(f, self.wfile)
+        #    f.close()
  
     def do_HEAD(self):
 
