@@ -47,27 +47,20 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write("PUT not allowed on a directory\n".encode())
             return
         else:
+
             try:
                 os.makedirs(os.path.dirname(path))
             except FileExistsError: pass
             length = int(self.headers['Content-Length'])
 
-            print("Translated path: ", path)
-
             with open(path, 'wb') as f:
                 f.write(self.rfile.read(length))
 
-            f = BytesIO() 
-            f.write(b'{"json":"field"}') #TODO return json with id and key
-            length = f.tell()
-            f.seek(0)
-
             self.send_response(201, "Created")
-            self.send_header("Content-type", "text/html")
-            self.send_header("Content-Length", str(length))
+            self.send_header("Response", '{"json":"field"}')
             self.end_headers()
 
-            self.copyfile(f, self.wfile)
+
  
 
     def do_GET(self):

@@ -13,6 +13,7 @@
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QThread>
 
 #include <fstream>
 #include <signal.h>
@@ -200,13 +201,21 @@ int mainInit(int argc, char *argv[])
     QFile f = QFile("C:/Users/constcut/Desktop/local/local2.ogg");
     f.open(QIODevice::ReadOnly);
 
-    auto reply = mgr.put(req, &f);
+    //auto reply = mgr.put(req, &f);
 
-    if (reply->error() == QNetworkReply::NoError)
+    QUrl urlGet("http://127.0.0.1:8000/curl.txt");
+    QNetworkRequest requestGet(urlGet);
+
+    //requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    //auto postReply = mgr.post(requestPost, &f);
+
+    auto reply = mgr.get(requestGet);
+
+    if (reply->error() == QNetworkReply::NoError) //Try connect slot?
     {
-        QByteArray bytes = reply->readAll();
-        QString replyTest = QString(bytes);
-        qDebug() << "Reply: " << replyTest;
+
+        QByteArray response = reply->readAll();
+        qDebug() << "Reply: " << response.size() << " and " << reply->readBufferSize() ;
     }
 
 
