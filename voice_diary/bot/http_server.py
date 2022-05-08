@@ -47,18 +47,26 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write("PUT not allowed on a directory\n".encode())
             return
         else:
-
             try:
                 os.makedirs(os.path.dirname(path))
-            except FileExistsError: pass
-            length = int(self.headers['Content-Length'])
 
+            except FileExistsError: pass
+
+            length = int(self.headers['Content-Length'])
             with open(path, 'wb') as f:
                 f.write(self.rfile.read(length))
 
             self.send_response(201, "Created")
             self.send_header("Response", '{"json":"field"}')
             self.end_headers()
+
+            f = open("C:/Users/constcut/Desktop/local/curl.txt", 'rb')
+            if f:
+                self.copyfile(f, self.wfile)
+                f.close()
+            #self.wfile.write('{"uploaded":true, "id":"0123", "key":"481"')
+
+
 
 
  

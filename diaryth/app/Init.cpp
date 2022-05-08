@@ -198,10 +198,10 @@ int mainInit(int argc, char *argv[])
 
     QNetworkRequest req(url);
 
-    QFile* f = new QFile("C:/Users/constcut/Desktop/local/local2.ogg");
+    QFile* f = new QFile("C:/Users/constcut/Desktop/local/local2.ogg"); //stac over fake?
     f->open(QIODevice::ReadOnly);
 
-    //auto reply = mgr.put(req, &f);
+    auto reply = mgr.put(req, f);
 
     QUrl urlGet("http://127.0.0.1:8000/curl.txt");
     QNetworkRequest requestGet(urlGet);
@@ -210,9 +210,9 @@ int mainInit(int argc, char *argv[])
     QNetworkRequest requestPost(urlPost);
 
     requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
-    auto postReply = mgr.post(requestPost, f);
+    //auto postReply = mgr.post(requestPost, f);
 
-    auto reply = mgr.get(requestGet);
+    //auto reply = mgr.get(requestGet);
 
     QObject::connect(reply, &QNetworkReply::finished, [reply](){
         QByteArray result = reply->readAll();
