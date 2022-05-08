@@ -211,11 +211,16 @@ int mainInit(int argc, char *argv[])
 
     auto reply = mgr.get(requestGet);
 
+    QObject::connect(reply, &QNetworkReply::finished, [reply](){
+        QByteArray result = reply->readAll();
+        qDebug() << result << " REPLY !";
+        reply->deleteLater();
+    });
+
+
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
     {
-
-        QByteArray response = reply->readAll();
-        qDebug() << "Reply: " << response.size() << " and " << reply->readBufferSize() ;
+        qDebug() << "Reply has no error";
     }
 
 
