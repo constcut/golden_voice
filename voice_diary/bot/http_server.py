@@ -89,6 +89,13 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         f = open("C:/Users/constcut/Desktop/local/get.txt", 'rb')
 
+        #/report/fullusername_1.2.3 - in to parts TODO
+        #/check/id_key - same structure
+
+        #++ parse all the params
+
+        print("GET FULL PATH ", self.path)
+
         self.send_response(200)
         ctype = self.guess_type(self.path)
         self.send_header("Content-type", ctype)
