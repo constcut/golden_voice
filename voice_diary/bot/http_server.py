@@ -60,11 +60,16 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Response", '{"json":"field"}')
             self.end_headers()
 
-            f = open("C:/Users/constcut/Desktop/local/curl.txt", 'rb')
+            f = open("C:/Users/constcut/Desktop/local/zx.json", 'wb')
+            f.write(b'{"done":"+","id"="DONE", "key"="TEST"}')
+            f.close()
+
+            f = open("C:/Users/constcut/Desktop/local/zx.json", 'rb')
             if f:
                 self.copyfile(f, self.wfile)
                 f.close()
-            #self.wfile.write('{"uploaded":true, "id":"0123", "key":"481"')
+
+            
 
 
 

@@ -15,6 +15,10 @@
 #include <QNetworkReply>
 #include <QThread>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 #include <fstream>
 #include <signal.h>
 
@@ -211,20 +215,36 @@ int mainInit(int argc, char *argv[])
 
     requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     //auto postReply = mgr.post(requestPost, f);
-
     //auto reply = mgr.get(requestGet);
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply](){
-        QByteArray result = reply->readAll();
+    QObject::connect(reply, &QNetworkReply::finished, [reply]()
+    {
+        QString result = reply->readAll();
         qDebug() << result << " REPLY !";
+
+        auto doc = QJsonDocument::fromJson(result.toLocal8Bit());
+        auto rootObject = doc.object();
+
+        if (rootObject.contains("done"))
+            qDebug() << "Contains done! id = " << rootObject["id"].toString()
+                     << " key = " << rootObject["key"].toString();
+        else
+        {
+            qDebug() << "Field done not found" << doc.isArray() << doc.isEmpty() << doc.isNull() << doc.isObject();
+
+
+            for (auto& k: rootObject.keys())
+                qDebug() << "KEY: " << k;
+
+        }
+
         reply->deleteLater();
     });
 
 
+
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
-    {
         qDebug() << "Reply has no error";
-    }
 
 
     int res = 0;
