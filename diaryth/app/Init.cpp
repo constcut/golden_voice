@@ -198,16 +198,19 @@ int mainInit(int argc, char *argv[])
 
     QNetworkRequest req(url);
 
-    QFile f = QFile("C:/Users/constcut/Desktop/local/local2.ogg");
-    f.open(QIODevice::ReadOnly);
+    QFile* f = new QFile("C:/Users/constcut/Desktop/local/local2.ogg");
+    f->open(QIODevice::ReadOnly);
 
     //auto reply = mgr.put(req, &f);
 
     QUrl urlGet("http://127.0.0.1:8000/curl.txt");
     QNetworkRequest requestGet(urlGet);
 
-    //requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
-    //auto postReply = mgr.post(requestPost, &f);
+    QUrl urlPost("http://127.0.0.1:8000/");
+    QNetworkRequest requestPost(urlPost);
+
+    requestPost.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    auto postReply = mgr.post(requestPost, f);
 
     auto reply = mgr.get(requestGet);
 
