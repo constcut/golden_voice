@@ -56,7 +56,7 @@ namespace diaryth {
         std::string platform;
 
     public:
-       //Config() = default;
+
         virtual ~Config() = default;
 
         void connectLog(bool *ptrValue, int index=-1,std::string logName="unknown");
@@ -95,7 +95,7 @@ namespace diaryth {
 
     public:
         ConfigQML(){}
-        ConfigQML(QObject* parent) {}
+        //ConfigQML(QObject* parent) {}
         ~ConfigQML() = default;
 
         std::string parameter(std::string name) {
