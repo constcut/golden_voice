@@ -1,4 +1,4 @@
-QT += sql quick multimedia core
+QT += sql quick multimedia core network
 CONFIG += c++17
 
 #CONFIG += AuralsLegacy

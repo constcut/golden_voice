@@ -10,6 +10,10 @@
 #include <QStandardPaths>
 #include <QDateTime>
 
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+
 #include <fstream>
 #include <signal.h>
 
@@ -185,6 +189,21 @@ int mainInit(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+
+
+    //
+    QNetworkAccessManager mgr;
+    QUrl url("http://127.0.0.1:8000/q_test.ogg");
+
+    QNetworkRequest req(url);
+
+    QFile f = QFile("C:\\Users\\constcut\\Desktop\\local\local2.ogg");
+    auto reply = mgr.put(req, &f);
+
+    if (reply->error() == QNetworkReply::NoError)
+        qDebug() << "Reply here, all fine";
+
+
 
     int res = 0;
     try {
