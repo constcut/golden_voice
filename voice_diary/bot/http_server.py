@@ -61,7 +61,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
             f = open("C:/Users/constcut/Desktop/local/zx.json", 'wb')
-            f.write(b'{"done":"+","id"="DONE", "key"="TEST"}')
+            f.write(b'{"done":"+","id":"DONE", "key":"TEST"}')
             f.close()
 
             f = open("C:/Users/constcut/Desktop/local/zx.json", 'rb')
