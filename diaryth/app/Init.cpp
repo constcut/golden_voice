@@ -191,18 +191,23 @@ int mainInit(int argc, char *argv[])
         return -1;
 
 
-    //
+    //Uppload file
     QNetworkAccessManager mgr;
-    QUrl url("http://127.0.0.1:8000/q_test.ogg");
+    QUrl url("http://127.0.0.1:8000/q2_test.ogg");
 
     QNetworkRequest req(url);
 
-    QFile f = QFile("C:\\Users\\constcut\\Desktop\\local\local2.ogg");
+    QFile f = QFile("C:/Users/constcut/Desktop/local/local2.ogg");
+    f.open(QIODevice::ReadOnly);
+
     auto reply = mgr.put(req, &f);
 
     if (reply->error() == QNetworkReply::NoError)
-        qDebug() << "Reply here, all fine";
-
+    {
+        QByteArray bytes = reply->readAll();
+        QString replyTest = QString(bytes);
+        qDebug() << "Reply: " << replyTest;
+    }
 
 
     int res = 0;

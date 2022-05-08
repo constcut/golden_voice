@@ -56,8 +56,18 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
             with open(path, 'wb') as f:
                 f.write(self.rfile.read(length))
+
+            f = BytesIO() 
+            f.write(b'{"json":"field"}') #TODO return json with id and key
+            length = f.tell()
+            f.seek(0)
+
             self.send_response(201, "Created")
+            self.send_header("Content-type", "text/html")
+            self.send_header("Content-Length", str(length))
             self.end_headers()
+
+            self.copyfile(f, self.wfile)
  
 
     def do_GET(self):
