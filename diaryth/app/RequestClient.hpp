@@ -14,7 +14,6 @@ namespace diaryth {
         Q_OBJECT
     public:
 
-
         Q_INVOKABLE bool logIn(QString username, QString password);
 
         Q_INVOKABLE void sendAudioFile(QString filename) {}
@@ -28,6 +27,8 @@ namespace diaryth {
         //void loggedIn(bool);
 
     private:
+
+        void loginNotification();
 
         bool _loggedIn;
         QString _username;

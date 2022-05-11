@@ -30,17 +30,21 @@ bool RequestClient::logIn(QString username, QString password)
     QObject::connect(getReply, &QNetworkReply::finished, [this, getReply=getReply]()
     {
          QString result = getReply->readAll();
-         qDebug() << result << " : login reply !";
+         //qDebug() << result << " : login reply !";
 
          this->_loggedIn = result == "Logged in!";
-         //emit this->loggedIn(_loggedIn);
+         this->loginNotification();
     });
-
-    qDebug() << "Request was sent!";
-
 
     return false; //Как-то обыграть асинхронно
 }
+
+
+void RequestClient::loginNotification()
+{
+    qDebug() << "Notification of login result: " << _loggedIn;
+}
+
 
 
 /*
