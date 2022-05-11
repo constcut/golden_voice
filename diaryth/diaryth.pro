@@ -34,6 +34,7 @@ SOURCES += \
     app/Config.cpp \
     app/Init.cpp \
     app/LogHandler.cpp \
+    app/RequestClient.cpp \
     audio/Recorder.cpp \
     audio/features/FeatureExtractor.cpp \
     audio/features/Yin.cpp \
@@ -177,6 +178,7 @@ HEADERS += \
     app/Config.hpp \
     app/Init.hpp \
     app/LogHandler.hpp \
+    app/RequestClient.hpp \
     app/StretchImage.hpp \
     app/log.hpp \
     audio/Recorder.hpp \
