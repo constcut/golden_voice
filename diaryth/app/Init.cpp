@@ -198,7 +198,7 @@ int mainInit(int argc, char *argv[])
 
     //Uppload file
     QNetworkAccessManager mgr;
-    QUrl url("http://127.0.0.1:8000/q3_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
+    QUrl url("http://localhost:8000/q3_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
 
     QNetworkRequest req(url);
 
@@ -238,7 +238,7 @@ int mainInit(int argc, char *argv[])
         qDebug() << "Reply has no error";
 
 
-    QUrl urlGet("http://127.0.0.1:8000/report/fullusername_1.2.3?param1=0&param2=1");
+    QUrl urlGet("http://localhost:8000/report/fullusername_1.2.3?param1=0&param2=1");
     QNetworkRequest requestGet(urlGet);
     auto getReply = mgr.get(requestGet);
 
