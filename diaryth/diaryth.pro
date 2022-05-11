@@ -209,6 +209,7 @@ DISTFILES += \
     qml/config.qml \
     qml/diaryCard.qml \
     qml/diaryCardRecords.qml \
+    qml/networkClient.qml \
     qml/pageView.qml \
     qml/patternInput.qml \
     qml/recorder.qml \
