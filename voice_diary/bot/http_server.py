@@ -83,11 +83,12 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         print(" do_GET ", self.path)
 
-        f = open("C:/Users/constcut/Desktop/local/get.txt", 'wb') #TODO при повторной отправке того же имени
-        f.write(b'{"result":"report"}')
-        f.close()    
 
-        f = open("C:/Users/constcut/Desktop/local/get.txt", 'rb')
+        #f = open("C:/Users/constcut/Desktop/local/get.txt", 'wb') #TODO при повторной отправке того же имени
+        #f.write(b'{"result":"report"}')
+        #f.close()    
+
+        #f = open("C:/Users/constcut/Desktop/local/get.txt", 'rb')
 
         #/report/fullusername_1.2.3 - in to parts TODO
         #/check/id_key - same structure
@@ -122,14 +123,22 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         ctype = self.guess_type(self.path)
         self.send_header("Content-type", ctype)
-        fs = os.fstat(f.fileno())
-        self.send_header("Content-Length", str(fs[6]))
-        self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+
+        #fs = os.fstat(f.fileno())
+
+        response_string = '{"done":"true", "some":"param"}'
+
+        #TODO better string len calculation
+
+        self.send_header("Content-Length", len(response_string)) #str(fs[6])
+        #self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
         self.end_headers()
 
-        if f:
-            self.copyfile(f, self.wfile)
-            f.close()
+        self.wfile.write(response_string.encode('ascii'))
+
+        #if f:
+        #    self.copyfile(f, self.wfile)
+        #    f.close()
 
         #"""Serve a GET request."""
         #f = self.send_head()
