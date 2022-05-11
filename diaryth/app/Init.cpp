@@ -237,8 +237,7 @@ int mainInit(int argc, char *argv[])
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
         qDebug() << "Reply has no error";
 
-
-    QUrl urlGet("http://localhost:8000/login?password=testpassword&login=testlogin");
+    QUrl urlGet("http://localhost:8000/login?password=test1password&login=testlogin");
     QNetworkRequest requestGet(urlGet);
     auto getReply = mgr.get(requestGet);
 
@@ -247,8 +246,6 @@ int mainInit(int argc, char *argv[])
          QString result = getReply->readAll();
          qDebug() << result << " : login reply !";
     });
-
-
 
 
     int res = 0;

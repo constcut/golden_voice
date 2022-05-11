@@ -105,6 +105,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         response_string = '{"done":"true", "some":"param"}'
 
+        print("PATH STEPS ", path_steps)
+
         if path_steps[1] == "login":
 
             check_login = "none"
@@ -141,7 +143,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         if f:
             f.close()
  
- 
+
     def do_POST(self):
 
         print(" do_POST ") #TODO try another python test
