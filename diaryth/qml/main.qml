@@ -26,7 +26,7 @@ ApplicationWindow {
             mainWindow.height = 600
         }
 
-        mainLoader.setSource("diaryCard.qml") //calendar, diaryCard,
+        mainLoader.setSource("networkClient.qml") //calendar, diaryCard,
     }
 
 
@@ -94,6 +94,10 @@ ApplicationWindow {
         MenuItem {
             text: "Tests"
             onTriggered: mainLoader.setSource("testsEngine.qml")
+        }
+        MenuItem {
+            text: "Net"
+            onTriggered: mainLoader.setSource("networkClient.qml")
         }
 
 

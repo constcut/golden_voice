@@ -29,19 +29,23 @@ Item {
             spacing: 10
 
             TextField {
-                id: nameField
+                id: username
                 placeholderText: "username"
+
+                text: "testlogin"
             }
             TextField {
-                id: tagsField
+                id: password
                 placeholderText: "password"
+
+                text: "testpassword"
             }
             Button
             {
                 text: "Log In"
                 onClicked:
                 {
-
+                    requestClient.logIn(username.text, password.text)
                 }
             }
             Text {
@@ -57,8 +61,12 @@ Item {
 
         target: requestClient
 
-        function onLoggedIn(value) {
-            console.log("Logged in notification", value)
+        function onLoggedIn(value)
+        {
+            if (value)
+                loginStatus.text = "You are logged in!"
+            else
+                loginStatus.text = "Username or password incorrect"
         }
     }
 
