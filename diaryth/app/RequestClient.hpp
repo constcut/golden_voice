@@ -22,9 +22,10 @@ namespace diaryth {
         Q_INVOKABLE bool requestCompleteStatus(QString id, QString key) {}
         Q_INVOKABLE QString getLastCompleteAnswer() {}
 
-    //signals:
 
-        //void loggedIn(bool);
+    signals:
+
+        void loggedIn(bool);
 
     private:
 

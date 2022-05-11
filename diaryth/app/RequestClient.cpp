@@ -43,6 +43,8 @@ bool RequestClient::logIn(QString username, QString password)
 void RequestClient::loginNotification()
 {
     qDebug() << "Notification of login result: " << _loggedIn;
+
+    emit loggedIn(_loggedIn);
 }
 
 
