@@ -25,7 +25,7 @@ namespace diaryth {
 
     signals:
 
-        void loggedIn(bool);
+        void loggedIn(bool value);
 
     private:
 
