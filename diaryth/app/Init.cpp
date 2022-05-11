@@ -10,15 +10,6 @@
 #include <QStandardPaths>
 #include <QDateTime>
 
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QThread>
-
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-
 #include <fstream>
 #include <signal.h>
 
@@ -31,6 +22,8 @@
 #include "diary/SQLBase.hpp"
 #include "diary/DiaryCardEngine.hpp"
 #include "diary/TestsEngine.hpp"
+
+#include "app/RequestClient.hpp"
 
 #ifdef AuralsLegacy
     #include "audio/wave/AudioHandler.hpp"
@@ -182,6 +175,7 @@ int mainInit(int argc, char *argv[])
     diaryth::DiaryCardEngine cardEngine;
     diaryth::TestsEngine testsEngine;
     diaryth::Recorder recorder(sqlBase);
+    diaryth::RequestClient requestClient;
 
     registerTestsAndCards(sqlBase);
 
@@ -190,62 +184,13 @@ int mainInit(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sqlBase", &sqlBase);
     engine.rootContext()->setContextProperty("cardEngine", &cardEngine);
     engine.rootContext()->setContextProperty("testsEngine", &testsEngine);
+    engine.rootContext()->setContextProperty("requestClient", &requestClient);
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
-
-    //Uppload file
-    QNetworkAccessManager mgr;
-    QUrl url("http://localhost:8000/q1_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
-
-    QNetworkRequest req(url);
-
-    QFile* f = new QFile("C:/Users/constcut/Desktop/local/local2.ogg"); //stac over fake?
-    f->open(QIODevice::ReadOnly);
-
-    auto reply = mgr.put(req, f);
-
-
-
-    QObject::connect(reply, &QNetworkReply::finished, [reply]()
-    {
-        QString result = reply->readAll();
-        qDebug() << result << " REPLY !";
-
-        auto doc = QJsonDocument::fromJson(result.toLocal8Bit());
-        auto rootObject = doc.object();
-
-        if (rootObject.contains("done"))
-            qDebug() << "Contains done! id = " << rootObject["id"].toString()
-                     << " key = " << rootObject["key"].toString();
-        else
-        {
-            qDebug() << "Field done not found" << doc.isArray() << doc.isEmpty() << doc.isNull() << doc.isObject();
-
-
-            for (auto& k: rootObject.keys())
-                qDebug() << "KEY: " << k;
-
-        }
-
-        reply->deleteLater();
-    });
-
-
-    if (reply->error() == QNetworkReply::NoError) //Try connect slot?
-        qDebug() << "Reply has no error";
-
-    QUrl urlGet("http://localhost:8000/login?password=test1password&login=testlogin");
-    QNetworkRequest requestGet(urlGet);
-    auto getReply = mgr.get(requestGet);
-
-    QObject::connect(reply, &QNetworkReply::finished, [getReply]()
-    {
-         QString result = getReply->readAll();
-         qDebug() << result << " : login reply !";
-    });
+    requestClient.logIn("testlogin", "testpassword");
 
 
     int res = 0;
