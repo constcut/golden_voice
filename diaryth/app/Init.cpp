@@ -198,7 +198,7 @@ int mainInit(int argc, char *argv[])
 
     //Uppload file
     QNetworkAccessManager mgr;
-    QUrl url("http://localhost:8000/q3_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
+    QUrl url("http://localhost:8000/q1_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
 
     QNetworkRequest req(url);
 
