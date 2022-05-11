@@ -19,26 +19,25 @@ using namespace diaryth;
 
 bool RequestClient::logIn(QString username, QString password)
 {
-    QNetworkAccessManager mgr;
-
     QString urlString = QString("http://localhost:8000/login?password=%1&login=%2")
                                 .arg(password, username);
-    QUrl urlGet(urlString);
-    QNetworkRequest requestGet(urlGet);
-    auto getReply = mgr.get(requestGet);
 
-    QObject::connect(getReply, &QNetworkReply::finished, [getReply]()
+    _lastRequest = QNetworkRequest(QUrl(urlString));
+    auto getReply = _mgr.get(_lastRequest);
+
+    _username = username;
+
+    QObject::connect(getReply, &QNetworkReply::finished, [this, getReply=getReply]()
     {
          QString result = getReply->readAll();
          qDebug() << result << " : login reply !";
-         //TODO slot-signals?
+
+         this->_loggedIn = result == "Logged in!";
+         //emit this->loggedIn(_loggedIn);
     });
 
     qDebug() << "Request was sent!";
 
-    QThread::sleep(10);
-
-    qDebug() << "After sleep";
 
     return false; //Как-то обыграть асинхронно
 }

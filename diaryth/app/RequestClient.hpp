@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
 
 
 namespace diaryth {
@@ -22,10 +23,17 @@ namespace diaryth {
         Q_INVOKABLE bool requestCompleteStatus(QString id, QString key) {}
         Q_INVOKABLE QString getLastCompleteAnswer() {}
 
+    //signals:
+
+        //void loggedIn(bool);
+
     private:
 
+        bool _loggedIn;
         QString _username;
         QNetworkAccessManager _mgr;
+
+        QNetworkRequest _lastRequest;
 
 
     };
