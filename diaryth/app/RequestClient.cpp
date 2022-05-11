@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include <QNetworkRequest>
-#include <QNetworkAccessManager>
+
 #include <QNetworkReply>
 #include <QThread>
 
@@ -13,6 +13,8 @@
 
 
 using namespace diaryth;
+
+
 
 
 bool RequestClient::logIn(QString username, QString password)
@@ -29,7 +31,14 @@ bool RequestClient::logIn(QString username, QString password)
     {
          QString result = getReply->readAll();
          qDebug() << result << " : login reply !";
+         //TODO slot-signals?
     });
+
+    qDebug() << "Request was sent!";
+
+    QThread::sleep(10);
+
+    qDebug() << "After sleep";
 
     return false; //Как-то обыграть асинхронно
 }

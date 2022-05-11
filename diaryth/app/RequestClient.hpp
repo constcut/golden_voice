@@ -2,6 +2,7 @@
 #define REQUESTCLIENT_HPP
 
 #include <QObject>
+#include <QNetworkAccessManager>
 
 
 namespace diaryth {
@@ -11,6 +12,7 @@ namespace diaryth {
     {
         Q_OBJECT
     public:
+
 
         Q_INVOKABLE bool logIn(QString username, QString password);
 
@@ -23,6 +25,7 @@ namespace diaryth {
     private:
 
         QString _username;
+        QNetworkAccessManager _mgr;
 
 
     };
