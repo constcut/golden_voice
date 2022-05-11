@@ -38,6 +38,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 f.write(self.rfile.read(length))
                 f.close()
 
+            print('Written ', length, " bytes")
+
             self.send_response(201, "Created")
             self.end_headers()
 
