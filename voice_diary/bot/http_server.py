@@ -94,6 +94,29 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         #++ parse all the params
 
+        params_steps = []
+        params_pos = self.path.find("?")
+
+        if params_pos != -1:
+            
+            full_path = self.path[0: params_pos]
+            full_params = self.path[params_pos + 1: ]
+
+            print("full params ", full_params)
+
+            params_groups = full_params.split("&")
+            for i in range(0, len(params_groups)):
+                params_steps.append(params_groups[i].split("="))
+
+        else:
+
+            full_path = self.path
+
+        path_steps = full_path.split("/")
+
+        print("Path steps: ", path_steps)
+        print("Params steps: ", params_steps)
+
         print("GET FULL PATH ", self.path)
 
         self.send_response(200)
