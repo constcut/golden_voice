@@ -238,14 +238,14 @@ int mainInit(int argc, char *argv[])
         qDebug() << "Reply has no error";
 
 
-    QUrl urlGet("http://localhost:8000/report/fullusername_1.2.3?param1=0&param2=1");
+    QUrl urlGet("http://localhost:8000/login?password=testpassword&login=testlogin");
     QNetworkRequest requestGet(urlGet);
     auto getReply = mgr.get(requestGet);
 
     QObject::connect(reply, &QNetworkReply::finished, [getReply]()
     {
          QString result = getReply->readAll();
-         qDebug() << result << " GET-REPLY !";
+         qDebug() << result << " : login reply !";
     });
 
 

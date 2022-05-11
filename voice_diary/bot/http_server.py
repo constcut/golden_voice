@@ -83,18 +83,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         print(" do_GET ", self.path)
 
-
-        #f = open("C:/Users/constcut/Desktop/local/get.txt", 'wb') #TODO при повторной отправке того же имени
-        #f.write(b'{"result":"report"}')
-        #f.close()    
-
-        #f = open("C:/Users/constcut/Desktop/local/get.txt", 'rb')
-
-        #/report/fullusername_1.2.3 - in to parts TODO
-        #/check/id_key - same structure
-
-        #++ parse all the params
-
         params_steps = []
         params_pos = self.path.find("?")
 
@@ -115,37 +103,35 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         path_steps = full_path.split("/")
 
-        print("Path steps: ", path_steps)
-        print("Params steps: ", params_steps)
-
-        print("GET FULL PATH ", self.path)
-
-        self.send_response(200)
-        ctype = self.guess_type(self.path)
-        self.send_header("Content-type", ctype)
-
-        #fs = os.fstat(f.fileno())
-
         response_string = '{"done":"true", "some":"param"}'
 
-        #TODO better string len calculation
+        if path_steps[1] == "login":
 
-        self.send_header("Content-Length", len(response_string)) #str(fs[6])
-        #self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+            check_login = "none"
+            check_password = "none"
+
+            for param in params_steps:
+
+                if param[0] == "login":
+                    check_login = param[1]
+
+                if param[0] == "password":
+                    check_password = param[1]
+
+            if check_login == "testlogin" and check_password == "testpassword":
+                response_string = "Logged in!"
+            else:
+                response_string = "Login or password incorrect"
+
+        self.send_response(200)
+        ctype = self.guess_type(self.path) 
+        self.send_header("Content-type", ctype) #TODO заменить
+        self.send_header("Content-Length", len(response_string)) 
         self.end_headers()
 
         self.wfile.write(response_string.encode('ascii'))
-
-        #if f:
-        #    self.copyfile(f, self.wfile)
-        #    f.close()
-
-        #"""Serve a GET request."""
-        #f = self.send_head()
-        #if f:
-        #    self.copyfile(f, self.wfile)
-        #    f.close()
  
+
     def do_HEAD(self):
 
         print(" do_HEAD ")
@@ -154,6 +140,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         f = self.send_head()
         if f:
             f.close()
+ 
  
     def do_POST(self):
 
