@@ -111,9 +111,10 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         #TODO subfunction to form reply
 
+        check_login = "none"
+
         if path_steps[1] == "login":
 
-            check_login = "none"
             check_password = "none"
 
             for param in params_steps:
@@ -132,7 +133,11 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         if path_steps[1] == "process":
             #TODO read id + key - check them from DB
-            response_string = '{"done":true, "report":"full text"}'
+            #+ FORM REAL RESPONSE - yet we use only
+            #response_string = '{"done":true, "report":"full text"}'
+            f = open(check_login + "/reports/full_report.json")
+            response_string = f.read()
+            f.close()
 
 
         self.send_response(200)
