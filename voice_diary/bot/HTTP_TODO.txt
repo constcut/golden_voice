@@ -3,4 +3,8 @@
 
 2) Audio\Image types
 
-3)
+3) Check processing done\get full report
+
+4) List audio\images\texts\reports for user
+
+5) Download one of files
