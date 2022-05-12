@@ -40,7 +40,7 @@ bool RequestClient::logIn(QString username, QString password)
          getReply->deleteLater();
     });
 
-    return false; //Как-то обыграть асинхронно
+    return false; //Убрать
 }
 
 
@@ -118,4 +118,30 @@ void RequestClient::fileSentNotification(QString type, QString result)
 {
     qDebug() << result << " : Send file reply FOR " << type;
     emit fileSent(type, result);
+}
+
+
+bool RequestClient::requestCompleteStatus(QString id, QString key)
+{
+    QString urlString = QString("http://localhost:8000/process?id=%1&key=%2")
+                                .arg(id, key);
+
+    _lastRequest = QNetworkRequest(QUrl(urlString));
+    auto reply = _mgr.get(_lastRequest);
+
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply]()
+    {
+         QString result = reply->readAll();
+
+         qDebug() << "Process request: " << result;
+
+         reply->deleteLater();
+    });
+
+}
+
+
+QString RequestClient::getLastCompleteAnswer()
+{
+
 }

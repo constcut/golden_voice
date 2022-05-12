@@ -111,7 +111,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 response_string = "Login or password incorrect"
 
 
-        if path_steps[1] == "report":
+        if path_steps[1] == "process":
             #TODO read id + key - check them from DB
             response_string = '{"done":true, "report":"full text"}'
 

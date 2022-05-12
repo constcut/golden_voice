@@ -19,8 +19,8 @@ namespace diaryth {
         Q_INVOKABLE void sendAudioFile(QString filename);
         Q_INVOKABLE void sendImageFile(QString filename);
 
-        Q_INVOKABLE bool requestCompleteStatus(QString id, QString key) {}
-        Q_INVOKABLE QString getLastCompleteAnswer() {}
+        Q_INVOKABLE bool requestCompleteStatus(QString id, QString key);
+        Q_INVOKABLE QString getLastCompleteAnswer();
 
 
     signals:
