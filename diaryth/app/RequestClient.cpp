@@ -11,6 +11,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QFile>
+
 
 using namespace diaryth;
 
@@ -48,21 +50,24 @@ void RequestClient::loginNotification()
 }
 
 
+void RequestClient::sendAudioFile(QString filename)
+{
+    if (_loggedIn == false)
+    {
+        qDebug() << "Not logged in to send file";
+        return;
+    }
 
-/*
-
-    //Uppload file
-    QNetworkAccessManager mgr;
-    QUrl url("http://localhost:8000/q11_test.ogg"); //TODO "http://127.0.0.1:8000/q2_test.ogg?check=test")
+    QString urlString = QString("http://localhost:8000/audio?login=%1").arg(_username);
+    QUrl url(urlString);
 
     QNetworkRequest req(url);
-
-    QFile f = QFile("C:/Users/constcut/Desktop/local/local_2.ogg"); //stac over fake?
+    QFile f = QFile(filename);
     f.open(QIODevice::ReadOnly);
 
     qDebug() << "File was open: " << f.isOpen();
 
-    auto reply = mgr.put(req, &f);
+    auto reply = _mgr.put(req, &f);
 
     QObject::connect(reply, &QNetworkReply::finished, [reply]()
     {
@@ -91,5 +96,15 @@ void RequestClient::loginNotification()
 
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
         qDebug() << "Reply has no error";
+
+
+}
+
+
+/*
+
+    //Uppload file
+    QNetworkAccessManager mgr;
+
 
  */

@@ -16,7 +16,7 @@ namespace diaryth {
 
         Q_INVOKABLE bool logIn(QString username, QString password);
 
-        Q_INVOKABLE void sendAudioFile(QString filename) {}
+        Q_INVOKABLE void sendAudioFile(QString filename);
         Q_INVOKABLE void sendPhotoFile(QString filename) {}
 
         Q_INVOKABLE bool requestCompleteStatus(QString id, QString key) {}
