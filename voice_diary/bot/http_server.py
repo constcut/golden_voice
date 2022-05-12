@@ -13,6 +13,33 @@ from io import BytesIO
  
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
+
+    def get_request_parts(self):
+
+        params_steps = []
+        params_pos = self.path.find("?")
+
+        if params_pos != -1:
+            
+            full_path = self.path[0: params_pos]
+            full_params = self.path[params_pos + 1: ]
+
+            print("full params ", full_params)
+
+            params_groups = full_params.split("&")
+            for i in range(0, len(params_groups)):
+                params_steps.append(params_groups[i].split("="))
+
+        else:
+
+            full_path = self.path
+
+        path_steps = full_path.split("/")
+
+        return path_steps, params_steps
+
+
+
     def do_PUT(self):
 
         path = self.translate_path(self.path) # TODO Избавиться, мы будем выбирать директории вручную
@@ -52,29 +79,13 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         print(" do_GET ", self.path)
 
-        params_steps = []
-        params_pos = self.path.find("?")
-
-        if params_pos != -1:
-            
-            full_path = self.path[0: params_pos]
-            full_params = self.path[params_pos + 1: ]
-
-            print("full params ", full_params)
-
-            params_groups = full_params.split("&")
-            for i in range(0, len(params_groups)):
-                params_steps.append(params_groups[i].split("="))
-
-        else:
-
-            full_path = self.path
-
-        path_steps = full_path.split("/")
+        path_steps, params_steps = self.get_request_parts()
 
         response_string = '{"done":"true", "some":"param"}'
 
         print("PATH STEPS ", path_steps)
+
+        #TODO subfunction to form reply
 
         if path_steps[1] == "login":
 
@@ -95,8 +106,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 response_string = "Login or password incorrect"
 
         self.send_response(200)
-        ctype = self.guess_type(self.path) 
-        self.send_header("Content-type", ctype) #TODO заменить
+        ctype = 'text/plain'
+        self.send_header("Content-type", ctype) 
         self.send_header("Content-Length", len(response_string)) 
         self.end_headers()
 
@@ -130,49 +141,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             if word in (os.curdir, os.pardir): continue
             path = os.path.join(path, word)
         return path
- 
-    def copyfile(self, source, outputfile):
-        """Copy all data between two file objects.
-        The SOURCE argument is a file object open for reading
-        (or anything with a read() method) and the DESTINATION
-        argument is a file object open for writing (or
-        anything with a write() method).
-        The only reason for overriding this would be to change
-        the block size or perhaps to replace newlines by CRLF
-        -- note however that this the default server uses this
-        to copy binary data as well.
-        """
-        shutil.copyfileobj(source, outputfile)
- 
-    def guess_type(self, path):
-        """Guess the type of a file.
-        Argument is a PATH (a filename).
-        Return value is a string of the form type/subtype,
-        usable for a MIME Content-type header.
-        The default implementation looks the file's extension
-        up in the table self.extensions_map, using application/octet-stream
-        as a default; however it would be permissible (if
-        slow) to look inside the data to make a better guess.
-        """
- 
-        base, ext = posixpath.splitext(path)
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        ext = ext.lower()
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        else:
-            return self.extensions_map['']
- 
-    if not mimetypes.inited:
-        mimetypes.init() # try to read system mime.types
-    extensions_map = mimetypes.types_map.copy()
-    extensions_map.update({
-        '': 'application/octet-stream', # Default
-        '.py': 'text/plain',
-        '.c': 'text/plain',
-        '.h': 'text/plain',
-        })
  
  
 def test(HandlerClass = SimpleHTTPRequestHandler,
