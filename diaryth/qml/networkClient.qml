@@ -61,8 +61,8 @@ Item {
             {
                 id: filename
                 placeholderText: "audio filename"
-
                 text: "C:/Users/constcut/Desktop/local/local_2.ogg"
+                implicitWidth: 410
             }
 
             Button {
@@ -87,8 +87,8 @@ Item {
             {
                 id: imagename
                 placeholderText: "image filename"
-
                 text: "C:/Users/constcut/Desktop/local/sprint.png"
+                implicitWidth: 410
             }
 
             Button {
