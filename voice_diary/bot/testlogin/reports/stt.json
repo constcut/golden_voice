@@ -1,0 +1,188 @@
+{
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/yandex.cloud.ai.stt.v2.LongRunningRecognitionResponse",
+    "chunks": [
+      {
+        "alternatives": [
+          {
+            "words": [
+              {
+                "startTime": "4.360s",
+                "endTime": "4.920s",
+                "word": "записываю",
+                "confidence": 1
+              },
+              {
+                "startTime": "4.960s",
+                "endTime": "5.079s",
+                "word": "дл€",
+                "confidence": 1
+              },
+              {
+                "startTime": "5.139s",
+                "endTime": "5.699s",
+                "word": "проверки",
+                "confidence": 1
+              }
+            ],
+            "text": "«аписываю дл€ проверки",
+            "confidence": 1
+          }
+        ],
+        "channelTag": "1"
+      },
+      {
+        "alternatives": [
+          {
+            "words": [
+              {
+                "startTime": "6.319s",
+                "endTime": "6.359s",
+                "word": "в",
+                "confidence": 1
+              },
+              {
+                "startTime": "6.399s",
+                "endTime": "6.579s",
+                "word": "тот",
+                "confidence": 1
+              },
+              {
+                "startTime": "6.639s",
+                "endTime": "6.819s",
+                "word": "раз",
+                "confidence": 1
+              },
+              {
+                "startTime": "6.919s",
+                "endTime": "6.979s",
+                "word": "€",
+                "confidence": 1
+              },
+              {
+                "startTime": "7.039s",
+                "endTime": "7.699s",
+                "word": "записывал",
+                "confidence": 1
+              },
+              {
+                "startTime": "7.779s",
+                "endTime": "8.099s",
+                "word": "просто",
+                "confidence": 1
+              },
+              {
+                "startTime": "8.139s",
+                "endTime": "8.180s",
+                "word": "с",
+                "confidence": 1
+              },
+              {
+                "startTime": "8.220s",
+                "endTime": "8.700s",
+                "word": "динамикой",
+                "confidence": 1
+              },
+              {
+                "startTime": "8.759s",
+                "endTime": "9.630s",
+                "word": "телефона",
+                "confidence": 1
+              }
+            ],
+            "text": "¬ тот раз € записывал просто с динамикой телефона",
+            "confidence": 1
+          }
+        ],
+        "channelTag": "1"
+      },
+      {
+        "alternatives": [
+          {
+            "words": [
+              {
+                "startTime": "10.789s",
+                "endTime": "10.889s",
+                "word": "не",
+                "confidence": 1
+              },
+              {
+                "startTime": "10.929s",
+                "endTime": "11.189s",
+                "word": "знаю",
+                "confidence": 1
+              },
+              {
+                "startTime": "11.229s",
+                "endTime": "11.370s",
+                "word": "что",
+                "confidence": 1
+              },
+              {
+                "startTime": "11.429s",
+                "endTime": "11.649s",
+                "word": "ты",
+                "confidence": 1
+              },
+              {
+                "startTime": "11.749s",
+                "endTime": "11.989s",
+                "word": "будешь",
+                "confidence": 1
+              },
+              {
+                "startTime": "12.029s",
+                "endTime": "12.489s",
+                "word": "провер€ть",
+                "confidence": 1
+              },
+              {
+                "startTime": "12.909s",
+                "endTime": "13.130s",
+                "word": "через",
+                "confidence": 1
+              },
+              {
+                "startTime": "13.189s",
+                "endTime": "13.350s",
+                "word": "свою",
+                "confidence": 1
+              },
+              {
+                "startTime": "13.389s",
+                "endTime": "14.010s",
+                "word": "разработку",
+                "confidence": 1
+              }
+            ],
+            "text": "Ќе знаю что ты будешь провер€ть через свою разработку",
+            "confidence": 1
+          }
+        ],
+        "channelTag": "1"
+      },
+      {
+        "alternatives": [
+          {
+            "words": [
+              {
+                "startTime": "15.139s",
+                "endTime": "15.750s",
+                "word": "вот",
+                "confidence": 1
+              }
+            ],
+            "text": "¬от",
+            "confidence": 1
+          }
+        ],
+        "channelTag": "1"
+      }
+    ]
+  },
+  "id": "e03jdhbhk3dsdh5pkqsq",
+  "createdAt": "2022-05-12T11:09:49Z",
+  "createdBy": "aje0bt3rqs0gb1bm0bb0",
+  "modifiedAt": "2022-05-12T11:09:51Z"
+}
