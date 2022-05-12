@@ -36,27 +36,26 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         path_steps, params_steps = self.get_request_parts()
 
-        file_path = ""
 
-        if path_steps[1] == "audio":
-            file_path = "audio/"
-            #TODO audio type = wav, mp3, opus
-
-        if path_steps[1] == "image":
-            file_path = "image/"
-
-        if path_steps[1] == "text":
-            file_path = "text/"
-
-        
-        username = "none"
+        username = ""
         for param in params_steps:
             if param[0] == "login":
                 username = param[1]
-                file_path = username + "/" + file_path + "id0" #TODO ID from DB
                 break
 
-        if (path_steps[1] != "audio" and path_steps[1] != "image" and path_steps[1] != "text") or username == "none":
+        file_path = ""       
+
+        if path_steps[1] == "audio":
+            file_path = username + "/audio/id0.ogg" #TODO ID from DB #TODO audio type = wav, mp3, opus
+          
+        if path_steps[1] == "image":
+            file_path = username + "/image/id0.png"
+
+        if path_steps[1] == "text":
+            file_path = username +  "text/id0.txt"
+        
+
+        if (path_steps[1] != "audio" and path_steps[1] != "image" and path_steps[1] != "text") or username == "":
             self.send_response(405, "Method Not Allowed")
             self.wfile.write("Missing type of username\n".encode())
             return
