@@ -1,14 +1,6 @@
 
 import os
-import posixpath
 import http.server
-import urllib.request, urllib.parse, urllib.error
-import shutil
-import mimetypes
-from io import BytesIO
-
-
-#TODO clean exceeds
  
  
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
@@ -41,8 +33,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
 
     def do_PUT(self):
-
-        path = self.translate_path(self.path) # TODO Избавиться, мы будем выбирать директории вручную
 
         path_steps, params_steps = self.get_request_parts()
 
@@ -136,27 +126,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         print(" POST request not implemented (yet) ") 
-
-
-    def translate_path(self, path):
-        """Translate a /-separated PATH to the local filename syntax.
-        Components that mean special things to the local file system
-        (e.g. drive or directory names) are ignored.  (XXX They should
-        probably be diagnosed.)
-        """
-        # abandon query parameters
-        path = path.split('?',1)[0]
-        path = path.split('#',1)[0]
-        path = posixpath.normpath(urllib.parse.unquote(path))
-        words = path.split('/')
-        words = [_f for _f in words if _f]
-        path = os.getcwd()
-        for word in words:
-            drive, word = os.path.splitdrive(word)
-            head, word = os.path.split(word)
-            if word in (os.curdir, os.pardir): continue
-            path = os.path.join(path, word)
-        return path
  
  
 def test(HandlerClass = SimpleHTTPRequestHandler,
