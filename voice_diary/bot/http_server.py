@@ -50,6 +50,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         if path_steps[1] == "audio":
             file_path = "audio/"
+            #TODO audio type = wav, mp3, opus
 
         if path_steps[1] == "image":
             file_path = "image/"
