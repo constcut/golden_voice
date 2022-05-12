@@ -24,7 +24,8 @@ Item {
 
         spacing: 10
 
-        RowLayout {
+        RowLayout
+        {
 
             spacing: 10
 
@@ -51,6 +52,28 @@ Item {
             Text {
                 id: loginStatus
             }
+        }
+
+        RowLayout
+        {
+
+            TextField
+            {
+                id: filename
+                placeholderText: "filename"
+
+                text: "C:/Users/constcut/Desktop/local/local_2.ogg"
+            }
+
+            Button {
+                text: "Send"
+                onClicked: {
+                    requestClient.sendAudioFile(filename.text)
+                }
+            }
+
+            spacing: 10
+
         }
 
     }

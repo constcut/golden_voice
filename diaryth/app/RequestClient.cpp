@@ -62,14 +62,15 @@ void RequestClient::sendAudioFile(QString filename)
     QUrl url(urlString);
 
     QNetworkRequest req(url);
-    QFile f = QFile(filename);
-    f.open(QIODevice::ReadOnly);
+    QFile* f = new QFile(filename);
+    f->open(QIODevice::ReadOnly);
 
-    qDebug() << "File was open: " << f.isOpen();
+    qDebug() << "File was open: " << f->isOpen();
 
-    auto reply = _mgr.put(req, &f);
+    auto reply = _mgr.put(req, f);
+    f->setParent(reply); //For auto delete
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply]()
+    QObject::connect(reply, &QNetworkReply::finished, [reply=reply]()
     {
         QString result = reply->readAll();
         qDebug() << result << " REPLY !";
@@ -86,7 +87,7 @@ void RequestClient::sendAudioFile(QString filename)
 
 
             for (auto& k: rootObject.keys())
-                qDebug() << "KEY: " << k;
+                qDebug() << "Objects inside: " << k;
 
         }
 
@@ -96,7 +97,6 @@ void RequestClient::sendAudioFile(QString filename)
 
     if (reply->error() == QNetworkReply::NoError) //Try connect slot?
         qDebug() << "Reply has no error";
-
 
 }
 
