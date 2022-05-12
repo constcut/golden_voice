@@ -26,10 +26,12 @@ namespace diaryth {
     signals:
 
         void loggedIn(bool value);
+        void fileSent(QString type, QString result); //Maybe we also need filename?
 
     private:
 
         void loginNotification();
+        void fileSentNotification(QString type, QString result);
 
         void sendFile(QString type, QString filename);
 

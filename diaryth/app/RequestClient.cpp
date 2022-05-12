@@ -36,6 +36,8 @@ bool RequestClient::logIn(QString username, QString password)
 
          this->_loggedIn = result == "Logged in!";
          this->loginNotification();
+
+         getReply->deleteLater();
     });
 
     return false; //Как-то обыграть асинхронно
@@ -82,11 +84,12 @@ void RequestClient::sendFile(QString type, QString filename)
     auto reply = _mgr.put(req, f);
     f->setParent(reply); //For auto delete
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply=reply, type=type]()
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply, type=type]()
     {
         QString result = reply->readAll();
-        qDebug() << result << " : Send file reply FOR " << type;
 
+
+        /*
         auto doc = QJsonDocument::fromJson(result.toLocal8Bit());
         auto rootObject = doc.object();
 
@@ -99,10 +102,9 @@ void RequestClient::sendFile(QString type, QString filename)
 
             for (auto& k: rootObject.keys())
                 qDebug() << "Objects inside: " << k;
-        }
+        }*/
 
-        //TODO Save request
-
+        fileSentNotification(type, result);
         reply->deleteLater();
     });
 
@@ -112,3 +114,8 @@ void RequestClient::sendFile(QString type, QString filename)
 }
 
 
+void RequestClient::fileSentNotification(QString type, QString result)
+{
+    qDebug() << result << " : Send file reply FOR " << type;
+    emit fileSent(type, result);
+}

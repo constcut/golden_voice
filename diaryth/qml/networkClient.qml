@@ -72,6 +72,10 @@ Item {
                 }
             }
 
+            Text {
+                id: audioStatus
+            }
+
             spacing: 10
 
         }
@@ -94,6 +98,10 @@ Item {
                 }
             }
 
+            Text {
+                id: imageStatus
+            }
+
             spacing: 10
 
         }
@@ -112,6 +120,15 @@ Item {
                 loginStatus.text = "You are logged in!"
             else
                 loginStatus.text = "Username or password incorrect"
+        }
+
+        function onFileSent(type, result)
+        {
+            if  (type === "audio")
+                audioStatus.text = result
+
+            if  (type === "image")
+                imageStatus.text = result
         }
     }
 
