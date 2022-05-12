@@ -20,7 +20,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
             params_groups = full_params.split("&")
             for i in range(0, len(params_groups)):
-                params_steps.append(params_groups[i].split("="))
+                params_steps.append(params_groups[i].split("=")) #TODO as dict
 
         else:
 
@@ -109,6 +109,12 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 response_string = "Logged in!"
             else:
                 response_string = "Login or password incorrect"
+
+
+        if path_steps[1] == "report":
+            #TODO read id + key - check them from DB
+            response_string = '{"done":true, "report":"full text"}'
+
 
         self.send_response(200)
         ctype = 'text/plain'
