@@ -132,10 +132,10 @@ void RequestClient::requestCompleteStatus(QString id, QString key)
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply, id=id]()
     {
-         QString result = reply->readAll();
+        QString result = reply->readAll();
 
-         this->processedNotification(id, result);
-         reply->deleteLater();
+        this->processedNotification(id, result);
+        reply->deleteLater();
     });
 
 }

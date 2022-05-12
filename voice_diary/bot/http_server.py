@@ -146,7 +146,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", len(response_string)) 
         self.end_headers()
 
-        self.wfile.write(response_string.encode('cp1251')) #Russian letters
+        self.wfile.write(response_string.encode('utf-8')) #Russian letters
  
 
     def do_HEAD(self):
