@@ -35,6 +35,7 @@ SOURCES += \
     app/Init.cpp \
     app/LogHandler.cpp \
     app/RequestClient.cpp \
+    app/VisualReport.cpp \
     audio/Recorder.cpp \
     audio/features/FeatureExtractor.cpp \
     audio/features/Yin.cpp \
@@ -180,6 +181,7 @@ HEADERS += \
     app/LogHandler.hpp \
     app/RequestClient.hpp \
     app/StretchImage.hpp \
+    app/VisualReport.hpp \
     app/log.hpp \
     audio/Recorder.hpp \
     audio/features/FeatureExtractor.hpp \
