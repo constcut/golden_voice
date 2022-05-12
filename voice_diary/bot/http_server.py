@@ -112,18 +112,18 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         #TODO subfunction to form reply
 
         check_login = "none"
+        check_password = "none"
 
-        if path_steps[1] == "login":
-
-            check_password = "none"
-
-            for param in params_steps:
+        for param in params_steps: #TODO rewrite on dict
 
                 if param[0] == "login":
                     check_login = param[1]
 
                 if param[0] == "password":
                     check_password = param[1]
+
+
+        if path_steps[1] == "login":
 
             if check_login == "testlogin" and check_password == "testpassword":
                 response_string = "Logged in!"
@@ -135,6 +135,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             #TODO read id + key - check them from DB
             #+ FORM REAL RESPONSE - yet we use only
             #response_string = '{"done":true, "report":"full text"}'
+            print("DEBUG check login", check_login, " and ", params_steps)
+
             f = open(check_login + "/reports/full_report.json")
             response_string = f.read()
             f.close()
@@ -146,7 +148,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", len(response_string)) 
         self.end_headers()
 
-        self.wfile.write(response_string.encode('ascii'))
+        self.wfile.write(response_string.encode('cp1251')) #Russian letters
  
 
     def do_HEAD(self):

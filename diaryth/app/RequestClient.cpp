@@ -122,8 +122,8 @@ void RequestClient::fileSentNotification(QString type, QString result)
 
 void RequestClient::requestCompleteStatus(QString id, QString key)
 {
-    QString urlString = QString("http://localhost:8000/process?id=%1&key=%2")
-                                .arg(id, key);
+    QString urlString = QString("http://localhost:8000/process?id=%1&key=%2&login=%3")
+                                .arg(id, key, _username);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
     auto reply = _mgr.get(_lastRequest);
@@ -133,7 +133,6 @@ void RequestClient::requestCompleteStatus(QString id, QString key)
          QString result = reply->readAll();
 
          this->processedNotification(id, result);
-
          reply->deleteLater();
     });
 
