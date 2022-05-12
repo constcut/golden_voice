@@ -2,8 +2,19 @@
 import os
 import http.server
  
+from report import ReportGenerator
+import threading
+
  
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
+    
+
+    def delayed_recognition(self, filename, report_path):
+        os.makedirs(os.path.dirname(report_path))
+
+        r = ReportGenerator()
+        r.local_recognition(report_path, filename, "testserver")
+        print("Delayed done!")
 
 
     def get_request_parts(self):
@@ -69,6 +80,10 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         with open(file_path, 'wb') as f:
             f.write(self.rfile.read(length))
             f.close()
+
+        if path_steps[1] == "audio":
+            t = threading.Timer(1.0, self.delayed_recognition, [file_path, username + "/reports/" ]) 
+            t.start()
 
         print('Written ', length, " bytes")
 
