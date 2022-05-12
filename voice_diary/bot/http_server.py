@@ -2,17 +2,18 @@
 import os
 import http.server
  
-from report import ReportGenerator
 import threading
 
  
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
-    
+
 
     def delayed_recognition(self, filename, report_path):
         os.makedirs(os.path.dirname(report_path))
 
+        from report import ReportGenerator
         r = ReportGenerator()
+
         r.local_recognition(report_path, filename, "testserver")
         print("Delayed done!")
 
