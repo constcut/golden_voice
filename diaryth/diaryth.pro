@@ -213,6 +213,7 @@ DISTFILES += \
     qml/pageView.qml \
     qml/patternInput.qml \
     qml/recorder.qml \
+    qml/reportVisualizer.qml \
     qml/testsEngine.qml \
     qml/testsResults.qml \
     qml/text.qml \

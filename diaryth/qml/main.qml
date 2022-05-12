@@ -15,22 +15,25 @@ ApplicationWindow {
     x: 30
     y: 50
 
-    Component.onCompleted: {
+    Component.onCompleted:
+    {
         if (Qt.platform.os === "android") {
             exitMenuItem.visible = false
             exitMenuItem.height = 0
             mainWindow.visibility = "FullScreen"
         }
         else {
+            //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
             mainWindow.width = 1280
             mainWindow.height = 600
         }
 
-        mainLoader.setSource("networkClient.qml") //calendar, diaryCard,
+        mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
     }
 
 
-    onClosing: {
+    onClosing:
+    {
         if (Qt.platform.os == "android") {
             close.accepted = false
             mainMenu.open()
@@ -98,6 +101,10 @@ ApplicationWindow {
         MenuItem {
             text: "Net"
             onTriggered: mainLoader.setSource("networkClient.qml")
+        }
+        MenuItem {
+            text: "Visualizer"
+            onTriggered: mainLoader.setSource("reportVisualizer.qml")
         }
 
 
