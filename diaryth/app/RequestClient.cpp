@@ -91,6 +91,8 @@ void RequestClient::sendAudioFile(QString filename)
 
         }
 
+        //TODO Save request
+
         reply->deleteLater();
     });
 
@@ -101,10 +103,56 @@ void RequestClient::sendAudioFile(QString filename)
 }
 
 
-/*
+void RequestClient::sendImageFile(QString filename)
+{
+    if (_loggedIn == false)
+    {
+        qDebug() << "Not logged in to send file";
+        return;
+    }
 
-    //Uppload file
-    QNetworkAccessManager mgr;
+    QString urlString = QString("http://localhost:8000/image?login=%1").arg(_username);
+    QUrl url(urlString);
+
+    QNetworkRequest req(url);
+    QFile* f = new QFile(filename);
+    f->open(QIODevice::ReadOnly);
+
+    qDebug() << "File was open: " << f->isOpen();
+
+    auto reply = _mgr.put(req, f);
+    f->setParent(reply); //For auto delete
+
+    QObject::connect(reply, &QNetworkReply::finished, [reply=reply]()
+    {
+        QString result = reply->readAll();
+        qDebug() << result << " REPLY !";
+
+        auto doc = QJsonDocument::fromJson(result.toLocal8Bit());
+        auto rootObject = doc.object();
+
+        if (rootObject.contains("done"))
+            qDebug() << "Contains done! id = " << rootObject["id"].toString()
+                     << " key = " << rootObject["key"].toString();
+        else
+        {
+            qDebug() << "Field done not found" << doc.isArray() << doc.isEmpty() << doc.isNull() << doc.isObject();
 
 
- */
+            for (auto& k: rootObject.keys())
+                qDebug() << "Objects inside: " << k;
+
+        }
+
+        //TODO Save request
+
+        reply->deleteLater();
+    });
+
+
+    if (reply->error() == QNetworkReply::NoError) //Try connect slot?
+        qDebug() << "Reply has no error";
+
+}
+
+
