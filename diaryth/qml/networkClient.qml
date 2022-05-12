@@ -60,7 +60,7 @@ Item {
             TextField
             {
                 id: filename
-                placeholderText: "filename"
+                placeholderText: "audio filename"
 
                 text: "C:/Users/constcut/Desktop/local/local_2.ogg"
             }
@@ -69,6 +69,28 @@ Item {
                 text: "Send"
                 onClicked: {
                     requestClient.sendAudioFile(filename.text)
+                }
+            }
+
+            spacing: 10
+
+        }
+
+        RowLayout
+        {
+
+            TextField
+            {
+                id: imagename
+                placeholderText: "image filename"
+
+                text: "C:/Users/constcut/Desktop/local/sprint.png"
+            }
+
+            Button {
+                text: "Send"
+                onClicked: {
+                    requestClient.sendImageFile(imagename.text)
                 }
             }
 
