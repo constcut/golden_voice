@@ -5,3 +5,7 @@ key.json
 *.wav
 *.ogg
 *.opus
+
+*audio*
+*image*
+*text*
