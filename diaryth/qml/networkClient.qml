@@ -123,6 +123,36 @@ Item {
             }
         }
 
+        ScrollView
+        {
+            id: view
+            width: 650
+            clip: true
+
+            implicitWidth: 650
+
+            height: 300
+            implicitHeight: 300
+
+            TextArea {
+
+                background: Rectangle {
+                    //color: "lightgreen"
+                    border.color: "lightgreen"
+                }
+
+                implicitWidth: parent.width
+
+                id: textArea
+                text: ""
+                placeholderText: "Input text here"
+
+                readOnly: textItem.date.length != 0
+            }
+
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        }
+
     }
 
     Connections
@@ -150,7 +180,8 @@ Item {
 
         function onFileProcessed(id, result)
         {
-            processInfo.text = result
+            processInfo.text = "DONE" //TODO real status here with no report
+            textArea.text = result
         }
     }
 
