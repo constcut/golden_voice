@@ -19,7 +19,7 @@ using namespace diaryth;
 
 
 
-bool RequestClient::logIn(QString username, QString password)
+void RequestClient::logIn(QString username, QString password)
 {
     QString urlString = QString("http://localhost:8000/login?password=%1&login=%2")
                                 .arg(password, username);
@@ -40,7 +40,6 @@ bool RequestClient::logIn(QString username, QString password)
          getReply->deleteLater();
     });
 
-    return false; //Убрать
 }
 
 
@@ -121,7 +120,7 @@ void RequestClient::fileSentNotification(QString type, QString result)
 }
 
 
-bool RequestClient::requestCompleteStatus(QString id, QString key)
+void RequestClient::requestCompleteStatus(QString id, QString key)
 {
     QString urlString = QString("http://localhost:8000/process?id=%1&key=%2")
                                 .arg(id, key);
@@ -141,7 +140,3 @@ bool RequestClient::requestCompleteStatus(QString id, QString key)
 }
 
 
-QString RequestClient::getLastCompleteAnswer()
-{
-
-}
