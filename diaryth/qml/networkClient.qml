@@ -147,6 +147,11 @@ Item {
             if  (type === "image")
                 imageStatus.text = result
         }
+
+        function onFileProcessed(id, result)
+        {
+            processInfo.text = result
+        }
     }
 
 

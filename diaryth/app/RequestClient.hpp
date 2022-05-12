@@ -26,11 +26,13 @@ namespace diaryth {
 
         void loggedIn(bool value);
         void fileSent(QString type, QString result); //Maybe we also need filename?
+        void fileProcessed(QString id, QString result);
 
     private:
 
         void loginNotification();
         void fileSentNotification(QString type, QString result);
+        void processedNotification(QString id, QString result);
 
         void sendFile(QString type, QString filename);
 

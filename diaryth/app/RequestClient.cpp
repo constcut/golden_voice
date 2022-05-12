@@ -128,15 +128,20 @@ void RequestClient::requestCompleteStatus(QString id, QString key)
     _lastRequest = QNetworkRequest(QUrl(urlString));
     auto reply = _mgr.get(_lastRequest);
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply]()
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply, id=id]()
     {
          QString result = reply->readAll();
 
-         qDebug() << "Process request: " << result;
+         this->processedNotification(id, result);
 
          reply->deleteLater();
     });
 
 }
 
+
+void RequestClient::processedNotification(QString id, QString result)
+{
+    emit fileProcessed(id, result);
+}
 
