@@ -31,6 +31,9 @@ namespace diaryth {
 
         void loginNotification();
 
+        void sendFile(QString type, QString filename);
+
+
         bool _loggedIn;
         QString _username;
         QNetworkAccessManager _mgr;
