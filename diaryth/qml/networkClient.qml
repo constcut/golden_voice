@@ -106,6 +106,23 @@ Item {
 
         }
 
+        RowLayout
+        {
+            spacing: 10
+
+
+            Button {
+                text: "Check"
+                onClicked: {
+                    requestClient.requestCompleteStatus("1","2")
+                }
+            }
+
+            Text {
+                id: processInfo
+            }
+        }
+
     }
 
     Connections
