@@ -44,34 +44,49 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         path = self.translate_path(self.path) # TODO Избавиться, мы будем выбирать директории вручную
 
-        #Нужно распарсить полный путь, и отделить папку пользователя от самого названия
-        #Однако если эта запись уже существует - выдать на неё ответ с ключем и id не осуществляя никаких других действий
-        #TODO
-        #Сделать 3 подпапки audio\text\image - и отправлять в виде accumerite.ru/audio/USERID_FILENAME.ext
-        #итого USERID\audio\ USERID\text\ USEROD\image\
+        path_steps, params_steps = self.get_request_parts()
 
-        if path.endswith('/'):
+        file_path = ""
+
+        if path_steps[1] == "audio":
+            file_path = "audio/"
+
+        if path_steps[1] == "image":
+            file_path = "image/"
+
+        if path_steps[1] == "text":
+            file_path = "text/"
+
+        
+        username = "none"
+        for param in params_steps:
+            if param[0] == "login":
+                username = param[1]
+                file_path = username + "/" + file_path + "id0" #TODO ID from DB
+                break
+
+        if (path_steps[1] != "audio" and path_steps[1] != "image" and path_steps[1] != "text") or username == "none":
             self.send_response(405, "Method Not Allowed")
-            self.wfile.write("PUT not allowed on a directory\n".encode())
+            self.wfile.write("Missing type of username\n".encode())
             return
-        else:
-            try:
-                os.makedirs(os.path.dirname(path))
 
-            except FileExistsError: pass
+        try:
+            os.makedirs(os.path.dirname(file_path))
 
-            length = int(self.headers['Content-Length'])
-            with open(path, 'wb') as f:
-                f.write(self.rfile.read(length))
-                f.close()
+        except FileExistsError: pass
 
-            print('Written ', length, " bytes")
+        length = int(self.headers['Content-Length'])
+        with open(file_path, 'wb') as f:
+            f.write(self.rfile.read(length))
+            f.close()
 
-            self.send_response(201, "Created")
-            self.end_headers()
+        print('Written ', length, " bytes")
 
-            response = '{"done":"+","id":"DONE", "key":"TEST"}'
-            self.wfile.write(response.encode("ascii"))
+        self.send_response(201, "Created")
+        self.end_headers()
+
+        response = '{"done":"+","id":"id0", "key":"TEST"}'
+        self.wfile.write(response.encode("ascii"))
 
 
 
