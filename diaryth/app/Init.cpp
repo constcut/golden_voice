@@ -161,7 +161,7 @@ int mainInit(int argc, char *argv[])
             qDebug() << "Failed to create records directory";
     }
 
-    //Настройки //KOI8-R //ISO 8859-5 //UTF-8 //Windows-1251
+    //Настройки //KOI8-R //ISO 8859-5 //UTF-8 //Windows-1251 //UTF-8
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     QQmlApplicationEngine engine;
 

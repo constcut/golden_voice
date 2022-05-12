@@ -11,6 +11,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QTextCodec>
+
 #include <QFile>
 
 

@@ -10,3 +10,5 @@
 5) Download one of files
 
 6) params_steps - как словарь, для простоты использования
+
+7) utf-8 encodings

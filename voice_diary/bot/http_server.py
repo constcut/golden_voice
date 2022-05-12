@@ -135,8 +135,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             #TODO read id + key - check them from DB
             #+ FORM REAL RESPONSE - yet we use only
             #response_string = '{"done":true, "report":"full text"}'
-            print("DEBUG check login", check_login, " and ", params_steps)
-
             f = open(check_login + "/reports/full_report.json")
             response_string = f.read()
             f.close()
