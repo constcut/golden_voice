@@ -1,0 +1,6 @@
+
+1) Real ID for each of audio\image\text
+
+2) Audio\Image types
+
+3)
