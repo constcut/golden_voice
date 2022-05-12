@@ -1069,7 +1069,7 @@ class ReportGenerator:
 		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path + осторожней тут
 			os.remove(spectrum_dir_path +"/pcm.wav")
 
-			command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
 		_ = check_call(command.split())
 
 		wav_file = f"{spectrum_dir_path}/pcm.wav"

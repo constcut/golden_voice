@@ -9,7 +9,10 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
 
     def delayed_recognition(self, filename, report_path):
-        os.makedirs(os.path.dirname(report_path))
+
+        #os.makedirs(os.path.dirname(report_path)) check exists
+
+        print("Starting delayed_recognition")
 
         from report import ReportGenerator
         r = ReportGenerator('key.json')
