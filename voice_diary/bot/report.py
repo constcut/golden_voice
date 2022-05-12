@@ -1149,7 +1149,7 @@ class ReportGenerator:
 
 
 
-r = ReportGenerator('key.json')
+#r = ReportGenerator('key.json')
 #r.start_bot()
 
 #TODO learn to use recognition from file, to avoid need send it to server each time

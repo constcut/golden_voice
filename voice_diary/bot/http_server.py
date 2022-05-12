@@ -12,7 +12,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         os.makedirs(os.path.dirname(report_path))
 
         from report import ReportGenerator
-        r = ReportGenerator()
+        r = ReportGenerator('key.json')
 
         r.local_recognition(report_path, filename, "testserver")
         print("Delayed done!")
