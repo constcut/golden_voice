@@ -42,6 +42,10 @@ void VisualReport::paint(QPainter* painter)
     const double zoomCoef = 200.0;
     const auto fullHeight = height() ;
 
+    double prevMean = 0.0;
+    double prevMedian = 0.0;
+    double prevXEnd = 0.0;
+
     for (const auto& e: _events)
     {
         auto eObj = e.toObject();
@@ -52,6 +56,8 @@ void VisualReport::paint(QPainter* painter)
 
         int y = 0;
         QString word;
+
+        double eventH = 0.0;
 
         if (type == "word")
         {
@@ -78,37 +84,50 @@ void VisualReport::paint(QPainter* painter)
             auto x = start * zoomCoef + 5;
             auto w = (end - start) * zoomCoef;
             y = value["min"].toDouble() + 40;
-            auto h = value["max"].toDouble() + 40 - y;
+            eventH = value["max"].toDouble() + 40 - y;
 
-            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h << " and median " << value["median"].toDouble();
+            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<eventH << " and median " << value["median"].toDouble();
 
-            painter->drawEllipse(x, fullHeight - value["min"].toDouble() - 40, 2, 2);
-            painter->drawEllipse(x, fullHeight - value["max"].toDouble() - 40, 2, 2);
+            painter->drawEllipse(x, fullHeight - value["min"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x, fullHeight - value["max"].toDouble() - 40, 4, 4);
+
+            painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() - 40, 4, 4);
 
             auto pen = painter->pen();
 
             painter->setPen(QColor("green"));
-            painter->drawEllipse(x, fullHeight - value["median"].toDouble() - 40, 2, 2);
+            painter->drawEllipse(x, fullHeight - value["median"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() - 40, 4, 4);
+
+            if (prevMedian != 0.0)
+                painter->drawLine(prevXEnd, prevMedian, x + w, fullHeight - value["median"].toDouble() - 40);
+
+            prevMedian = fullHeight - value["median"].toDouble() - 40;
 
             painter->setPen(QColor("blue"));
-            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() - 40, 2, 2);
-            //TODO sd
+            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() - 40, 4, 4);
+
+            if (prevMean != 0)
+                painter->drawLine(prevXEnd, prevMean, x + w, fullHeight - value["mean"].toDouble() - 40);
+
+            prevMean = fullHeight - value["mean"].toDouble() - 40;
+
+            prevXEnd = x + w;
 
             painter->setPen(pen);
-            painter->drawRect(x, fullHeight - y, w, -h);
+            painter->drawRect(x, fullHeight - y, w, - eventH);
         }
         else
             ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
-
-        const double zoomCoef = 200.0;
-        const double rectWidth = 20;
 
 
         if (type == "word")
         {
             //Debug freq value
             //painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
-            painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth - 3, word);
+            painter->drawText(start * zoomCoef + 5, fullHeight - y + eventH - 3, word);
         }
     }
 
