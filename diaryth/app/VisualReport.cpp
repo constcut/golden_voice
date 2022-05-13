@@ -60,20 +60,26 @@ void VisualReport::paint(QPainter* painter)
         {
 
             word = eObj["word"].toString();
-            auto pitch = eObj["stats"].toObject()["praat_pitch"].toObject();
+            QJsonObject value;
 
-            qDebug() << pitch["mean"].toDouble() << pitch["median"].toDouble()
-                     << pitch["min"].toDouble() << pitch["max"].toDouble()
-                     << pitch["SD"].toDouble()  ;
+            if (_type == VisualTypes::Pitch)
+                value = eObj["stats"].toObject()["praat_pitch"].toObject();
+
+            if (_type == VisualTypes::Amplitude)
+                value = eObj["stats"].toObject()["intensity"].toObject();
+
+            qDebug() << value["mean"].toDouble() << value["median"].toDouble()
+                     << value["min"].toDouble() << value["max"].toDouble()
+                     << value["SD"].toDouble()  ;
 
             auto x = start * zoomCoef + 5;
             auto w = (end - start) * zoomCoef;
-            y = pitch["min"].toDouble() + 40;
-            auto h = pitch["max"].toDouble() + 40 - y;
+            y = value["min"].toDouble() + 40;
+            auto h = value["max"].toDouble() + 40 - y;
 
-            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h << " and median " << pitch["median"].toDouble();
+            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h << " and median " << value["median"].toDouble();
 
-            painter->drawEllipse(x, pitch["median"].toDouble(), 2, 2);
+            painter->drawEllipse(x, value["median"].toDouble(), 2, 2);
             painter->drawRect(x, fullHeight - y, w, h);
         }
         else
