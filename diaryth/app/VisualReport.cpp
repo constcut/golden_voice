@@ -84,7 +84,7 @@ void VisualReport::paint(QPainter* painter)
             //          << value["SD"].toDouble()  ;
 
             auto x = start * zoomCoef + 5;
-            auto w = (end - start) * zoomCoef;
+            double w = (end - start) * zoomCoef;
             y = value["min"].toDouble() + 40;
             eventH = value["max"].toDouble() + 40 - y;
 
@@ -118,9 +118,39 @@ void VisualReport::paint(QPainter* painter)
 
             prevXEnd = x + w;
 
+
+            if (_type == VisualTypes::Pitch)
+            {
+                painter->setPen(QColor("red"));
+                QJsonArray pitches = eObj["praat_pitch"].toArray();
+
+                double pixelPerSample = w / pitches.size();
+
+                double prevX = 0.0;
+                double prevY = 0.0;
+
+                for (int i = 0; i < pitches.size(); ++i)
+                {
+                    double pY = pitches[i].toDouble();
+
+                    double newX = x + i * pixelPerSample;
+                    double newY = fullHeight - pY - 40;
+
+                    if (pY != 0.0 && prevY != fullHeight - 40)
+                    {
+                        painter->drawEllipse(newX, newY, 2, 2);
+
+                        if (prevX != 0.0 || prevY != 0.0)
+                            painter->drawLine(prevX, prevY, newX, newY);
+                    }
+
+                    prevX = x + i * pixelPerSample;
+                    prevY = fullHeight - pY - 40;
+                }
+            }
+
             painter->setPen(pen);
             painter->drawRect(x, fullHeight - y, w, - eventH);
-
 
         }
         else
