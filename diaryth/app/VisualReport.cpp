@@ -20,9 +20,27 @@ void VisualReport::paint(QPainter* painter)
     if (f.isOpen())
         qDebug() << "JSON File opened";
 
-    QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
+    auto allData = f.readAll();
+    QString fullString = allData;
+
+    QString subStr = fullString.mid(0, 10);
+
+    qDebug() << "JSON start " << subStr;
+
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8());
+
+    qDebug() << "Doc is object " << doc.isObject();
 
     auto root = doc.object();
+
+
+    for (const auto& value: root)
+    {
+        qDebug() << value.isObject() << " is Object";
+    }
+
+    qDebug() << "Front key" << root.keys().front();
+
     QJsonArray events = root["events"].toArray();
 
     qDebug() << "Events total count: " << events.size();
