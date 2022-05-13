@@ -89,7 +89,7 @@ void VisualReport::paint(QPainter* painter)
             painter->drawRect(x, fullHeight - y, w, h);
         }
         else
-            painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
+            ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
 
         const double zoomCoef = 200.0;
         const double rectWidth = 20;
