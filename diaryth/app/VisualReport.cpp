@@ -12,10 +12,7 @@ using namespace diaryth;
 
 //TODO конструктор
 
-//TODO precalc full width функция для установки размера скрола после загрузки файла
-
-
-void VisualReport::paint(QPainter* painter)
+VisualReport::VisualReport()
 {
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
 
@@ -30,16 +27,24 @@ void VisualReport::paint(QPainter* painter)
     QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error);
 
     auto root = doc.object();
-    QJsonArray events = root["events"].toArray();
+    _events = root["events"].toArray();
 
-    qDebug() << "Events total count: " << events.size();
+    qDebug() << "Events total count: " << _events.size();
+
+}
+
+//TODO precalc full width функция для установки размера скрола после загрузки файла
+
+
+void VisualReport::paint(QPainter* painter)
+{
 
 
     const double zoomCoef = 200.0;
     const auto fullHeight = height() ;
 
 
-    for (const auto& e: events)
+    for (const auto& e: _events)
     {
         auto eObj = e.toObject();
 

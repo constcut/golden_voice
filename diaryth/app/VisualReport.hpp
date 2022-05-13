@@ -4,6 +4,8 @@
 #include <QQuickPaintedItem>
 #include <QObject>
 
+#include <QJsonArray>
+
 namespace diaryth
 {
 
@@ -11,7 +13,7 @@ namespace diaryth
     {
         Q_OBJECT
     public:
-        VisualReport() = default;
+        VisualReport();
 
         void paint(QPainter* painter);
 
@@ -34,6 +36,8 @@ namespace diaryth
 
     private:
         VisualTypes _type = VisualTypes::Pitch;
+
+        QJsonArray _events;
     };
 
 
