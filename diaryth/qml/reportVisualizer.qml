@@ -53,7 +53,7 @@ Item {
                 width: 3000
                 y: 5
                 Component.onCompleted: {
-
+                    visualReport1.setAmpitudeType()
                 }
             }
 
@@ -64,7 +64,7 @@ Item {
                 width: 3000
                 y: 5 + 250
                 Component.onCompleted: {
-                    //visualReport2.setAmpitudeType()
+                    visualReport2.setPitchType()
                 }
             }
 

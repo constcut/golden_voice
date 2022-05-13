@@ -33,7 +33,7 @@ namespace diaryth
         }
 
     private:
-        VisualTypes _type;
+        VisualTypes _type = VisualTypes::Pitch;
     };
 
 

@@ -62,11 +62,17 @@ void VisualReport::paint(QPainter* painter)
             word = eObj["word"].toString();
             QJsonObject value;
 
-            if (_type == VisualTypes::Pitch)
+            if (_type == VisualTypes::Pitch) {
                 value = eObj["stats"].toObject()["praat_pitch"].toObject();
-
-            if (_type == VisualTypes::Amplitude)
+                qDebug() << "Pitch object obtained";
+            }
+            else
+            if (_type == VisualTypes::Amplitude) {
                 value = eObj["stats"].toObject()["intensity"].toObject();
+                qDebug() << "Amplitude object obtained";
+            }
+            else
+                qDebug() << "WHAT";
 
             qDebug() << value["mean"].toDouble() << value["median"].toDouble()
                      << value["min"].toDouble() << value["max"].toDouble()
