@@ -477,7 +477,8 @@ class ReportGenerator:
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
 					"startTime": start, "endTime": end, 
 					"confidence": word['confidence'], 
-					"praat_pitch": list(pitch_cut)
+					"praat_pitch": list(pitch_cut),
+					"praat_intensity": list(intens_cut)
 					,"morph" : morph_analysis
 					,"token_id" : token_id
 					,"word_idx" : total_words
