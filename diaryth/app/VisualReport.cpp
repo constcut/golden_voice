@@ -67,26 +67,24 @@ void VisualReport::paint(QPainter* painter)
 
             if (_type == VisualTypes::Pitch) {
                 value = eObj["stats"].toObject()["praat_pitch"].toObject();
-                qDebug() << "Pitch object obtained";
             }
             else
             if (_type == VisualTypes::Amplitude) {
                 value = eObj["stats"].toObject()["intensity"].toObject();
-                qDebug() << "Amplitude object obtained";
             }
             else
-                qDebug() << "WHAT";
+                qDebug() << "Unknow visualization type";
 
-            qDebug() << value["mean"].toDouble() << value["median"].toDouble()
-                     << value["min"].toDouble() << value["max"].toDouble()
-                     << value["SD"].toDouble()  ;
+            //qDebug() << value["mean"].toDouble() << value["median"].toDouble()
+            //         << value["min"].toDouble() << value["max"].toDouble()
+            //          << value["SD"].toDouble()  ;
 
             auto x = start * zoomCoef + 5;
             auto w = (end - start) * zoomCoef;
             y = value["min"].toDouble() + 40;
             eventH = value["max"].toDouble() + 40 - y;
 
-            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<eventH << " and median " << value["median"].toDouble();
+            //qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<eventH << " and median " << value["median"].toDouble();
 
             painter->drawEllipse(x, fullHeight - value["min"].toDouble() - 40, 4, 4);
             painter->drawEllipse(x, fullHeight - value["max"].toDouble() - 40, 4, 4);
@@ -101,7 +99,7 @@ void VisualReport::paint(QPainter* painter)
             painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() - 40, 4, 4);
 
             if (prevMedian != 0.0)
-                painter->drawLine(prevXEnd, prevMedian, x + w, fullHeight - value["median"].toDouble() - 40);
+                painter->drawLine(prevXEnd, prevMedian, x, fullHeight - value["median"].toDouble() - 40);
 
             prevMedian = fullHeight - value["median"].toDouble() - 40;
 
@@ -110,7 +108,7 @@ void VisualReport::paint(QPainter* painter)
             painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() - 40, 4, 4);
 
             if (prevMean != 0)
-                painter->drawLine(prevXEnd, prevMean, x + w, fullHeight - value["mean"].toDouble() - 40);
+                painter->drawLine(prevXEnd, prevMean, x, fullHeight - value["mean"].toDouble() - 40);
 
             prevMean = fullHeight - value["mean"].toDouble() - 40;
 
@@ -118,6 +116,8 @@ void VisualReport::paint(QPainter* painter)
 
             painter->setPen(pen);
             painter->drawRect(x, fullHeight - y, w, - eventH);
+
+
         }
         else
             ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
@@ -127,7 +127,10 @@ void VisualReport::paint(QPainter* painter)
         {
             //Debug freq value
             //painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
-            painter->drawText(start * zoomCoef + 5, fullHeight - y + eventH - 3, word);
+            painter->drawText(start * zoomCoef + 5, fullHeight - y  - eventH, word);
+
+            qDebug() << "Draw W: " << word << " " << fullHeight - y + 10;
+            qDebug() << "__ " << start * zoomCoef + 5;
         }
     }
 
