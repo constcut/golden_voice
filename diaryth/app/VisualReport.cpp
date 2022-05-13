@@ -138,7 +138,7 @@ void VisualReport::paint(QPainter* painter)
 
                     if (pY != 0.0 && prevY != fullHeight - 40)
                     {
-                        painter->drawEllipse(newX, newY, 2, 2);
+                        //painter->drawEllipse(newX, newY, 2, 2);
 
                         if (prevX != 0.0 || prevY != 0.0)
                             painter->drawLine(prevX, prevY, newX, newY);
@@ -161,7 +161,7 @@ void VisualReport::paint(QPainter* painter)
         {
             //Debug freq value
             //painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
-            painter->drawText(start * zoomCoef + 5, fullHeight - y  - eventH, word);
+            painter->drawText(start * zoomCoef + 5, fullHeight - y  - eventH - 5, word);
 
             qDebug() << "Draw W: " << word << " " << fullHeight - y + 10;
             qDebug() << "__ " << start * zoomCoef + 5;
