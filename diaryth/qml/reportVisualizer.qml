@@ -36,44 +36,38 @@ Item {
                 width: parent.width
                 height: 400
 
-                onPressed: {
-                    flick.pressedX = mouseX
-                }
-                onReleased: {
-                    var diff =  flick.pressedX - mouseX
-                    flick.contentX += diff
-                    if (flick.contentX < 0)
-                        flick.contentX = 0
-                }
                 onClicked:{
-                    var minRmStep = waveShape.getMinRmsStep()
-                    waveShape.setWindowPosition(mouseX * minRmStep/2.0)
-                    //acgraph.loadByteArray(waveShape.getPCM(mouseX * minRmStep / 2.0, 4096));
-                    acgraph.loadFloatSamples(waveShape.getFloatSamples(mouseX * minRmStep / 2.0, 4096))
-                    yinInfo.text = acgraph.getLastFreq()
-                            + "\nTime = " + ((mouseX * minRmStep / 2.0) / 44100.0).toFixed(4)
-                            //+ "\nSpecPitch= " + spectrum.getSpectrumF0().toFixed(3)
-                    //spectrum.loadFloatSamples(acgraph.getACF())
+
 
                 }
                 onDoubleClicked: {
-                    var minRmStep = waveShape.getMinRmsStep()
-                    audio.loadWindowPCM(waveShape.getPCM(mouseX * minRmStep / 2.0, 4096))
-                    audio.startPlayback()
+
                 }
 
             }
 
             VisualReport
             {
-                id: visualReport
-                height:  parent.height
+                id: visualReport1
+                height:  250
                 width: 3000
                 y: 5
                 Component.onCompleted: {
 
                 }
             }
+
+            VisualReport
+            {
+                id: visualReport2
+                height:  500
+                width: 3000
+                y: 5 + 250
+                Component.onCompleted: {
+
+                }
+            }
+
 
         }
     }

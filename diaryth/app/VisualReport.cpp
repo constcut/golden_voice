@@ -36,7 +36,7 @@ void VisualReport::paint(QPainter* painter)
 
 
     const double zoomCoef = 200.0;
-    const auto fullHeight = height();
+    const auto fullHeight = height() ;
 
 
     for (const auto& e: events)
@@ -59,10 +59,7 @@ void VisualReport::paint(QPainter* painter)
         if (type == "word")
         {
 
-            y += 50;
             word = eObj["word"].toString();
-
-
             auto pitch = eObj["stats"].toObject()["praat_pitch"].toObject();
 
             qDebug() << pitch["mean"].toDouble() << pitch["median"].toDouble()
@@ -71,28 +68,26 @@ void VisualReport::paint(QPainter* painter)
 
             auto x = start * zoomCoef + 5;
             auto w = (end - start) * zoomCoef;
-            y = pitch["min"].toDouble();
-            auto h = pitch["max"].toDouble() - y;
+            y = pitch["min"].toDouble() + 40;
+            auto h = pitch["max"].toDouble() + 40 - y;
 
-            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h;
+            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h << " and median " << pitch["median"].toDouble();
 
             painter->drawEllipse(x, pitch["median"].toDouble(), 2, 2);
-
-            painter->drawRect(x,fullHeight-y,w,h);
+            painter->drawRect(x, fullHeight - y, w, h);
         }
         else
-            painter->drawRect(start * zoomCoef + 5, fullHeight - y, (end - start) * zoomCoef, rectH);
+            painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
 
         const double zoomCoef = 200.0;
         const double rectWidth = 20;
 
 
-
         if (type == "word")
         {
-
-            painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
-            painter->drawText(start * zoomCoef + 5, y + rectWidth - 3, word);
+            //Debug freq value
+            //painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
+            painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth - 3, word);
         }
     }
 
