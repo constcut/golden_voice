@@ -16,7 +16,7 @@ Item {
     ScrollView
     {
         width: parent.width
-        height: 410
+        height: 510
 
         Flickable
         {
@@ -24,7 +24,7 @@ Item {
             y: 5
             x: 0
             width: parent.width
-            height: 410
+            height: 510
             contentWidth: 3000
             contentHeight:  parent.height
             property int pressedX : 0
@@ -60,7 +60,7 @@ Item {
             VisualReport
             {
                 id: visualReport2
-                height:  500
+                height:  250
                 width: 3000
                 y: 5 + 250
                 Component.onCompleted: {
