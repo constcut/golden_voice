@@ -12,16 +12,13 @@ namespace diaryth
         Q_OBJECT
     public:
         VisualReport() = default;
+
+        void paint(QPainter* painter);
     };
 
 
 }
 
-class VisualReport : public QQuickPaintedItem
-{
-    Q_OBJECT
-public:
-    VisualReport();
-};
+
 
 #endif // VISUALREPORT_H
