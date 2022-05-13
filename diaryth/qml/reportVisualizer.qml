@@ -15,6 +15,7 @@ Item {
 
     ScrollView
     {
+        id: scroll
         width: parent.width
         height: visualReport1.height + visualReport2.height
 
@@ -49,22 +50,25 @@ Item {
             VisualReport
             {
                 id: visualReport1
-                height:  230
+                height:  140
                 width: 3000
                 y: 5
                 Component.onCompleted: {
                     visualReport1.setAmpitudeType()
+                    flick.contentWidth = visualReport1.getFullWidth()
+                    visualReport1.width = visualReport1.getFullWidth()
                 }
             }
 
             VisualReport
             {
                 id: visualReport2
-                height:  350
+                height:  310
                 width: 3000
-                y: 5 + 250
+                y: 5 + visualReport1.height
                 Component.onCompleted: {
                     visualReport2.setPitchType()
+                    visualReport2.width =  visualReport2.getFullWidth()
                 }
             }
 

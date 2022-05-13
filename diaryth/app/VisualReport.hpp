@@ -22,6 +22,19 @@ namespace diaryth
             Amplitude
         };
 
+        Q_INVOKABLE double getFullWidth() {
+            return _fullWidth;
+        }
+
+        Q_INVOKABLE double getZoom() {
+            return _zoomCoef;
+        }
+
+        Q_INVOKABLE void setZoom(double newZoom) {
+            _zoomCoef = newZoom;
+            update();
+        }
+
         Q_INVOKABLE void setPitchType()
         {
             _type = VisualTypes::Pitch;
@@ -35,9 +48,13 @@ namespace diaryth
         }
 
     private:
+
         VisualTypes _type = VisualTypes::Pitch;
 
         QJsonArray _events;
+
+        double _fullWidth;
+        double _zoomCoef;
     };
 
 

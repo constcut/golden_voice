@@ -14,6 +14,9 @@ using namespace diaryth;
 
 VisualReport::VisualReport()
 {
+    _zoomCoef = 200.0;
+
+
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
 
     f.open(QIODevice::ReadOnly);
@@ -31,6 +34,7 @@ VisualReport::VisualReport()
 
     qDebug() << "Events total count: " << _events.size();
 
+    _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
 }
 
 //TODO precalc full width функция для установки размера скрола после загрузки файла
