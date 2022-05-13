@@ -23,7 +23,7 @@ namespace diaryth
         };
 
         Q_INVOKABLE double getFullWidth() {
-            return _fullWidth;
+            return _fullWidth + 20;
         }
 
         Q_INVOKABLE double getZoom() {
