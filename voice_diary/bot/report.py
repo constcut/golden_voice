@@ -611,7 +611,7 @@ class ReportGenerator:
 			root_element["HNR"] = seq_dict["global_hnr"]
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
-		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4, ensure_ascii=False)
+		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
 
 		full_report_generated = datetime.datetime.now()
 

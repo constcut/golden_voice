@@ -119,34 +119,39 @@ void VisualReport::paint(QPainter* painter)
             prevXEnd = x + w;
 
 
+            QJsonArray sequence;
             if (_type == VisualTypes::Pitch)
             {
-                painter->setPen(QColor("red"));
-                QJsonArray pitches = eObj["praat_pitch"].toArray();
+                sequence = eObj["praat_pitch"].toArray();
+            }
 
-                double pixelPerSample = w / pitches.size();
+            if (_type == VisualTypes::Amplitude)
+                sequence = eObj["praat_intensity"].toArray();
 
-                double prevX = 0.0;
-                double prevY = 0.0;
+            painter->setPen(QColor("red"));
 
-                for (int i = 0; i < pitches.size(); ++i)
+            double pixelPerSample = w / sequence.size();
+
+            double prevX = 0.0;
+            double prevY = 0.0;
+
+            for (int i = 0; i < sequence.size(); ++i)
+            {
+                double pY = sequence[i].toDouble();
+
+                double newX = x + i * pixelPerSample;
+                double newY = fullHeight - pY - 40;
+
+                if (pY != 0.0 && prevY != fullHeight - 40)
                 {
-                    double pY = pitches[i].toDouble();
+                    //painter->drawEllipse(newX, newY, 2, 2);
 
-                    double newX = x + i * pixelPerSample;
-                    double newY = fullHeight - pY - 40;
-
-                    if (pY != 0.0 && prevY != fullHeight - 40)
-                    {
-                        //painter->drawEllipse(newX, newY, 2, 2);
-
-                        if (prevX != 0.0 || prevY != 0.0)
-                            painter->drawLine(prevX, prevY, newX, newY);
-                    }
-
-                    prevX = x + i * pixelPerSample;
-                    prevY = fullHeight - pY - 40;
+                    if (prevX != 0.0 || prevY != 0.0)
+                        painter->drawLine(prevX, prevY, newX, newY);
                 }
+
+                prevX = x + i * pixelPerSample;
+                prevY = fullHeight - pY - 40;
             }
 
             painter->setPen(pen);

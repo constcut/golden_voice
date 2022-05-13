@@ -63,7 +63,7 @@ Item {
             VisualReport
             {
                 id: visualReport2
-                height:  310
+                height:  500
                 width: 3000
                 y: 5 + visualReport1.height
                 Component.onCompleted: {
