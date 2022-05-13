@@ -36,6 +36,8 @@ void VisualReport::paint(QPainter* painter)
 
 
     const double zoomCoef = 200.0;
+    const auto fullHeight = height();
+
 
     for (const auto& e: events)
     {
@@ -52,7 +54,11 @@ void VisualReport::paint(QPainter* painter)
         int y = 20;
         QString word;
 
-        if (type == "word") {
+        double rectH = 25;
+
+        if (type == "word")
+        {
+
             y += 50;
             word = eObj["word"].toString();
 
@@ -63,11 +69,19 @@ void VisualReport::paint(QPainter* painter)
                      << pitch["min"].toDouble() << pitch["max"].toDouble()
                      << pitch["SD"].toDouble()  ;
 
+            auto x = start * zoomCoef + 5;
+            auto w = (end - start) * zoomCoef;
+            y = pitch["min"].toDouble();
+            auto h = pitch["max"].toDouble() - y;
 
-            painter->drawRect(start * zoomCoef + 5, y, (end - start) * zoomCoef, rectWidth);
+            qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h;
+
+            painter->drawEllipse(x, pitch["median"].toDouble(), 2, 2);
+
+            painter->drawRect(x,fullHeight-y,w,h);
         }
         else
-            painter->drawRect(start * zoomCoef + 5, y, (end - start) * zoomCoef, rectWidth);
+            painter->drawRect(start * zoomCoef + 5, fullHeight - y, (end - start) * zoomCoef, rectH);
 
         const double zoomCoef = 200.0;
         const double rectWidth = 20;
@@ -75,7 +89,11 @@ void VisualReport::paint(QPainter* painter)
 
 
         if (type == "word")
+        {
+
+            painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
             painter->drawText(start * zoomCoef + 5, y + rectWidth - 3, word);
+        }
     }
 
     //TODO отрисовка частоты

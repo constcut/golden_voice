@@ -16,7 +16,7 @@ Item {
     ScrollView
     {
         width: parent.width
-        height: parent.height / 3
+        height: 410
 
         Flickable
         {
@@ -24,7 +24,7 @@ Item {
             y: 5
             x: 0
             width: parent.width
-            height: parent.height-20
+            height: 410
             contentWidth: 3000
             contentHeight:  parent.height
             property int pressedX : 0
@@ -34,7 +34,7 @@ Item {
                 x:0
                 y:20
                 width: parent.width
-                height: 250
+                height: 400
 
                 onPressed: {
                     flick.pressedX = mouseX
