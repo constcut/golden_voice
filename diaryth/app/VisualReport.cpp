@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
+#include <QPainter>
 
 
 using namespace diaryth;
@@ -20,27 +21,12 @@ void VisualReport::paint(QPainter* painter)
     if (f.isOpen())
         qDebug() << "JSON File opened";
 
-    auto allData = f.readAll();
-    QString fullString = allData;
+    QString fullString = f.readAll();
 
-    QString subStr = fullString.mid(0, 10);
-
-    qDebug() << "JSON start " << subStr;
-
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8());
-
-    qDebug() << "Doc is object " << doc.isObject();
+    //QJsonParseError *error = new QJsonParseError(); //TODO leak
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error);
 
     auto root = doc.object();
-
-
-    for (const auto& value: root)
-    {
-        qDebug() << value.isObject() << " is Object";
-    }
-
-    qDebug() << "Front key" << root.keys().front();
-
     QJsonArray events = root["events"].toArray();
 
     qDebug() << "Events total count: " << events.size();
@@ -50,10 +36,27 @@ void VisualReport::paint(QPainter* painter)
         auto eObj = e.toObject();
 
         auto type = eObj["type"].toString();
-        double start = eObj["start"].toDouble();
-        double end = eObj["end"].toDouble();
+        double start = eObj["startTime"].toDouble();
+        double end = eObj["endTime"].toDouble();
+
+
 
         qDebug() << "Type " << type << " start " << start << " end " << end;
+
+        int y = 20;
+        QString word;
+
+        if (type == "word") {
+            y += 50;
+            word = eObj["word"].toString();
+        }
+
+        const zoomCoef = 200.0;
+
+        painter->drawRect(start * zoomCoef, y, (end - start) * zoomCoef, 20);
+
+        if (type == "word")
+            painter->drawText(start * zoomCoef, y, word);
     }
 
     //Draw silence as blue, and word as green

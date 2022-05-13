@@ -68,7 +68,7 @@ Item {
             {
                 id: visualReport
                 height:  parent.height
-                width: 1000
+                width: 3000
                 y: 5
                 Component.onCompleted: {
 

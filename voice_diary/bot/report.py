@@ -610,6 +610,7 @@ class ReportGenerator:
 			root_element["HNR"] = seq_dict["global_hnr"]
 
 		json_report = json.dumps(root_element, indent = 4, ensure_ascii=False) 
+		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)))
 
 		full_report_generated = datetime.datetime.now()
 
@@ -1325,7 +1326,8 @@ r.save_json_products(r._config['dir'], full_report, full_text)
 print("DONE!")
 '''
 
-#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local.ogg', "changen")
+r = ReportGenerator("key.json")
+r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
 
 #r.extract_features(r._config["dir"] + "/pcm.wav")
 
