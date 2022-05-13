@@ -50,7 +50,7 @@ Item {
             VisualReport
             {
                 id: visualReport1
-                height:  140
+                height:  190
                 width: 3000
                 y: 5
                 Component.onCompleted: {
@@ -74,6 +74,11 @@ Item {
 
 
         }
+    }
+
+    Button {
+        text : "+"
+        y: visualReport1.y + visualReport1.height + visualReport2.height
     }
 
     function keyboardEventSend(key, mode) {

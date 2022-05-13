@@ -14,7 +14,7 @@ using namespace diaryth;
 
 VisualReport::VisualReport()
 {
-    _zoomCoef = 200.0;
+    _zoomCoef = 250.0;
 
 
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
@@ -49,6 +49,11 @@ void VisualReport::paint(QPainter* painter)
     double prevMean = 0.0;
     double prevMedian = 0.0;
     double prevXEnd = 0.0;
+
+    double verticalZoom = 1.0;
+
+    if (_type == VisualTypes::Amplitude)
+        verticalZoom = 1.2;
 
     for (const auto& e: _events)
     {
@@ -85,36 +90,36 @@ void VisualReport::paint(QPainter* painter)
 
             auto x = start * zoomCoef + 5;
             double w = (end - start) * zoomCoef;
-            y = value["min"].toDouble() + 40;
-            eventH = value["max"].toDouble() + 40 - y;
+            y = value["min"].toDouble() * verticalZoom + 40;
+            eventH = value["max"].toDouble() * verticalZoom + 40 - y;
 
             //qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<eventH << " and median " << value["median"].toDouble();
 
-            painter->drawEllipse(x, fullHeight - value["min"].toDouble() - 40, 4, 4);
-            painter->drawEllipse(x, fullHeight - value["max"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
+            painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
 
-            painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
 
             auto pen = painter->pen();
 
             painter->setPen(QColor("green"));
-            painter->drawEllipse(x, fullHeight - value["median"].toDouble() - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
 
             if (prevMedian != 0.0)
-                painter->drawLine(prevXEnd, prevMedian, x, fullHeight - value["median"].toDouble() - 40);
+                painter->drawLine(prevXEnd, prevMedian, x, fullHeight - value["median"].toDouble() * verticalZoom - 40);
 
-            prevMedian = fullHeight - value["median"].toDouble() - 40;
+            prevMedian = fullHeight - value["median"].toDouble() * verticalZoom - 40;
 
             painter->setPen(QColor("blue"));
-            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() - 40, 4, 4);
+            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
+            painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
 
             if (prevMean != 0)
-                painter->drawLine(prevXEnd, prevMean, x, fullHeight - value["mean"].toDouble() - 40);
+                painter->drawLine(prevXEnd, prevMean, x, fullHeight - value["mean"].toDouble() * verticalZoom - 40);
 
-            prevMean = fullHeight - value["mean"].toDouble() - 40;
+            prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - 40;
 
             prevXEnd = x + w;
 
@@ -154,8 +159,9 @@ void VisualReport::paint(QPainter* painter)
                 prevY = fullHeight - pY - 40;
             }
 
-            painter->setPen(pen);
+            painter->setPen(QColor("gray"));
             painter->drawRect(x, fullHeight - y, w, - eventH);
+            painter->setPen(pen);
 
         }
         else
@@ -164,7 +170,7 @@ void VisualReport::paint(QPainter* painter)
 
         if (type == "word")
         {
-            painter->drawText(start * zoomCoef + 5, fullHeight - y  - eventH - 5, word);
+            painter->drawText(start * zoomCoef + 5, fullHeight - y  + 20, word);
         }
     }
 

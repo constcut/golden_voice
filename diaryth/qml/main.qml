@@ -12,8 +12,8 @@ ApplicationWindow {
     visible: true
     title: "diaryth"
 
-    x: 30
-    y: 50
+    x: 2
+    y: 2
 
     Component.onCompleted:
     {
@@ -25,7 +25,7 @@ ApplicationWindow {
         else {
             //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
             mainWindow.width = 1280
-            mainWindow.height = 700
+            mainWindow.height = 800
         }
 
         mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
