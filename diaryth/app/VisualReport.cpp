@@ -39,10 +39,8 @@ VisualReport::VisualReport()
 void VisualReport::paint(QPainter* painter)
 {
 
-
     const double zoomCoef = 200.0;
     const auto fullHeight = height() ;
-
 
     for (const auto& e: _events)
     {
@@ -52,14 +50,8 @@ void VisualReport::paint(QPainter* painter)
         double start = eObj["startTime"].toDouble();
         double end = eObj["endTime"].toDouble();
 
-
-
-        qDebug() << "Type " << type << " start " << start << " end " << end;
-
-        int y = 20;
+        int y = 0;
         QString word;
-
-        double rectH = 25;
 
         if (type == "word")
         {
@@ -90,8 +82,20 @@ void VisualReport::paint(QPainter* painter)
 
             qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<h << " and median " << value["median"].toDouble();
 
-            painter->drawEllipse(x, value["median"].toDouble(), 2, 2);
-            painter->drawRect(x, fullHeight - y, w, h);
+            painter->drawEllipse(x, fullHeight - value["min"].toDouble() - 40, 2, 2);
+            painter->drawEllipse(x, fullHeight - value["max"].toDouble() - 40, 2, 2);
+
+            auto pen = painter->pen();
+
+            painter->setPen(QColor("green"));
+            painter->drawEllipse(x, fullHeight - value["median"].toDouble() - 40, 2, 2);
+
+            painter->setPen(QColor("blue"));
+            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() - 40, 2, 2);
+            //TODO sd
+
+            painter->setPen(pen);
+            painter->drawRect(x, fullHeight - y, w, -h);
         }
         else
             ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
