@@ -10,6 +10,9 @@
 
 using namespace diaryth;
 
+//TODO конструктор
+
+//TODO precalc full width функция для установки размера скрола после загрузки файла
 
 
 void VisualReport::paint(QPainter* painter)
@@ -51,14 +54,16 @@ void VisualReport::paint(QPainter* painter)
             word = eObj["word"].toString();
         }
 
-        const zoomCoef = 200.0;
+        const double zoomCoef = 200.0;
+        const double rectWidth = 20;
 
-        painter->drawRect(start * zoomCoef, y, (end - start) * zoomCoef, 20);
+        painter->drawRect(start * zoomCoef + 5, y, (end - start) * zoomCoef, rectWidth);
 
         if (type == "word")
-            painter->drawText(start * zoomCoef, y, word);
+            painter->drawText(start * zoomCoef + 5, y + rectWidth - 3, word);
     }
 
-    //Draw silence as blue, and word as green
-    //x is time*coef = 100, for a start
+    //TODO отрисовка частоты
+
+    //TODO отрисовка статистически значений
 }
