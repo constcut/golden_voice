@@ -159,12 +159,7 @@ void VisualReport::paint(QPainter* painter)
 
         if (type == "word")
         {
-            //Debug freq value
-            //painter->drawText(start * zoomCoef + 5, fullHeight - y + rectWidth*2 - 3, QString::number(y));
             painter->drawText(start * zoomCoef + 5, fullHeight - y  - eventH - 5, word);
-
-            qDebug() << "Draw W: " << word << " " << fullHeight - y + 10;
-            qDebug() << "__ " << start * zoomCoef + 5;
         }
     }
 
