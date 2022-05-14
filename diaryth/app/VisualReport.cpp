@@ -59,6 +59,34 @@ int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 
 
 
+QVariantList VisualReport::selectedEvents()
+{
+
+    QVariantList fullList;
+
+    for (int i = 0; i < _events.size(); ++i)
+    {
+        if (_selectedIdx.count(i) == 0)
+            continue;
+
+        auto e = _events[i];
+        auto eObj = e.toObject();
+        auto type = eObj["type"].toString();
+        double start = eObj["startTime"].toDouble();
+        double end = eObj["endTime"].toDouble();
+        QString word = eObj["word"].toString();
+
+        QVariantList eventLine;
+        eventLine << word << start << end; //TODO more
+
+        fullList << eventLine;
+    }
+
+    return fullList;
+}
+
+
+
 void VisualReport::selectEvent(int idx)
 {
     if (_selectedIdx.count(idx))

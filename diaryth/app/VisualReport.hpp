@@ -1,12 +1,16 @@
 #ifndef VISUALREPORT_H
 #define VISUALREPORT_H
 
+
 #include <QQuickPaintedItem>
 #include <QObject>
 
 #include <QJsonArray>
 
+#include <QVariantList>
+
 #include <set>
+
 
 namespace diaryth
 {
@@ -52,6 +56,10 @@ namespace diaryth
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
 
         Q_INVOKABLE void selectEvent(int idx);
+
+        //Get selected idx?
+
+        Q_INVOKABLE QVariantList selectedEvents();
 
     private:
 
