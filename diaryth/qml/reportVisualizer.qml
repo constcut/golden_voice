@@ -48,11 +48,12 @@ Item {
                 {
                     anchors.fill: parent
                     onClicked:{
-                        console.log("Report1")
 
                     }
                     onDoubleClicked: {
-
+                        var idx = visualReport1.eventIdxOnClick(mouseX, mouseY)
+                        visualReport1.selectEvent(idx)
+                        visualReport2.selectEvent(idx)
                     }
 
                 }
@@ -77,7 +78,9 @@ Item {
 
                     }
                     onDoubleClicked: {
-
+                        var idx = visualReport1.eventIdxOnClick(mouseX, mouseY)
+                        visualReport1.selectEvent(idx)
+                        visualReport2.selectEvent(idx)
                     }
 
                 }
