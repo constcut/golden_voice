@@ -4,7 +4,8 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.1
 
-Item {
+Item
+{
     id: item
 
     property string filename: "default"
@@ -89,9 +90,32 @@ Item {
         }
     }
 
+    Popup
+    {
+        id: popup
+        x: 50
+        y: 50
+        width: item.width - x * 2
+        height: item.height - x * 2
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        Button {
+            text: "Close"
+
+            x: parent.width - width - 10
+            y: parent.height - height - 5
+
+            onClicked: popup.close()
+        }
+    }
+
     Button {
         text : "+"
         y: visualReport1.y + visualReport1.height + visualReport2.height
+
+        onClicked: popup.open()
     }
 
     function keyboardEventSend(key, mode) {
