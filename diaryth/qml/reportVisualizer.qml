@@ -74,7 +74,6 @@ Item {
                 {
                     anchors.fill: parent
                     onClicked:{
-                        console.log("Report2")
 
                     }
                     onDoubleClicked: {

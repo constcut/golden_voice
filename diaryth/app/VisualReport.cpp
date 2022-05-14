@@ -157,9 +157,7 @@ void VisualReport::paint(QPainter* painter)
 
             QJsonArray sequence;
             if (_type == VisualTypes::Pitch)
-            {
                 sequence = eObj["praat_pitch"].toArray();
-            }
 
             if (_type == VisualTypes::Amplitude)
                 sequence = eObj["praat_intensity"].toArray();
