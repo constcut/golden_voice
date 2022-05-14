@@ -90,6 +90,7 @@ Item
         }
     }
 
+
     Popup
     {
         id: popup
@@ -101,19 +102,36 @@ Item
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-        Repeater {
-            id: eventsRepeater
+        Repeater
+        {
+            id: eventsRepeater //TODO cover under flickable
 
-            Text
+            RowLayout
             {
-                id: eventText
 
-                 x: 10
-                 y: index * 30
+                x: 10
+                y: index * 40
+
+                Text
+                {
+                    id: eventText
+                }
+
+                function setText(text)
+                {
+                    eventText.text = text
+                }
+
+                RoundButton {
+                    text: "+"
+                }
             }
+
+
         }
 
-        Button {
+        Button
+        {
             text: "Close"
 
             x: parent.width - width - 10
@@ -138,7 +156,7 @@ Item
             for (var i = 0; i < events.length; ++i) {
 
                 var eventLine = events[i]
-                eventsRepeater.itemAt(i).text = eventLine[0] + " " + eventLine[1] + " " + eventLine[2]
+                eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
             }
 
             popup.open()
