@@ -6,6 +6,8 @@
 
 #include <QJsonArray>
 
+#include <set>
+
 namespace diaryth
 {
 
@@ -47,6 +49,10 @@ namespace diaryth
             update();
         }
 
+        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
+
+        Q_INVOKABLE void selectEvent(int idx);
+
     private:
 
         VisualTypes _type = VisualTypes::Pitch;
@@ -55,6 +61,8 @@ namespace diaryth
 
         double _fullWidth;
         double _zoomCoef;
+
+        std::set<int> _selectedIdx;
     };
 
 

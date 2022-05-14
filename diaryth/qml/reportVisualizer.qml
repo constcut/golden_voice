@@ -30,22 +30,7 @@ Item {
             contentHeight:  parent.height
             property int pressedX : 0
 
-            MouseArea
-            {
-                x:0
-                y:20
-                width: parent.width
-                height: 400
 
-                onClicked:{
-
-
-                }
-                onDoubleClicked: {
-
-                }
-
-            }
 
             VisualReport
             {
@@ -58,6 +43,19 @@ Item {
                     flick.contentWidth = visualReport1.getFullWidth()
                     visualReport1.width = visualReport1.getFullWidth()
                 }
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:{
+                        console.log("Report1")
+
+                    }
+                    onDoubleClicked: {
+
+                    }
+
+                }
             }
 
             VisualReport
@@ -69,6 +67,19 @@ Item {
                 Component.onCompleted: {
                     visualReport2.setPitchType()
                     visualReport2.width =  visualReport2.getFullWidth()
+                }
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:{
+                        console.log("Report2")
+
+                    }
+                    onDoubleClicked: {
+
+                    }
+
                 }
             }
 

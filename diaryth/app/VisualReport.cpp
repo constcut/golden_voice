@@ -14,7 +14,7 @@ using namespace diaryth;
 
 VisualReport::VisualReport()
 {
-    _zoomCoef = 250.0;
+    _zoomCoef = 500.0;
 
 
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
@@ -37,13 +37,44 @@ VisualReport::VisualReport()
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
 }
 
-//TODO precalc full width функция для установки размера скрола после загрузки файла
+
+int VisualReport::eventIdxOnClick(int mouseX, int mouseY)
+{
+    double second = mouseX / _zoomCoef;
+    int i = 0;
+    for (const auto& e: _events)
+    {
+        auto eObj = e.toObject();
+        auto type = eObj["type"].toString();
+        double start = eObj["startTime"].toDouble();
+        double end = eObj["endTime"].toDouble();
+
+        if (second >= start && second <= end && type == "word")
+            return i; //yet we skip pauses
+
+        ++i;
+    }
+
+    return -1;
+}
+
+
+
+void VisualReport::selectEvent(int idx)
+{
+    if (_selectedIdx.count(idx))
+        _selectedIdx.erase(idx);
+    else
+        _selectedIdx.insert(idx);
+
+    update();
+}
+
+
 
 
 void VisualReport::paint(QPainter* painter)
 {
-
-    const double zoomCoef = 200.0;
     const auto fullHeight = height() ;
 
     double prevMean = 0.0;
@@ -88,8 +119,8 @@ void VisualReport::paint(QPainter* painter)
             //         << value["min"].toDouble() << value["max"].toDouble()
             //          << value["SD"].toDouble()  ;
 
-            auto x = start * zoomCoef + 5;
-            double w = (end - start) * zoomCoef;
+            auto x = start * _zoomCoef + 5;
+            double w = (end - start) * _zoomCoef;
             y = value["min"].toDouble() * verticalZoom + 40;
             eventH = value["max"].toDouble() * verticalZoom + 40 - y;
 
@@ -170,7 +201,7 @@ void VisualReport::paint(QPainter* painter)
 
         if (type == "word")
         {
-            painter->drawText(start * zoomCoef + 5, fullHeight - y  + 20, word);
+            painter->drawText(start * _zoomCoef + 5, fullHeight - y  + 20, word);
         }
     }
 
