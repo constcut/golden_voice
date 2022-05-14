@@ -127,7 +127,6 @@ Item
                 }
             }
 
-
         }
 
         Button
@@ -141,20 +140,21 @@ Item
         }
     }
 
+
     Button
     {
         text : "+"
         y: visualReport1.y + visualReport1.height + visualReport2.height
 
-        onClicked: {
-
+        onClicked:
+        {
             var events = visualReport1.getSelectedEvents()
 
             eventsRepeater.model = 0
             eventsRepeater.model = events.length
 
-            for (var i = 0; i < events.length; ++i) {
-
+            for (var i = 0; i < events.length; ++i)
+            {
                 var eventLine = events[i]
                 eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
             }
@@ -162,6 +162,7 @@ Item
             popup.open()
         }
     }
+
 
     function keyboardEventSend(key, mode) {
         //Заглушка, но можно реализовать логику здесь
