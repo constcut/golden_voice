@@ -38,12 +38,13 @@ VisualReport::VisualReport()
 }
 
 
-int VisualReport::eventIdxOnClick(int mouseX, int mouseY)
+int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 {
     double second = mouseX / _zoomCoef;
-    int i = 0;
-    for (const auto& e: _events)
+
+    for (int i = 0; i < _events.size(); ++i)
     {
+        auto e = _events[i];
         auto eObj = e.toObject();
         auto type = eObj["type"].toString();
         double start = eObj["startTime"].toDouble();
@@ -51,8 +52,6 @@ int VisualReport::eventIdxOnClick(int mouseX, int mouseY)
 
         if (second >= start && second <= end && type == "word")
             return i; //yet we skip pauses
-
-        ++i;
     }
 
     return -1;
@@ -86,8 +85,10 @@ void VisualReport::paint(QPainter* painter)
     if (_type == VisualTypes::Amplitude)
         verticalZoom = 1.5;
 
-    for (const auto& e: _events)
+    for (int i = 0; i < _events.size(); ++i)
     {
+        auto e = _events[i];
+
         auto eObj = e.toObject();
 
         auto type = eObj["type"].toString();
@@ -115,16 +116,15 @@ void VisualReport::paint(QPainter* painter)
             else
                 qDebug() << "Unknow visualization type";
 
-            //qDebug() << value["mean"].toDouble() << value["median"].toDouble()
-            //         << value["min"].toDouble() << value["max"].toDouble()
-            //          << value["SD"].toDouble()  ;
-
             auto x = start * _zoomCoef + 5;
             double w = (end - start) * _zoomCoef;
             y = value["min"].toDouble() * verticalZoom + 40;
             eventH = value["max"].toDouble() * verticalZoom + 40 - y;
 
-            //qDebug() << "X="<<x<<" y="<<y<<" w="<<w<<" h="<<eventH << " and median " << value["median"].toDouble();
+            if (_selectedIdx.count(i))
+                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
+            else
+                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("lightgray")));
 
             painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
             painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
@@ -190,6 +190,7 @@ void VisualReport::paint(QPainter* painter)
                 prevY = fullHeight - pY - 40;
             }
 
+
             painter->setPen(QColor("gray"));
             painter->drawRect(x, fullHeight - y, w, - eventH);
             painter->setPen(pen);
@@ -200,12 +201,8 @@ void VisualReport::paint(QPainter* painter)
 
 
         if (type == "word")
-        {
             painter->drawText(start * _zoomCoef + 5, fullHeight - y  + 20, word);
-        }
     }
 
     //TODO отрисовка частоты
-
-    //TODO отрисовка статистически значений
 }
