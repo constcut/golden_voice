@@ -99,7 +99,7 @@ Item
         height: item.height - x * 2
         modal: true
         focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         Button {
             text: "Close"
