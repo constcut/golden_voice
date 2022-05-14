@@ -124,7 +124,7 @@ void VisualReport::paint(QPainter* painter)
             if (_selectedIdx.count(i))
                 painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
             else
-                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("lightgray")));
+                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor(240, 240, 240)));
 
             painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
             painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
