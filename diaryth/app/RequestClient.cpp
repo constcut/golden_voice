@@ -34,7 +34,6 @@ void RequestClient::logIn(QString username, QString password)
     QObject::connect(getReply, &QNetworkReply::finished, [this, getReply=getReply]()
     {
          QString result = getReply->readAll();
-         //qDebug() << result << " : login reply !";
 
          this->_loggedIn = result == "Logged in!";
          this->loginNotification();
@@ -83,28 +82,11 @@ void RequestClient::sendFile(QString type, QString filename)
     qDebug() << "File was open: " << f->isOpen();
 
     auto reply = _mgr.put(req, f);
-    f->setParent(reply); //For auto delete
+    f->setParent(reply);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply=reply, type=type]()
     {
         QString result = reply->readAll();
-
-
-        /*
-        auto doc = QJsonDocument::fromJson(result.toLocal8Bit());
-        auto rootObject = doc.object();
-
-        if (rootObject.contains("done"))
-            qDebug() << "Contains done! id = " << rootObject["id"].toString()
-                     << " key = " << rootObject["key"].toString();
-        else
-        {
-            qDebug() << "Field done not found" << doc.isArray() << doc.isEmpty() << doc.isNull() << doc.isObject();
-
-            for (auto& k: rootObject.keys())
-                qDebug() << "Objects inside: " << k;
-        }*/
-
         fileSentNotification(type, result);
         reply->deleteLater();
     });
