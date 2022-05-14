@@ -59,7 +59,7 @@ int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 
 
 
-QVariantList VisualReport::selectedEvents()
+QVariantList VisualReport::getSelectedEvents()
 {
 
     QVariantList fullList;
@@ -71,15 +71,22 @@ QVariantList VisualReport::selectedEvents()
 
         auto e = _events[i];
         auto eObj = e.toObject();
+
         auto type = eObj["type"].toString();
+
+        if (type == "pause")
+            continue;
+
         double start = eObj["startTime"].toDouble();
         double end = eObj["endTime"].toDouble();
         QString word = eObj["word"].toString();
 
-        QVariantList eventLine;
-        eventLine << word << start << end; //TODO more
+        QStringList eventLine; //yet best way to send matrix of "variant"
+        eventLine << word << QString::number(start) << QString::number(end); //TODO more
 
-        fullList << eventLine;
+        //Another way is to use first name then QList<qreal> или может даже QMap<QString, qreal>
+
+        fullList.append(eventLine);
     }
 
     return fullList;

@@ -101,6 +101,18 @@ Item
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+        Repeater {
+            id: eventsRepeater
+
+            Text
+            {
+                id: eventText
+
+                 x: 10
+                 y: index * 30
+            }
+        }
+
         Button {
             text: "Close"
 
@@ -111,11 +123,26 @@ Item
         }
     }
 
-    Button {
+    Button
+    {
         text : "+"
         y: visualReport1.y + visualReport1.height + visualReport2.height
 
-        onClicked: popup.open()
+        onClicked: {
+
+            var events = visualReport1.getSelectedEvents()
+
+            eventsRepeater.model = 0
+            eventsRepeater.model = events.length
+
+            for (var i = 0; i < events.length; ++i) {
+
+                var eventLine = events[i]
+                eventsRepeater.itemAt(i).text = eventLine[0] + " " + eventLine[1] + " " + eventLine[2]
+            }
+
+            popup.open()
+        }
     }
 
     function keyboardEventSend(key, mode) {

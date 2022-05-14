@@ -59,7 +59,7 @@ namespace diaryth
 
         //Get selected idx?
 
-        Q_INVOKABLE QVariantList selectedEvents();
+        Q_INVOKABLE QVariantList getSelectedEvents();
 
     private:
 
