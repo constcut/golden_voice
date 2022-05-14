@@ -24,8 +24,8 @@ ApplicationWindow {
         }
         else {
             //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
-            mainWindow.width = 1280
-            mainWindow.height = 800
+            mainWindow.width = 1370
+            mainWindow.height = 749
         }
 
         mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient

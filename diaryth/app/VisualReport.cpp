@@ -53,7 +53,7 @@ void VisualReport::paint(QPainter* painter)
     double verticalZoom = 1.0;
 
     if (_type == VisualTypes::Amplitude)
-        verticalZoom = 1.2;
+        verticalZoom = 1.5;
 
     for (const auto& e: _events)
     {
@@ -142,7 +142,7 @@ void VisualReport::paint(QPainter* painter)
 
             for (int i = 0; i < sequence.size(); ++i)
             {
-                double pY = sequence[i].toDouble();
+                double pY = sequence[i].toDouble() * verticalZoom;
 
                 double newX = x + i * pixelPerSample;
                 double newY = fullHeight - pY - 40;
