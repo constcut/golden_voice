@@ -15,18 +15,13 @@ using namespace diaryth;
 VisualReport::VisualReport()
 {
     _zoomCoef = 500.0;
-
+    _type = VisualTypes::TypeNotSet;
 
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
-
-    f.open(QIODevice::ReadOnly);
-
-    if (f.isOpen())
-        qDebug() << "JSON File opened";
+    f.open(QIODevice::ReadOnly); //Проверка на открытие и реакция TODO
 
     QString fullString = f.readAll();
-    //QJsonParseError *error = new QJsonParseError();
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error);
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error); //QJsonParseError *error = new QJsonParseError();
 
     auto root = doc.object();
     _events = root["events"].toArray();
@@ -166,8 +161,15 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
             prevStats.prevValues[infoName] = y;
         };
 
-        paintFun("Jitter (local)", QColor("green"), 4);
-        paintFun("Shimmer (local)", QColor("blue"), 2);
+        for (const auto& [name, fieldDisplayInfo]: _praatFields)
+        {
+            auto color = fieldDisplayInfo.color;
+
+            if (_selectedIdx.count(idx)) //Возможно это лишнее
+                color = color.darker();
+
+            paintFun(name, color, fieldDisplayInfo.yCoef);
+        }
 
         prevStats.prevXEnd = x + w;
     }
@@ -274,8 +276,6 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
             if (pY != 0.0 && prevY != fullHeight - 40)
             {
-                //painter->drawEllipse(newX, newY, 2, 2);
-
                 if (prevX != 0.0 || prevY != 0.0)
                     painter->drawLine(prevX, prevY, newX, newY);
             }
@@ -283,7 +283,6 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
             prevX = x + i * pixelPerSample;
             prevY = fullHeight - pY - 40;
         }
-
 
         painter->setPen(QColor("gray"));
         painter->drawRect(x, fullHeight - y, w, - eventH);

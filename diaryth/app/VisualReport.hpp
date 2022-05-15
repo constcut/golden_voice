@@ -50,6 +50,7 @@ namespace diaryth
         void paint(QPainter* painter);
 
         enum VisualTypes {
+            TypeNotSet,
             Pitch,
             Amplitude,
             PraatInfo
@@ -87,12 +88,14 @@ namespace diaryth
         }
 
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
-
         Q_INVOKABLE void selectEvent(int idx);
+        Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
 
-        //Get selected idxs?
-
-        Q_INVOKABLE QVariantList getSelectedEvents();
+        Q_INVOKABLE void addPraatField(QString name, QString color, int yCoef)
+        {
+            _praatFields[name] = {QColor(color), yCoef};
+            //update();
+        }
 
     private:
 
@@ -103,7 +106,7 @@ namespace diaryth
                             int idx, PraatPrevStats &prevStats);
 
 
-        VisualTypes _type = VisualTypes::Pitch;
+        VisualTypes _type;
 
         double _fullWidth;
         double _zoomCoef;

@@ -41,6 +41,10 @@ Item
                 y: 5
                 Component.onCompleted: {
                     //visualReport1.setAmpitudeType()
+
+                    visualReport1.addPraatField("Jitter (rap)", "red", 4)
+                    visualReport1.addPraatField("Number of pulses", "orange", 1)
+
                     visualReport1.setPraatType()
                     flick.contentWidth = visualReport1.getFullWidth()
                     visualReport1.width = visualReport1.getFullWidth()
