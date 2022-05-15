@@ -137,7 +137,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
         auto x = start * _zoomCoef + 5;
         double w = (end - start) * _zoomCoef;
 
-        auto paintFun = [&](QString infoName, QColor color, int yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+        auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
         {
             double value = 0.0;
 
