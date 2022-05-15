@@ -131,9 +131,9 @@ Item
                     eventText.text = text
                 }
 
-                RoundButton {
+                /*RoundButton {
                     text: "+"
-                }
+                }*/
             }
 
         }
@@ -184,17 +184,55 @@ Item
                     var events = visualReport1.getSelectedEvents()
 
                     eventsRepeater.model = 0
-                    eventsRepeater.model = events.length
+                    eventsRepeater.model = events.length + 4 //names, chunk, full, full - chunk
+
+                    var fieldsNames = visualReport1.getPraatFieldsNames();
+                    var fullText = "type, "
+
+                    for (var j = 0; j < fieldsNames.length; ++j)
+                        fullText += fieldsNames[j] + ", "
+
+                    eventsRepeater.itemAt(0).setText( fullText )
 
                     for (var i = 0; i < events.length; ++i)
                     {
                         var eventLine = events[i]
+                        var eventIdx = eventLine[0]
+                        var word = visualReport1.getWordByIdx(eventIdx)
 
-                        console.log("Event line ", i, " ", eventLine)
-                        //eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
+                        fullText = word + " "
+
+                        for (j = 1; j < eventLine.length; ++j)
+                            fullText += eventLine[j].toString() + ", "
+
+                        eventsRepeater.itemAt(i + 1).setText( fullText )
+
+                        //TODO полная разница full и chunk с каждым словом
+                        //TODO графики полной разницы каждого слова
                     }
 
+                    var chunkInfo = visualReport1.getChunkInfo(parseInt(chunkId.currentText))
+
+                    fullText = "chunk "
+                    for (j = 0; j < chunkInfo.length; ++j)
+                        fullText += chunkInfo[j].toString() + ", "
+
+                    eventsRepeater.itemAt( events.length + 1 ).setText( fullText )
+
                     var fullInfo = visualReport1.getFullInfo()
+
+                    fullText = "full "
+                    for (j = 0; j < fullInfo.length; ++j)
+                        fullText += fullInfo[j].toString() + ", "
+
+                    eventsRepeater.itemAt( events.length + 2 ).setText( fullText )
+
+                    fullText = "diff "
+                    for (j = 0; j < chunkInfo.length; ++j) {
+                        fullText += (fullInfo[j] - chunkInfo[j]).toFixed(3).toString() + ", "
+                    }
+
+                    eventsRepeater.itemAt( events.length + 3 ).setText( fullText )
 
                     popup.open()
                 }
