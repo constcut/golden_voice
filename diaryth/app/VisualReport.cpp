@@ -38,6 +38,7 @@ VisualReport::VisualReport()
 }
 
 
+
 int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 {
     double second = mouseX / _zoomCoef;
@@ -109,133 +110,170 @@ void VisualReport::selectEvent(int idx)
 
 void VisualReport::paint(QPainter* painter)
 {
-    const auto fullHeight = height() ;
 
-    double prevMean = 0.0;
-    double prevMedian = 0.0;
-    double prevXEnd = 0.0;
+    ReportPrevStats prevStats;
+
+    painter->drawRect(2, 2, width() - 4, height() - 4); // Для удобства тестирования
+
+    for (int i = 0; i < _events.size(); ++i)
+    {
+        auto e = _events[i];
+        auto event = e.toObject();
+        auto type = event["type"].toString();
+
+        if (_type == VisualTypes::Pitch || _type == VisualTypes::Amplitude)
+            paintSequenceType(painter, event, i, prevStats);
+
+        if (_type == VisualTypes::PraatInfo)
+            paintPraatInfo(painter, event, i, prevStats);
+
+    }
+
+}
+
+
+void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
+                                  int idx, ReportPrevStats &prevStats)
+{
+
+    //Не забыть иногда praat_info может быть пустым
+
+    auto type = event["type"].toString(); //Возвращать как structure binding?
+    double start = event["startTime"].toDouble();
+    double end = event["endTime"].toDouble();
+
+
+    if (type == "word")
+    {
+        auto x = start * _zoomCoef + 5;
+        double w = (end - start) * _zoomCoef;
+
+        painter->drawLine(x, 50, x + w, 50);
+    }
+
+}
+
+
+
+void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
+                                 int idx, ReportPrevStats& prevStats)
+{
+    const auto fullHeight = height() ;
 
     double verticalZoom = 1.0;
 
     if (_type == VisualTypes::Amplitude)
         verticalZoom = 1.5;
 
-    for (int i = 0; i < _events.size(); ++i)
+    auto type = event["type"].toString(); //Возвращать как structure binding?
+    double start = event["startTime"].toDouble();
+    double end = event["endTime"].toDouble();
+
+    int y = 0;
+    QString word;
+
+    double eventH = 0.0;
+
+    if (type == "word")
     {
-        auto e = _events[i];
 
-        auto eObj = e.toObject();
+        word = event["word"].toString();
 
-        auto type = eObj["type"].toString();
-        double start = eObj["startTime"].toDouble();
-        double end = eObj["endTime"].toDouble();
+        QJsonObject value;
 
-        int y = 0;
-        QString word;
-
-        double eventH = 0.0;
-
-        if (type == "word")
-        {
-
-            word = eObj["word"].toString();
-            QJsonObject value;
-
-            if (_type == VisualTypes::Pitch) {
-                value = eObj["stats"].toObject()["praat_pitch"].toObject();
-            }
-            else
-            if (_type == VisualTypes::Amplitude) {
-                value = eObj["stats"].toObject()["intensity"].toObject();
-            }
-            else
-                qDebug() << "Unknow visualization type";
-
-            auto x = start * _zoomCoef + 5;
-            double w = (end - start) * _zoomCoef;
-            y = value["min"].toDouble() * verticalZoom + 40;
-            eventH = value["max"].toDouble() * verticalZoom + 40 - y;
-
-            if (_selectedIdx.count(i))
-                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
-            else
-                painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor(240, 240, 240)));
-
-            painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
-            painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
-
-            painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
-
-            auto pen = painter->pen();
-
-            painter->setPen(QColor("green"));
-            painter->drawEllipse(x, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
-
-            if (prevMedian != 0.0)
-                painter->drawLine(prevXEnd, prevMedian, x, fullHeight - value["median"].toDouble() * verticalZoom - 40);
-
-            prevMedian = fullHeight - value["median"].toDouble() * verticalZoom - 40;
-
-            painter->setPen(QColor("blue"));
-            painter->drawEllipse(x, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
-            painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
-
-            if (prevMean != 0)
-                painter->drawLine(prevXEnd, prevMean, x, fullHeight - value["mean"].toDouble() * verticalZoom - 40);
-
-            prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - 40;
-
-            prevXEnd = x + w;
-
-
-            QJsonArray sequence;
-            if (_type == VisualTypes::Pitch)
-                sequence = eObj["praat_pitch"].toArray();
-
-            if (_type == VisualTypes::Amplitude)
-                sequence = eObj["praat_intensity"].toArray();
-
-            painter->setPen(QColor("red"));
-
-            double pixelPerSample = w / sequence.size();
-
-            double prevX = 0.0;
-            double prevY = 0.0;
-
-            for (int i = 0; i < sequence.size(); ++i)
-            {
-                double pY = sequence[i].toDouble() * verticalZoom;
-
-                double newX = x + i * pixelPerSample;
-                double newY = fullHeight - pY - 40;
-
-                if (pY != 0.0 && prevY != fullHeight - 40)
-                {
-                    //painter->drawEllipse(newX, newY, 2, 2);
-
-                    if (prevX != 0.0 || prevY != 0.0)
-                        painter->drawLine(prevX, prevY, newX, newY);
-                }
-
-                prevX = x + i * pixelPerSample;
-                prevY = fullHeight - pY - 40;
-            }
-
-
-            painter->setPen(QColor("gray"));
-            painter->drawRect(x, fullHeight - y, w, - eventH);
-            painter->setPen(pen);
-
+        if (_type == VisualTypes::Pitch) {
+            value = event["stats"].toObject()["praat_pitch"].toObject();
         }
         else
-            ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
+        if (_type == VisualTypes::Amplitude) {
+            value = event["stats"].toObject()["intensity"].toObject();
+        }
+        else
+            qDebug() << "Unknow visualization type";
+
+        auto x = start * _zoomCoef + 5;
+        double w = (end - start) * _zoomCoef;
+        y = value["min"].toDouble() * verticalZoom + 40;
+        eventH = value["max"].toDouble() * verticalZoom + 40 - y;
+
+        if (_selectedIdx.count(idx))
+            painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
+        else
+            painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor(240, 240, 240)));
+
+        painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
+
+        painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
+
+        auto pen = painter->pen();
+
+        painter->setPen(QColor("green"));
+        painter->drawEllipse(x, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
+
+        if (prevStats.prevMedian != 0.0)
+            painter->drawLine(prevStats.prevXEnd, prevStats.prevMedian, x,
+                              fullHeight - value["median"].toDouble() * verticalZoom - 40);
+
+        prevStats.prevMedian = fullHeight - value["median"].toDouble() * verticalZoom - 40;
+
+        painter->setPen(QColor("blue"));
+        painter->drawEllipse(x, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
+
+        if (prevStats.prevMean != 0)
+            painter->drawLine(prevStats.prevXEnd, prevStats.prevMean, x,
+                              fullHeight - value["mean"].toDouble() * verticalZoom - 40);
+
+        prevStats.prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - 40;
+        prevStats.prevXEnd = x + w;
 
 
-        if (type == "word")
-            painter->drawText(start * _zoomCoef + 5, fullHeight - y  + 20, word);
+        QJsonArray sequence;
+        if (_type == VisualTypes::Pitch)
+            sequence = event["praat_pitch"].toArray();
+
+        if (_type == VisualTypes::Amplitude)
+            sequence = event["praat_intensity"].toArray();
+
+        painter->setPen(QColor("red"));
+
+        double pixelPerSample = w / sequence.size();
+
+        double prevX = 0.0;
+        double prevY = 0.0;
+
+        for (int i = 0; i < sequence.size(); ++i)
+        {
+            double pY = sequence[i].toDouble() * verticalZoom;
+
+            double newX = x + i * pixelPerSample;
+            double newY = fullHeight - pY - 40;
+
+            if (pY != 0.0 && prevY != fullHeight - 40)
+            {
+                //painter->drawEllipse(newX, newY, 2, 2);
+
+                if (prevX != 0.0 || prevY != 0.0)
+                    painter->drawLine(prevX, prevY, newX, newY);
+            }
+
+            prevX = x + i * pixelPerSample;
+            prevY = fullHeight - pY - 40;
+        }
+
+
+        painter->setPen(QColor("gray"));
+        painter->drawRect(x, fullHeight - y, w, - eventH);
+        painter->setPen(pen);
+
     }
+    else
+        ;//painter->drawRect(start * zoomCoef + 5, fullHeight - y - 20, (end - start) * zoomCoef, rectH);
 
-    //TODO отрисовка частоты
+
+    if (type == "word")
+        painter->drawText(start * _zoomCoef + 5, fullHeight - y  + 20, word);
 }

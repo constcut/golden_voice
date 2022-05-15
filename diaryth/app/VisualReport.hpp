@@ -15,6 +15,15 @@
 namespace diaryth
 {
 
+
+    struct ReportPrevStats
+    {
+        double prevMean = 0.0;
+        double prevMedian = 0.0;
+        double prevXEnd = 0.0;
+    };
+
+
     class VisualReport : public QQuickPaintedItem
     {
         Q_OBJECT
@@ -25,7 +34,8 @@ namespace diaryth
 
         enum VisualTypes {
             Pitch,
-            Amplitude
+            Amplitude,
+            PraatInfo
         };
 
         Q_INVOKABLE double getFullWidth() {
@@ -53,15 +63,28 @@ namespace diaryth
             update();
         }
 
+        Q_INVOKABLE void setPraatType()
+        {
+            _type = VisualTypes::PraatInfo;
+            update();
+        }
+
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
 
         Q_INVOKABLE void selectEvent(int idx);
 
-        //Get selected idx?
+        //Get selected idxs?
 
         Q_INVOKABLE QVariantList getSelectedEvents();
 
     private:
+
+        void paintSequenceType(QPainter* painter, QJsonObject& event,
+                               int idx, ReportPrevStats &prevStats);
+
+        void paintPraatInfo(QPainter* painter, QJsonObject& event,
+                            int idx, ReportPrevStats &prevStats);
+
 
         VisualTypes _type = VisualTypes::Pitch;
 

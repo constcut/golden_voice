@@ -40,7 +40,8 @@ Item
                 width: 3000
                 y: 5
                 Component.onCompleted: {
-                    visualReport1.setAmpitudeType()
+                    //visualReport1.setAmpitudeType()
+                    visualReport1.setPraatType()
                     flick.contentWidth = visualReport1.getFullWidth()
                     visualReport1.width = visualReport1.getFullWidth()
                 }
