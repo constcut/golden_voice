@@ -338,6 +338,7 @@ Item
                     text: "-"
 
                     onClicked: {
+                        configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields(index)
                         configRepeater.model -= 1
                         configPopup.loadFields()
@@ -348,6 +349,7 @@ Item
                     text: "+"
 
                     onClicked: {
+                        configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields()
                         configRepeater.model += 1
                         configPopup.loadFields()
