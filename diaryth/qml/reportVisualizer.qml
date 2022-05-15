@@ -362,8 +362,7 @@ Item
                     id: praatFieldName
                     model: jsonReport.getPraatFieldsNames()
 
-                    implicitWidth: 250
-                    width: 250
+                    implicitWidth: 400
                 }
 
                 ComboBox {
