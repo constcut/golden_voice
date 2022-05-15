@@ -59,7 +59,12 @@ namespace diaryth
             Amplitude,
             PraatInfo,
             PraatInfoFullDiff,
-            PraatInfoChunkDiff
+            PraatInfoChunkDiff,
+            ChunksOnly
+            //Отображение только чанков ? в них нужна гарантированно скорость слов в чанке
+            //PlainWords - просто слова !
+            //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
+            //Отображение letters_speed - как быстро произносятся буквы
         };
 
         Q_INVOKABLE void setParent(JsonReport* report)
@@ -96,6 +101,13 @@ namespace diaryth
         Q_INVOKABLE void setPraatInfoChunkType()
         {
             _type = VisualTypes::PraatInfoChunkDiff;
+            update();
+        }
+
+
+        Q_INVOKABLE void setChunksOnlyType()
+        {
+            _type = VisualTypes::ChunksOnly;
             update();
         }
 

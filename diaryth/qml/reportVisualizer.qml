@@ -239,6 +239,14 @@ Item
                     visualReport1.setPraatFullDiffType()
                 }
             }
+
+            Button {
+                text: "Chunks only"
+
+                onClicked: {
+                    visualReport1.setChunksOnlyType()
+                }
+            }
     }
 
 

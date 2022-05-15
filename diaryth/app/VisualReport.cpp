@@ -57,6 +57,21 @@ void VisualReport::paint(QPainter* painter)
 
         if (_type == VisualTypes::PraatInfo || _type == PraatInfoFullDiff || _type == PraatInfoChunkDiff)
             paintPraatInfo(painter, event, i, prevPraats);
+
+        if (_type == VisualTypes::ChunksOnly) //Возможно потом объединить в paintSequenceType
+        {
+            for (int i = 0; i < _parentReport->getChunksCount(); ++i)
+            {
+                const auto& chunk = _parentReport->getChunks()[i];
+                double start = chunk["start"].toDouble();
+                double end = chunk["end"].toDouble();
+
+                auto x = start * _parentReport->getZoom() + 5;
+                double w = (end - start) * _parentReport->getZoom();
+
+                painter->drawRect(x, 50, w, 30);
+            }
+        }
     }
 }
 
