@@ -10,6 +10,7 @@
 #include <QVariantList>
 
 #include <set>
+#include <map>
 
 
 namespace diaryth
@@ -26,6 +27,8 @@ namespace diaryth
     struct PraatPrevStats
     {
         double prevXEnd = 0.0;
+
+        std::map<QString, double> prevValues;
 
         double prevJitter = 0.0;
         double prevShimmer = 0.0;

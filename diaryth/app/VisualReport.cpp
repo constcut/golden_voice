@@ -137,47 +137,43 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
                                   int idx, PraatPrevStats &prevStats)
 {
 
-    //prevStats - должен хранить map<QString, double> - для вариативности
-
-    //Не забыть иногда praat_info может быть пустым
-
     auto type = event["type"].toString(); //Возвращать как structure binding?
     double start = event["startTime"].toDouble();
     double end = event["endTime"].toDouble();
 
-
     if (type == "word")
     {
-
         auto x = start * _zoomCoef + 5;
         double w = (end - start) * _zoomCoef;
 
-        //Позже реализовать отрисовку так:
-        //QString praat_info_name, int y_coef, QColor color - чтобы можно было отобразить сколько угодно элементов
-
-        auto paintFun = [&](QString infoName)
+        auto paintFun = [&](QString infoName, QColor color, int yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
         {
             double value = 0.0;
 
             if (event["info"].isObject())
             {
-
                 auto info = event["info"].toObject();
                 value = info[infoName].toDouble() * 5;
             }
 
-            int y = height() - value * 10;
+            int y = height() - value * yCoef;
 
+            painter->setPen(color);
             painter->drawLine(x, y, x + w, y);
 
             if (prevStats.prevXEnd != 0.0)
-                painter->drawLine(prevStats.prevXEnd, prevStats.prevJitter, x, y);
+            {
+                painter->drawLine(prevStats.prevXEnd,
+                                  prevStats.prevValues[infoName], x, y);
+            }
 
-            prevStats.prevXEnd = x + w;
-            prevStats.prevJitter = y;
+            prevStats.prevValues[infoName] = y;
         };
 
-        paintFun("Jitter (local)");
+        paintFun("Jitter (local)", QColor("green"), 1);
+        paintFun("Shimmer (local)", QColor("blue"), 1);
+
+        prevStats.prevXEnd = x + w;
     }
 }
 
