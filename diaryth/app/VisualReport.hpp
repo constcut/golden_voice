@@ -12,6 +12,8 @@
 #include <set>
 #include <map>
 
+#include "JsonReport.hpp"
+
 
 namespace diaryth
 {
@@ -58,18 +60,6 @@ namespace diaryth
             PraatInfo
         };
 
-        Q_INVOKABLE double getFullWidth() {
-            return _fullWidth + 20;
-        }
-
-        Q_INVOKABLE double getZoom() { //Time - добавить в название, чтобы было понятно
-            return _zoomCoef;
-        }
-
-        Q_INVOKABLE void setZoom(double newZoom) { //TODO Move all to cpp even single liners, uses them first in file
-            _zoomCoef = newZoom;
-            update();
-        }
 
         Q_INVOKABLE void setPitchType()
         {
@@ -95,24 +85,6 @@ namespace diaryth
             //update();
         }
 
-        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
-        Q_INVOKABLE void selectEvent(int idx);
-
-        Q_INVOKABLE QVariant getSelectedEvents();
-        Q_INVOKABLE QList<qreal> getChunkInfo(int idx); //TODO как и с selection убрать все в класс хранитель JSON общий для всех репортов подключать через QObject*
-        Q_INVOKABLE QList<qreal> getFullInfo();
-        Q_INVOKABLE QStringList getPraatFieldsNames();
-
-        Q_INVOKABLE QString getWordByIdx(int idx);
-
-
-        Q_INVOKABLE void removeAllSelections() {
-            _selectedIdx.clear();
-            update();
-        }
-
-        Q_INVOKABLE int getChunksCount();
-        Q_INVOKABLE void selectChunk(int idx);
 
     private:
 
@@ -125,18 +97,10 @@ namespace diaryth
 
         VisualTypes _type;
 
-
-        //Переместить всё
-        double _fullWidth;
-        double _zoomCoef;
-
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
 
-        QJsonArray _events; //TODO вероятно позже лучше хранить в отдельном классе, который связывать с множеством репортов - иначе дублировани
-        QJsonArray _chunks; //Операции выделения итд можно тоже поместить в этот отдельный класс
-        QJsonObject _fullPraat;
+        JsonReport* _parentReport;
 
-        std::set<int> _selectedIdx;
     };
 
 

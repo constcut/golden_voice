@@ -4,191 +4,21 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-
-#include <QFile> //remove when sepparated with json object
-
 #include <QPainter>
 
 
 using namespace diaryth;
 
-//TODO конструктор
 
 VisualReport::VisualReport()
 {
-    _zoomCoef = 500.0;
-    _type = VisualTypes::TypeNotSet;
-
-    QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
-    f.open(QIODevice::ReadOnly); //Проверка на открытие и реакция TODO
-
-    QString fullString = f.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error); //QJsonParseError *error = new QJsonParseError();
-
-    auto root = doc.object();
-
-    _events = root["events"].toArray();
-    _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
-
-    _chunks = root["chunks"].toArray();
-    _fullPraat = root["praat_report"].toObject(); //TODO + statistics of sequences
+    _parentReport = nullptr;
 
     _praatFields["Jitter (local)"] = { QColor("green"), 20 };
     _praatFields["Shimmer (local)"] = { QColor("blue"), 10 };
 }
 
-
-int VisualReport::getChunksCount()
-{
-    return _chunks.size();
-}
-
-
-void VisualReport::selectChunk(int idx)
-{
-    _selectedIdx.clear();
-
-    for (int i = 0; i < _events.size(); ++i)
-    {
-        auto e = _events[i];
-        int chunkId = e.toObject()["chunkId"].toInt();
-
-        if (chunkId == idx)
-            _selectedIdx.insert(i);
-    }
-
-    update();
-}
-
-
-
-int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
-{
-    double second = mouseX / _zoomCoef;
-
-    for (int i = 0; i < _events.size(); ++i)
-    {
-        auto e = _events[i];
-        auto eObj = e.toObject();
-        auto type = eObj["type"].toString();
-        double start = eObj["startTime"].toDouble();
-        double end = eObj["endTime"].toDouble();
-
-        if (second >= start && second <= end && type == "word")
-            return i; //yet we skip pauses
-    }
-
-    return -1;
-}
-
-
-
-QVariant VisualReport::getSelectedEvents()
-{
-
-    QList<QList<qreal>> fullList;
-
-    for (int i = 0; i < _events.size(); ++i)
-    {
-        if (_selectedIdx.count(i) == 0)
-            continue;
-
-        auto e = _events[i];
-        auto eObj = e.toObject();
-
-        auto type = eObj["type"].toString();
-
-        if (type == "pause")
-            continue;
-
-        //double start = eObj["startTime"].toDouble();
-        //double end = eObj["endTime"].toDouble();
-        QString word = eObj["word"].toString();
-
-        QList<qreal> eventLine;
-
-        eventLine << i;
-
-        if (eObj["info"].isObject())
-        {
-            auto praatInfo = eObj["info"].toObject();
-
-            const auto& keys = praatInfo.keys();
-            for (const auto& key: keys)
-                eventLine << praatInfo[key].toDouble();
-        }
-
-        fullList << eventLine;
-    }
-
-    return QVariant::fromValue(fullList);
-}
-
-
-QString VisualReport::getWordByIdx(int idx)
-{
-    auto e = _events[idx];
-    auto eObj = e.toObject();
-
-    QString type = eObj["type"].toString();
-
-    if (type == "pause")
-        return "";
-
-    return eObj["word"].toString();
-}
-
-
-QList<qreal> VisualReport::getChunkInfo(int idx) //TODO ещё одну функцию для общей статистики
-{
-    QList<qreal> chunkLine;
-
-    auto chunkPraatInfo = _chunks[idx].toObject()["praat_report"].toObject();
-
-    const auto& keys = chunkPraatInfo.keys();
-    for (const auto& key: keys)
-        chunkLine << chunkPraatInfo[key].toDouble();
-
-    return chunkLine;
-}
-
-
-QList<qreal> VisualReport::getFullInfo()
-{
-    QList<qreal> fullFileLine;
-
-    const auto& keys = _fullPraat.keys();
-    for (const auto& key: keys)
-        fullFileLine << _fullPraat[key].toDouble();
-
-    return fullFileLine;
-}
-
-
-QStringList VisualReport::getPraatFieldsNames()
-{
-    QStringList fullFileLine;
-
-    for (const auto& key: _fullPraat.keys())
-        fullFileLine << key;
-
-    return fullFileLine;
-}
-
-
-
-
-void VisualReport::selectEvent(int idx)
-{
-    if (_selectedIdx.count(idx))
-        _selectedIdx.erase(idx);
-    else
-        _selectedIdx.insert(idx);
-
-    update();
-}
-
-
+//TODO set parent report
 
 
 void VisualReport::paint(QPainter* painter)
@@ -197,11 +27,13 @@ void VisualReport::paint(QPainter* painter)
     ReportPrevStats prevStats;
     PraatPrevStats prevPraats;
 
-    painter->drawRect(2, 2, width() - 4, height() - 4); // Для удобства тестирования
+    painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
 
-    for (int i = 0; i < _events.size(); ++i)
+    const auto& events = _parentReport->getEvents();
+
+    for (int i = 0; i < events.size(); ++i)
     {
-        auto e = _events[i];
+        auto e = events[i];
         auto event = e.toObject();
 
         if (_type == VisualTypes::Pitch || _type == VisualTypes::Amplitude)
@@ -221,10 +53,13 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
     double start = event["startTime"].toDouble();
     double end = event["endTime"].toDouble();
 
+    const double zoomCoef = _parentReport->getZoom();
+    const auto& selectedIdx = _parentReport->getSelectedIdx();
+
     if (type == "word")
     {
-        auto x = start * _zoomCoef + 5;
-        double w = (end - start) * _zoomCoef;
+        auto x = start * zoomCoef + 5;
+        double w = (end - start) * zoomCoef;
 
         auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
         {
@@ -254,7 +89,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
         {
             auto color = fieldDisplayInfo.color;
 
-            if (_selectedIdx.count(idx)) //Возможно это лишнее
+            if (selectedIdx.count(idx)) //Возможно это лишнее
                 color = color.lighter();
 
             paintFun(name, color, fieldDisplayInfo.yCoef);
@@ -280,6 +115,9 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
     double start = event["startTime"].toDouble();
     double end = event["endTime"].toDouble();
 
+    const double zoomCoef = _parentReport->getZoom();
+    const auto& selectedIdx = _parentReport->getSelectedIdx();
+
     int y = 0;
     QString word;
 
@@ -302,12 +140,12 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
         else
             qDebug() << "Unknow visualization type";
 
-        auto x = start * _zoomCoef + 5;
-        double w = (end - start) * _zoomCoef;
+        auto x = start * zoomCoef + 5;
+        double w = (end - start) * zoomCoef;
         y = value["min"].toDouble() * verticalZoom + 40;
         eventH = value["max"].toDouble() * verticalZoom + 40 - y;
 
-        if (_selectedIdx.count(idx))
+        if (selectedIdx.count(idx))
             painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
         else
             painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor(240, 240, 240)));
@@ -383,5 +221,5 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
 
     if (type == "word")
-        painter->drawText(start * _zoomCoef + 5, fullHeight - y  + 20, word);
+        painter->drawText(start * zoomCoef + 5, fullHeight - y  + 20, word);
 }

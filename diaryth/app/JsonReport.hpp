@@ -63,6 +63,7 @@ namespace diaryth
         const QJsonArray& getEvents() { return _events; }
         const QJsonArray& getChunks() { return _chunks; }
         const QJsonObject& getFullPraat() { return _fullPraat; }
+        const std::set<int>& getSelectedIdx() { return _selectedIdx; }
 
     private:
 
