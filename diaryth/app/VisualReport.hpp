@@ -66,7 +66,7 @@ namespace diaryth
             return _zoomCoef;
         }
 
-        Q_INVOKABLE void setZoom(double newZoom) {
+        Q_INVOKABLE void setZoom(double newZoom) { //TODO Move all to cpp even single liners, uses them first in file
             _zoomCoef = newZoom;
             update();
         }
@@ -99,7 +99,10 @@ namespace diaryth
         Q_INVOKABLE void selectEvent(int idx);
         Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
 
-        Q_INVOKABLE void removeAllSelections();
+        Q_INVOKABLE void removeAllSelections() {
+            _selectedIdx.clear();
+            update();
+        }
 
         Q_INVOKABLE int getChunksCount();
         Q_INVOKABLE void selectChunk(int idx);
