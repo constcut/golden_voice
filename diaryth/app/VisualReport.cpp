@@ -253,7 +253,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
             auto color = fieldDisplayInfo.color;
 
             if (_selectedIdx.count(idx)) //Возможно это лишнее
-                color = color.darker();
+                color = color.lighter();
 
             paintFun(name, color, fieldDisplayInfo.yCoef);
         }
