@@ -233,21 +233,20 @@ Item
             id: realValidator
         }
 
-        property var colorsNames: ["red", "green", "blue", "black", "darkRed", "darkGreen", "darkBlue",
+        property var colorsNames: ["red", "green", "blue", "orange", "black", "darkRed", "darkGreen", "darkBlue",
                                    "cyan", "magenta", "yellow", "gray", "darkCyan", "darkMagenta",
                                    "darkYellow", "darkGray", "lightGray"]
 
+        property var lastVisualReport: ""
+
         function loadFromVisual(visualReport)
         {
-            var praatFields = visualReport.getPraatFields()
+            configPopup.lastVisualReport = visualReport
 
-            console.log("Praat fields ", praatFields.length)
-            console.log("praat fields", praatFields)
-            console.log(" idx 0 ", praatFields[0])
+            var praatFields = visualReport.getPraatFields()
 
             configRepeater.model = 0
             configRepeater.model = praatFields.length
-
 
             for (var i = 0; i < praatFields.length; ++i)
             {
@@ -269,6 +268,38 @@ Item
                 function loadValues(name, color, coef)
                 {
                     console.log("LOAD ", name, color, coef)
+
+                    var praatFieldsNames = jsonReport.getPraatFieldsNames()
+
+                    for (var i = 0; i < praatFieldsNames.length; ++i)
+                    {
+                        if (praatFieldsNames[i] === name)
+                            break;
+                    }
+
+                    praatFieldName.currentIndex = i
+
+                    for (i = 0; i < configPopup.colorsNames.length; ++i)
+                    {
+                        if (configPopup.colorsNames[i] === color)
+                            break;
+                    }
+
+                    fieldColor.currentIndex = i
+
+                    fieldCoef.text = coef
+                }
+
+                function getName() {
+                    return praatFieldName.currentText
+                }
+
+                function getColor() {
+                    return fieldColor.currentText
+                }
+
+                function getYCoef() {
+                    return fieldCoef.text
                 }
 
                 ComboBox
@@ -301,6 +332,32 @@ Item
             y: parent.height - height - 5
 
             onClicked: configPopup.close()
+        }
+
+        Button
+        {
+            text: "Save"
+
+            x: 10
+            y: parent.height - height - 5
+
+            onClicked:
+            {
+                configPopup.lastVisualReport.clearPraatFields() //find a way to use parametric values
+
+                for (var i = 0; configRepeater.model; ++i)
+                {
+                    var name = configRepeater.itemAt(i).getName()
+                    var color = configRepeater.itemAt(i).getColor()
+                    var yCoef = parseFloat(configRepeater.itemAt(i).getYCoef())
+
+                    configPopup.lastVisualReport.addPraatField(name, color, yCoef)
+                }
+
+                configPopup.lastVisualReport.setPraatType() //way to repaint
+
+                configPopup.close()
+            }
         }
     }
 

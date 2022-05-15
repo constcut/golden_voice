@@ -31,8 +31,6 @@ QVariantList VisualReport::getPraatFields()
         allFields << QVariant::fromValue(fieldLine);
     }
 
-    qDebug() << "Returning praat fields size: " << allFields.size();
-
     return allFields;
 }
 

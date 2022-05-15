@@ -119,10 +119,6 @@ QVariant JsonReport::getSelectedEvents()
         if (type == "pause")
             continue;
 
-        //double start = eObj["startTime"].toDouble();
-        //double end = eObj["endTime"].toDouble();
-        //QString word = eObj["word"].toString();
-
         QList<qreal> eventLine;
 
         eventLine << i;
@@ -141,6 +137,7 @@ QVariant JsonReport::getSelectedEvents()
 
     return QVariant::fromValue(fullList);
 }
+
 
 
 QString JsonReport::getWordByIdx(int idx)
