@@ -91,6 +91,12 @@ namespace diaryth
             //update();
         }
 
+        Q_INVOKABLE void clearPraatFields() {
+            _praatFields.clear();
+        }
+
+        Q_INVOKABLE QVariant getPraatFields();
+
 
     private:
 

@@ -210,7 +210,10 @@ Item
             Button {
                 text: "Config"
 
-                onClicked: configPopup.open()
+                onClicked: {
+                    configPopup.loadFromVisual(visualReport1)
+                    configPopup.open()
+                }
             }
     }
 
@@ -229,6 +232,17 @@ Item
         DoubleValidator {
             id: realValidator
         }
+
+        property var colorsNames: ["red", "green", "blue", "black", "darkRed", "darkGreen", "darkBlue",
+                                   "cyan", "magenta", "yellow", "gray", "darkCyan", "darkMagenta",
+                                   "darkYellow", "darkGray", "lightGray"]
+
+        function loadFromVisual(visualReport)
+        {
+            var praatFields = visualReport.getPraatFields()
+            console.log("Debug: praat fields  ", praatFields)
+        }
+
 
         Repeater
         {
@@ -250,7 +264,7 @@ Item
 
                 ComboBox {
                     id: fieldColor
-                    model: ["red", "green", "blue"]
+                    model: configPopup.colorsNames
                 }
 
                 TextField {

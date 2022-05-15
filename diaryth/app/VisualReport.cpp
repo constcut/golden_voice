@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPainter>
+#include <QVariantList>
 
 
 using namespace diaryth;
@@ -18,7 +19,20 @@ VisualReport::VisualReport()
     _praatFields["Shimmer (local)"] = { "blue", 10 };
 }
 
-//TODO set parent report
+
+QVariant VisualReport::getPraatFields()
+{
+    QList<QVariantList> allFields;
+
+    for (const auto& [fieldName, fieldData]: _praatFields)
+    {
+        QVariantList fieldLine;
+        fieldLine << fieldName << fieldData.color << fieldData.yCoef;
+        allFields << fieldLine;
+    }
+
+    return QVariant::fromValue(allFields);
+}
 
 
 void VisualReport::paint(QPainter* painter)
