@@ -338,9 +338,8 @@ Item
                     text: "-"
 
                     onClicked: {
-                        configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields(index)
-                        configRepeater.model = configRepeater.model - 1
+                        //configRepeater.model = configRepeater.model - 1 //WE got issue here as our object is child
                         configPopup.loadFields()
                     }
                 }
@@ -349,9 +348,8 @@ Item
                     text: "+"
 
                     onClicked: {
-                        configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields()
-                        configRepeater.model = configRepeater.model + 1
+                        //configRepeater.model = configRepeater.model + 1 //WE got issue here as our object is child
                         configPopup.loadFields()
                     }
                 }
