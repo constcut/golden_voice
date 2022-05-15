@@ -59,6 +59,10 @@ namespace diaryth
         Q_INVOKABLE int getChunksCount();
         Q_INVOKABLE void selectChunk(int idx);
 
+        Q_INVOKABLE int getLastSelectedChunk() {
+            return _lastSelectedChunk;
+        }
+
         //void addVisualReport
         //void removeVisualReport
         //void clearAllVisualReport
@@ -76,14 +80,15 @@ namespace diaryth
 
         void updateAllVisualReports();
 
-        double _fullWidth;
-        double _zoomCoef;
+        double _fullWidth = 0.0;
+        double _zoomCoef = 250.0;
 
         QJsonArray _events; //TODO вероятно позже лучше хранить в отдельном классе, который связывать с множеством репортов - иначе дублировани
         QJsonArray _chunks; //Операции выделения итд можно тоже поместить в этот отдельный класс
         QJsonObject _fullPraat;
 
         std::set<int> _selectedIdx;
+        int _lastSelectedChunk = 0;
 
         std::set<VisualReport*> _connectedVisuals;
 

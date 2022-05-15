@@ -75,6 +75,7 @@ void JsonReport::selectChunk(int idx)
             _selectedIdx.insert(i);
     }
 
+    _lastSelectedChunk = idx;
     updateAllVisualReports();
 }
 

@@ -55,7 +55,7 @@ void VisualReport::paint(QPainter* painter)
         if (_type == VisualTypes::Pitch || _type == VisualTypes::Amplitude)
             paintSequenceType(painter, event, i, prevStats);
 
-        if (_type == VisualTypes::PraatInfo)
+        if (_type == VisualTypes::PraatInfo || _type == PraatInfoFullDiff)
             paintPraatInfo(painter, event, i, prevPraats);
     }
 }
@@ -84,10 +84,26 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
             if (event["info"].isObject())
             {
                 auto info = event["info"].toObject();
-                value = info[infoName].toDouble();
+
+                value = info[infoName].toDouble(); //default PraatInfo
+
+                if (_type == VisualTypes::PraatInfoFullDiff)
+                    value = _parentReport->getFullPraat()[infoName].toDouble() - value;
+
+                if (_type == VisualTypes::PraatInfoChunkDiff)
+                {
+                    auto praatInfo = _parentReport->getChunks()[_parentReport->getLastSelectedChunk()]["praat_report"].toObject();
+                    value = praatInfo[infoName].toDouble() - value;
+                }
             }
 
-            int y = height() - value * yCoef; //TODO это единственное значение, что будет отличаться
+
+            int y = 0;
+
+            if (_type == VisualTypes::PraatInfo)
+                y = height() - value * yCoef; //TODO это единственное значение, что будет отличаться
+            else
+                y = height() / 2 - value * yCoef;
             //При использовании новых типов PraatInfoFullDiff PraatInfoChunkDiff
 
             painter->setPen(color);

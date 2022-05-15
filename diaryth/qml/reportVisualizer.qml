@@ -215,6 +215,30 @@ Item
                     configPopup.open()
                 }
             }
+
+            Button {
+                text: "Normal praat"
+
+                onClicked: {
+                    visualReport1.setPraatType()
+                }
+            }
+
+            Button {
+                text: "Chunk diff"
+
+                onClicked: {
+                    visualReport1.setPraatInfoChunkType()
+                }
+            }
+
+            Button {
+                text: "Full diff"
+
+                onClicked: {
+                    visualReport1.setPraatFullDiffType()
+                }
+            }
     }
 
 
@@ -399,7 +423,7 @@ Item
             {
                 configPopup.storeFields()
                 loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
-                configRepeater.model += 1
+                configRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
             }
         }
 
