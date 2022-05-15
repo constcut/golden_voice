@@ -64,6 +64,8 @@ int JsonReport::getChunksCount()
 
 void JsonReport::selectChunk(int idx)
 {
+
+
     _selectedIdx.clear();
 
     for (int i = 0; i < _events.size(); ++i)
