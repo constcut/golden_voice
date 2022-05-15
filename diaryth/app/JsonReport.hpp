@@ -11,7 +11,7 @@
 
 
 //TODO clean after JsonReport Merge
-
+//TODO const correct for all JsonReport\Visual\Network
 
 namespace diaryth
 {
@@ -59,6 +59,10 @@ namespace diaryth
         //void addVisualReport
         //void removeVisualReport
         //void clearAllVisualReport
+
+        const QJsonArray& getEvents() { return _events; }
+        const QJsonArray& getChunks() { return _chunks; }
+        const QJsonObject& getFullPraat() { return _fullPraat; }
 
     private:
 
