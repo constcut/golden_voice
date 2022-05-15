@@ -267,8 +267,6 @@ Item
 
                 function loadValues(name, color, coef)
                 {
-                    console.log("LOAD ", name, color, coef)
-
                     var praatFieldsNames = jsonReport.getPraatFieldsNames()
 
                     for (var i = 0; i < praatFieldsNames.length; ++i)
@@ -321,6 +319,22 @@ Item
                     validator: realValidator
                     text: "1,0"
                 }
+
+                RoundButton {
+                    text: "-"
+
+                    onClicked: {
+
+                    }
+                }
+
+                RoundButton {
+                    text: "+"
+
+                    onClicked: {
+
+                    }
+                }
             }
         }
 
@@ -347,7 +361,6 @@ Item
 
                 for (var i = 0; i < configRepeater.model; ++i)
                 {
-                    console.log("Fillin field #", i)
 
                     var name = configRepeater.itemAt(i).getName()
                     var color = configRepeater.itemAt(i).getColor()
