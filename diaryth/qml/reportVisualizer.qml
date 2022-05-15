@@ -345,8 +345,10 @@ Item
             {
                 configPopup.lastVisualReport.clearPraatFields() //find a way to use parametric values
 
-                for (var i = 0; configRepeater.model; ++i)
+                for (var i = 0; i < configRepeater.model; ++i)
                 {
+                    console.log("Fillin field #", i)
+
                     var name = configRepeater.itemAt(i).getName()
                     var color = configRepeater.itemAt(i).getColor()
                     var yCoef = parseFloat(configRepeater.itemAt(i).getYCoef())
