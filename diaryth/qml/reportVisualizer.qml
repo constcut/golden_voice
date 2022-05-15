@@ -47,13 +47,12 @@ Item
 
                     }
                     onDoubleClicked: {
-                        var idx = visualReport1.eventIdxOnClick(mouseX, mouseY)
-                        visualReport1.selectEvent(idx)
-                        visualReport2.selectEvent(idx)
+                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
+                        jsonReport.selectEvent(idx)
                     }
 
                 }
-            }
+            } //VisualReport
 
             VisualReport
             {
@@ -69,17 +68,16 @@ Item
 
                     }
                     onDoubleClicked: {
-                        var idx = visualReport1.eventIdxOnClick(mouseX, mouseY)
-                        visualReport1.selectEvent(idx)
-                        visualReport2.selectEvent(idx)
+                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
+                        jsonReport.selectEvent(idx)
                     }
 
                 }
-            }
+            } //VisualReport
 
+        } //Flickable
 
-        }
-    }
+    } //ScrollView
 
 
     Popup
@@ -99,25 +97,17 @@ Item
 
             RowLayout
             {
-
                 x: 10
                 y: index * 40
 
-                Text
-                {
+                Text {
                     id: eventText
                 }
 
-                function setText(text)
-                {
+                function setText(text) {
                     eventText.text = text
                 }
-
-                /*RoundButton {
-                    text: "+"
-                }*/
             }
-
         }
 
         Button
@@ -151,8 +141,7 @@ Item
             Button {
                 text: "Select chunk"
                 onClicked: {
-                    visualReport1.selectChunk(parseInt(chunkId.currentText))
-                    visualReport2.selectChunk(parseInt(chunkId.currentText))
+                    jsonReport.selectChunk(parseInt(chunkId.currentText))
                 }
             }
 
