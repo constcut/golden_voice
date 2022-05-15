@@ -34,7 +34,7 @@ namespace diaryth
 
         Q_INVOKABLE void setZoom(double newZoom) { //TODO Move all to cpp even single liners, uses them first in file
             _zoomCoef = newZoom;
-            //update(); //TODO notify call all connected objects
+            updateAllVisualReports();
         }
 
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
