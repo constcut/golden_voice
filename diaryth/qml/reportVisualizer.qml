@@ -275,13 +275,16 @@ Item
                 fieldsList.push(fieldLine)
             }
 
-            console.log("Stored ", fieldsList.length, " fields")
             configPopup.storedFields = fieldsList
         }
 
         function loadFields()
         {
-            console.log("Load fields called ", configPopup.storedFields.length)
+            for (var i = 0; i < configPopup.storedFields.length; ++i)
+            {
+                var fieldLine = configPopup.storedFields[i]
+                configRepeater.itemAt(i).loadValues(fieldLine[0], fieldLine[1], fieldLine[2])
+            }
         }
 
 
@@ -377,7 +380,7 @@ Item
         Timer
         {
             id: loadStoredTimer
-            interval: 250
+            interval: 50
             running: false
             repeat: false
             onTriggered: {
