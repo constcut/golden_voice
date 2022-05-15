@@ -243,6 +243,7 @@ Item
 
             console.log("Praat fields ", praatFields.length)
             console.log("praat fields", praatFields)
+            console.log(" idx 0 ", praatFields[0])
 
             configRepeater.model = 0
             configRepeater.model = praatFields.length

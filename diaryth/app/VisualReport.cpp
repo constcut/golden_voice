@@ -20,18 +20,20 @@ VisualReport::VisualReport()
 }
 
 
-QVariant VisualReport::getPraatFields()
+QVariantList VisualReport::getPraatFields()
 {
-    QList<QVariantList> allFields;
+    QVariantList allFields;
 
     for (const auto& [fieldName, fieldData]: _praatFields)
     {
-        QVariantList fieldLine;
-        fieldLine << fieldName << fieldData.color << fieldData.yCoef;
-        allFields << fieldLine;
+        QStringList fieldLine;
+        fieldLine << fieldName << fieldData.color << QString::number(fieldData.yCoef);
+        allFields << QVariant::fromValue(fieldLine);
     }
 
-    return QVariant::fromValue(allFields);
+    qDebug() << "Returning praat fields size: " << allFields.size();
+
+    return allFields;
 }
 
 
