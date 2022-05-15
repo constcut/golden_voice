@@ -260,12 +260,28 @@ Item
 
         function storeFields(skipIdx = -1)
         {
-            console.log("Store fields called ", skipIdx)
+            var fieldsList = []
+
+            for (var i = 0; i < configRepeater.model; ++i)
+            {
+                if (i === skipIdx)
+                    continue
+
+                var name = configRepeater.itemAt(i).getName()
+                var color = configRepeater.itemAt(i).getColor()
+                var yCoef = configRepeater.itemAt(i).getYCoef()
+                var fieldLine = [name, color, yCoef]
+
+                fieldsList.push(fieldLine)
+            }
+
+            console.log("Stored ", fieldsList.length, " fields")
+            configPopup.storedFields = fieldsList
         }
 
         function loadFields()
         {
-            console.log("Load fields called ")
+            console.log("Load fields called ", configPopup.storedFields.length)
         }
 
 
