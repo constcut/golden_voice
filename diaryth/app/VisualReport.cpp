@@ -24,8 +24,11 @@ VisualReport::VisualReport()
     QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error); //QJsonParseError *error = new QJsonParseError();
 
     auto root = doc.object();
+
     _events = root["events"].toArray();
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
+
+    _chunks = root["chunks"].toArray();
 
     _praatFields["Jitter (local)"] = { QColor("green"), 20 };
     _praatFields["Shimmer (local)"] = { QColor("blue"), 10 };

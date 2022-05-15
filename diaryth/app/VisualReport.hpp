@@ -44,7 +44,9 @@ namespace diaryth
     class VisualReport : public QQuickPaintedItem
     {
         Q_OBJECT
+
     public:
+
         VisualReport();
 
         void paint(QPainter* painter);
@@ -60,7 +62,7 @@ namespace diaryth
             return _fullWidth + 20;
         }
 
-        Q_INVOKABLE double getZoom() {
+        Q_INVOKABLE double getZoom() { //Time - добавить в название, чтобы было понятно
             return _zoomCoef;
         }
 
@@ -87,15 +89,20 @@ namespace diaryth
             update();
         }
 
-        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
-        Q_INVOKABLE void selectEvent(int idx);
-        Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
-
         Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)
         {
             _praatFields[name] = {QColor(color), yCoef};
             //update();
         }
+
+        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
+        Q_INVOKABLE void selectEvent(int idx);
+        Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
+
+        Q_INVOKABLE void removeAllSelections();
+
+        Q_INVOKABLE int getChunksCount();
+        Q_INVOKABLE void selectChunk(int idx);
 
     private:
 
@@ -114,6 +121,8 @@ namespace diaryth
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
 
         QJsonArray _events;
+        QJsonArray _chunks;
+
         std::set<int> _selectedIdx;
     };
 
