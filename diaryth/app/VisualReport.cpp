@@ -114,6 +114,23 @@ QVariantList VisualReport::getSelectedEvents()
 }
 
 
+QStringList VisualReport::getChunkInfo(int idx)
+{
+    QStringList chunkLine;
+
+
+    return chunkLine;
+}
+
+
+QStringList VisualReport::getFullInfo()
+{
+    QStringList fullFileLine;
+
+    return fullFileLine;
+}
+
+
 
 void VisualReport::selectEvent(int idx)
 {

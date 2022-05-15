@@ -97,7 +97,11 @@ namespace diaryth
 
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
         Q_INVOKABLE void selectEvent(int idx);
-        Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
+
+        Q_INVOKABLE QVariantList getSelectedEvents();
+        Q_INVOKABLE QStringList getChunkInfo(int idx);
+        Q_INVOKABLE QStringList getFullInfo();
+
 
         Q_INVOKABLE void removeAllSelections() {
             _selectedIdx.clear();
@@ -123,8 +127,8 @@ namespace diaryth
 
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
 
-        QJsonArray _events;
-        QJsonArray _chunks;
+        QJsonArray _events; //TODO вероятно позже лучше хранить в отдельном классе, который связывать с множеством репортов - иначе дублировани
+        QJsonArray _chunks; //Операции выделения итд можно тоже поместить в этот отдельный класс
 
         std::set<int> _selectedIdx;
     };
