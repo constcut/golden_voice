@@ -205,8 +205,75 @@ Item
 
                     popup.open()
                 }
+            } //Button
+
+            Button {
+                text: "Config"
+
+                onClicked: configPopup.open()
             }
     }
+
+
+    Popup
+    {
+        id: configPopup
+        x: 50
+        y: 50
+        width: item.width - x * 2
+        height: item.height - x * 2
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        DoubleValidator {
+            id: realValidator
+        }
+
+        Repeater
+        {
+            model: 3
+            id: configRepeater //TODO cover under flickable
+
+            RowLayout
+            {
+                y: index * 60
+
+                ComboBox
+                {
+                    id: praatField
+                    model: jsonReport.getPraatFieldsNames()
+
+                    implicitWidth: 250
+                    width: 250
+                }
+
+                ComboBox {
+                    id: fieldColor
+                    model: ["red", "green", "blue"]
+                }
+
+                TextField {
+                    id: fieldCoef
+                    validator: realValidator
+                    text: "1,0"
+                }
+            }
+        }
+
+        Button
+        {
+            text: "Close"
+
+            x: parent.width - width - 10
+            y: parent.height - height - 5
+
+            onClicked: configPopup.close()
+        }
+    }
+
+
+
 
     JsonReport
     {
