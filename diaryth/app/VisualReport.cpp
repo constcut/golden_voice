@@ -14,8 +14,8 @@ VisualReport::VisualReport()
 {
     _parentReport = nullptr;
 
-    _praatFields["Jitter (local)"] = { QColor("green"), 20 };
-    _praatFields["Shimmer (local)"] = { QColor("blue"), 10 };
+    _praatFields["Jitter (local)"] = { "green", 20 };
+    _praatFields["Shimmer (local)"] = { "blue", 10 };
 }
 
 //TODO set parent report
@@ -89,7 +89,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
 
         for (const auto& [name, fieldDisplayInfo]: _praatFields)
         {
-            auto color = fieldDisplayInfo.color;
+            auto color = QColor(fieldDisplayInfo.color);
 
             if (selectedIdx.count(idx)) //Возможно это лишнее
                 color = color.lighter();

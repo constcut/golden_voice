@@ -38,7 +38,7 @@ namespace diaryth
 
     struct PraatFieldDisplayInfo
     {
-        QColor color;
+        QString color;
         double yCoef;
     };
 
@@ -87,7 +87,7 @@ namespace diaryth
 
         Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)
         {
-            _praatFields[name] = {QColor(color), yCoef};
+            _praatFields[name] = {color, yCoef};
             //update();
         }
 
