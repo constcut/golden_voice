@@ -339,20 +339,33 @@ Item
 
                     onClicked: {
                         configPopup.storeFields(index)
-                        //configRepeater.model = configRepeater.model - 1 //WE got issue here as our object is child
-                        configPopup.loadFields()
+                        loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
+                        configRepeater.model = configRepeater.model - 1 //WE got issue here as our current object is child
                     }
                 }
 
                 RoundButton {
                     text: "+"
 
-                    onClicked: {
+                    onClicked:
+                    {
                         configPopup.storeFields()
-                        //configRepeater.model = configRepeater.model + 1 //WE got issue here as our object is child
-                        configPopup.loadFields()
+                        loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
+                        configRepeater.model = configRepeater.model + 1 //WE got issue here as our current object is child
                     }
                 }
+            }
+        }
+
+
+        Timer
+        {
+            id: loadStoredTimer
+            interval: 250
+            running: false
+            repeat: false
+            onTriggered: {
+                configPopup.loadFields()
             }
         }
 
@@ -363,10 +376,11 @@ Item
             x: parent.width/2 - width/2 - 5
             y: parent.height - height - 5
 
-            onClicked: {
-                //STORE model
+            onClicked:
+            {
+                configPopup.storeFields()
+                loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
                 configRepeater.model += 1
-                //LOAD model
             }
         }
 
