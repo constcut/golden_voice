@@ -57,7 +57,9 @@ namespace diaryth
             TypeNotSet,
             Pitch,
             Amplitude,
-            PraatInfo
+            PraatInfo,
+            PraatInfoFullDiff,
+            PraatInfoChunkDiff
         };
 
         Q_INVOKABLE void setParent(JsonReport* report)

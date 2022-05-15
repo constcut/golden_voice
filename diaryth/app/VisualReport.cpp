@@ -87,7 +87,8 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
                 value = info[infoName].toDouble();
             }
 
-            int y = height() - value * yCoef;
+            int y = height() - value * yCoef; //TODO это единственное значение, что будет отличаться
+            //При использовании новых типов PraatInfoFullDiff PraatInfoChunkDiff
 
             painter->setPen(color);
             painter->drawLine(x, y, x + w, y);
