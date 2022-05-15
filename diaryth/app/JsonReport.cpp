@@ -7,6 +7,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "VisualReport.hpp"
+
 using namespace diaryth;
 
 
@@ -33,9 +35,25 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 
 void JsonReport::updateAllVisualReports()
 {
-    qDebug() << "Implement update all visual reports";
+    for (auto visualPtr: _connectedVisuals)
+        visualPtr->update();
 }
 
+
+void JsonReport::registerVisual(VisualReport* visual)
+{
+    _connectedVisuals.insert(visual);
+}
+
+void JsonReport::removeVisual(VisualReport* visual)
+{
+    _connectedVisuals.erase(visual);
+}
+
+void JsonReport::clearVisuals()
+{
+    _connectedVisuals.clear();
+}
 
 
 int JsonReport::getChunksCount()
@@ -176,8 +194,6 @@ QStringList JsonReport::getPraatFieldsNames()
 }
 
 
-
-
 void JsonReport::selectEvent(int idx)
 {
     if (_selectedIdx.count(idx))
@@ -187,4 +203,5 @@ void JsonReport::selectEvent(int idx)
 
     updateAllVisualReports();
 }
+
 

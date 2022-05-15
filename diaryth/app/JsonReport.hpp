@@ -16,6 +16,9 @@
 namespace diaryth
 {
 
+    class VisualReport;
+
+
     class JsonReport : public QObject
     {
         Q_OBJECT
@@ -65,6 +68,10 @@ namespace diaryth
         const QJsonObject& getFullPraat() { return _fullPraat; }
         const std::set<int>& getSelectedIdx() { return _selectedIdx; }
 
+        void registerVisual(VisualReport* visual); //Not Q_INVOKABLE  beasue must be registered from VR set parent
+        Q_INVOKABLE void removeVisual(VisualReport* visual);
+        Q_INVOKABLE void clearVisuals();
+
     private:
 
         void updateAllVisualReports();
@@ -77,6 +84,8 @@ namespace diaryth
         QJsonObject _fullPraat;
 
         std::set<int> _selectedIdx;
+
+        std::set<VisualReport*> _connectedVisuals;
 
     };
 

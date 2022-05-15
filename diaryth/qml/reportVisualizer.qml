@@ -129,8 +129,7 @@ Item
             Button {
                 text: "Remove selection"
                 onClicked: {
-                    visualReport1.removeAllSelections()
-                    visualReport2.removeAllSelections()
+                    jsonReport.removeAllSelections()
                 }
             }
 

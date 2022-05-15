@@ -63,6 +63,7 @@ namespace diaryth
         Q_INVOKABLE void setParent(JsonReport* report)
         {
             _parentReport = report;
+            report->registerVisual(this);
             update();
         }
 
