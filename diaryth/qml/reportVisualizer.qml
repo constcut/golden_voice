@@ -239,6 +239,8 @@ Item
 
         property var lastVisualReport: ""
 
+        property var storedFields: ""
+
         function loadFromVisual(visualReport)
         {
             configPopup.lastVisualReport = visualReport
@@ -254,6 +256,18 @@ Item
                 configRepeater.itemAt(i).loadValues(fieldLine[0], fieldLine[1], fieldLine[2])
             }
         }
+
+
+        function storeFields(skipIdx = -1)
+        {
+            console.log("Store fields called ", skipIdx)
+        }
+
+        function loadFields()
+        {
+            console.log("Load fields called ")
+        }
+
 
 
         Repeater
@@ -324,7 +338,9 @@ Item
                     text: "-"
 
                     onClicked: {
-
+                        configPopup.storeFields(index)
+                        configRepeater.model -= 1
+                        configPopup.loadFields()
                     }
                 }
 
@@ -332,11 +348,28 @@ Item
                     text: "+"
 
                     onClicked: {
-
+                        configPopup.storeFields()
+                        configRepeater.model += 1
+                        configPopup.loadFields()
                     }
                 }
             }
         }
+
+        Button
+        {
+            text: "Add new"
+
+            x: parent.width/2 - width/2 - 5
+            y: parent.height - height - 5
+
+            onClicked: {
+                //STORE model
+                configRepeater.model += 1
+                //LOAD model
+            }
+        }
+
 
         Button
         {
