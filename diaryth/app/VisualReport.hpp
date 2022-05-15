@@ -60,7 +60,8 @@ namespace diaryth
             PraatInfo,
             PraatInfoFullDiff,
             PraatInfoChunkDiff,
-            ChunksOnly
+            ChunksOnly,
+            PlainWords
             //Отображение только чанков ? в них нужна гарантированно скорость слов в чанке
             //PlainWords - просто слова !
             //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
@@ -104,12 +105,18 @@ namespace diaryth
             update();
         }
 
+        Q_INVOKABLE void setPlainWordsType()
+        {
+            _type = VisualTypes::PlainWords;
+            update();
+        }
+
 
         Q_INVOKABLE void setChunksOnlyType()
         {
             _type = VisualTypes::ChunksOnly;
             update();
-        }
+        } //TODO move into amplitude or pitch
 
         Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)
         {

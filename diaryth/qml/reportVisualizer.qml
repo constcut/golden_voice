@@ -245,6 +245,15 @@ Item
 
                 onClicked: {
                     visualReport1.setChunksOnlyType()
+                    //TODO move into amplitude or pitch
+                }
+            }
+
+            Button {
+                text: "Plain words"
+
+                onClicked: {
+                    visualReport1.setPlainWordsType()
                 }
             }
     }
