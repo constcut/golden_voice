@@ -35,6 +35,27 @@ VisualReport::VisualReport()
 }
 
 
+int VisualReport::getChunksCount()
+{
+    return _chunks.size();
+}
+
+
+void VisualReport::selectChunk(int idx)
+{
+    _selectedIdx.clear();
+
+    for (int i = 0; i < _events.size(); ++i)
+    {
+        auto e = _events[i];
+        int chunkId = e.toObject()["chunkId"].toInt();
+
+        if (chunkId == idx)
+            _selectedIdx.insert(i);
+    }
+}
+
+
 
 int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 {
