@@ -27,8 +27,8 @@ VisualReport::VisualReport()
     _events = root["events"].toArray();
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
 
-    _praatFields["Jitter (local)"] = { QColor("green"), 4 };
-    _praatFields["Shimmer (local)"] = { QColor("blue"), 2 };
+    _praatFields["Jitter (local)"] = { QColor("green"), 20 };
+    _praatFields["Shimmer (local)"] = { QColor("blue"), 10 };
 }
 
 
@@ -144,7 +144,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
             if (event["info"].isObject())
             {
                 auto info = event["info"].toObject();
-                value = info[infoName].toDouble() * 5;
+                value = info[infoName].toDouble();
             }
 
             int y = height() - value * yCoef;

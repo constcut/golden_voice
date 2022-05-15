@@ -37,7 +37,7 @@ namespace diaryth
     struct PraatFieldDisplayInfo
     {
         QColor color;
-        int yCoef;
+        double yCoef;
     };
 
 
@@ -91,7 +91,7 @@ namespace diaryth
         Q_INVOKABLE void selectEvent(int idx);
         Q_INVOKABLE QVariantList getSelectedEvents(); //Get selected idxs? Нужна ли ещё одна функция
 
-        Q_INVOKABLE void addPraatField(QString name, QString color, int yCoef)
+        Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)
         {
             _praatFields[name] = {QColor(color), yCoef};
             //update();

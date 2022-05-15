@@ -42,8 +42,10 @@ Item
                 Component.onCompleted: {
                     //visualReport1.setAmpitudeType()
 
-                    visualReport1.addPraatField("Jitter (rap)", "red", 4)
-                    visualReport1.addPraatField("Number of pulses", "orange", 1)
+                    //TODO сделать отдельное окно для выбора CheckBox возможных полей и цвета, коэфициента
+
+                    visualReport1.addPraatField("Jitter (rap)", "red", 20)
+                    visualReport1.addPraatField("Number of pulses", "orange", 5)
 
                     visualReport1.setPraatType()
                     flick.contentWidth = visualReport1.getFullWidth()
