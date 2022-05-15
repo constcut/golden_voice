@@ -149,27 +149,42 @@ Item
     }
 
 
-    Button
+    RowLayout
     {
-        text : "+"
-        y: visualReport1.y + visualReport1.height + visualReport2.height
+            y: visualReport1.y + visualReport1.height + visualReport2.height
 
-        onClicked:
-        {
-            var events = visualReport1.getSelectedEvents()
-
-            eventsRepeater.model = 0
-            eventsRepeater.model = events.length
-
-            for (var i = 0; i < events.length; ++i)
-            {
-                var eventLine = events[i]
-                eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
+            Button {
+                text: "Remove selection"
+                onClicked: {
+                    visualReport1.removeAllSelections()
+                    visualReport2.removeAllSelections()
+                }
             }
 
-            popup.open()
-        }
+
+            Button
+            {
+                text : "+"
+
+                onClicked:
+                {
+                    var events = visualReport1.getSelectedEvents()
+
+                    eventsRepeater.model = 0
+                    eventsRepeater.model = events.length
+
+                    for (var i = 0; i < events.length; ++i)
+                    {
+                        var eventLine = events[i]
+                        eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
+                    }
+
+                    popup.open()
+                }
+            }
     }
+
+
 
 
     function keyboardEventSend(key, mode) {
