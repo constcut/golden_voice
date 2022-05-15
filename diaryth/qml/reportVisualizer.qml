@@ -192,6 +192,8 @@ Item
                         eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
                     }
 
+                    var fullInfo = visualReport1.getFullInfo()
+
                     popup.open()
                 }
             }

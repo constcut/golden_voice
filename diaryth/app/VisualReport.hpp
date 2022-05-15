@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include <QJsonArray>
+#include <QJsonObject>
 
 #include <QVariantList>
 
@@ -99,8 +100,9 @@ namespace diaryth
         Q_INVOKABLE void selectEvent(int idx);
 
         Q_INVOKABLE QVariantList getSelectedEvents();
-        Q_INVOKABLE QStringList getChunkInfo(int idx);
-        Q_INVOKABLE QStringList getFullInfo();
+        Q_INVOKABLE QList<qreal> getChunkInfo(int idx); //TODO как и с selection убрать все в класс хранитель JSON общий для всех репортов подключать через QObject*
+        Q_INVOKABLE QList<qreal> getFullInfo();
+        Q_INVOKABLE QStringList getPraatFieldsNames();
 
 
         Q_INVOKABLE void removeAllSelections() {
@@ -129,6 +131,7 @@ namespace diaryth
 
         QJsonArray _events; //TODO вероятно позже лучше хранить в отдельном классе, который связывать с множеством репортов - иначе дублировани
         QJsonArray _chunks; //Операции выделения итд можно тоже поместить в этот отдельный класс
+        QJsonObject _fullPraat;
 
         std::set<int> _selectedIdx;
     };

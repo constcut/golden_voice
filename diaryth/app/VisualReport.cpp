@@ -29,6 +29,7 @@ VisualReport::VisualReport()
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
 
     _chunks = root["chunks"].toArray();
+    _fullPraat = root["praat_report"].toObject(); //TODO + statistics of sequences
 
     _praatFields["Jitter (local)"] = { QColor("green"), 20 };
     _praatFields["Shimmer (local)"] = { QColor("blue"), 10 };
@@ -114,21 +115,42 @@ QVariantList VisualReport::getSelectedEvents()
 }
 
 
-QStringList VisualReport::getChunkInfo(int idx)
+QList<qreal> VisualReport::getChunkInfo(int idx) //TODO ещё одну функцию для общей статистики
 {
-    QStringList chunkLine;
+    QList<qreal> chunkLine;
 
+    auto chunkPraatInfo = _chunks[idx].toObject()["praat_report"].toObject();
+
+    const auto& keys = chunkPraatInfo.keys();
+    for (const auto& key: keys)
+        chunkLine << chunkPraatInfo[key].toDouble();
 
     return chunkLine;
 }
 
 
-QStringList VisualReport::getFullInfo()
+QList<qreal> VisualReport::getFullInfo()
 {
-    QStringList fullFileLine;
+    QList<qreal> fullFileLine;
+
+    const auto& keys = _fullPraat.keys();
+    for (const auto& key: keys)
+        fullFileLine << _fullPraat[key].toDouble();
 
     return fullFileLine;
 }
+
+
+QStringList VisualReport::getPraatFieldsNames()
+{
+    QStringList fullFileLine;
+
+    for (const auto& key: _fullPraat.keys())
+        fullFileLine << key;
+
+    return fullFileLine;
+}
+
 
 
 
