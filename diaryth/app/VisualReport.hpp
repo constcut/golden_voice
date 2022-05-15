@@ -23,6 +23,14 @@ namespace diaryth
         double prevXEnd = 0.0;
     };
 
+    struct PraatPrevStats
+    {
+        double prevXEnd = 0.0;
+
+        double prevJitter = 0.0;
+        double prevShimmer = 0.0;
+    };
+
 
     class VisualReport : public QQuickPaintedItem
     {
@@ -83,7 +91,7 @@ namespace diaryth
                                int idx, ReportPrevStats &prevStats);
 
         void paintPraatInfo(QPainter* painter, QJsonObject& event,
-                            int idx, ReportPrevStats &prevStats);
+                            int idx, PraatPrevStats &prevStats);
 
 
         VisualTypes _type = VisualTypes::Pitch;

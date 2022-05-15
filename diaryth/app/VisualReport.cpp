@@ -112,6 +112,7 @@ void VisualReport::paint(QPainter* painter)
 {
 
     ReportPrevStats prevStats;
+    PraatPrevStats prevPraats;
 
     painter->drawRect(2, 2, width() - 4, height() - 4); // Для удобства тестирования
 
@@ -125,7 +126,7 @@ void VisualReport::paint(QPainter* painter)
             paintSequenceType(painter, event, i, prevStats);
 
         if (_type == VisualTypes::PraatInfo)
-            paintPraatInfo(painter, event, i, prevStats);
+            paintPraatInfo(painter, event, i, prevPraats);
 
     }
 
@@ -133,10 +134,10 @@ void VisualReport::paint(QPainter* painter)
 
 
 void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
-                                  int idx, ReportPrevStats &prevStats)
+                                  int idx, PraatPrevStats &prevStats)
 {
 
-    //Возможно стоит заменить prevStats
+    //prevStats - должен хранить map<QString, double> - для вариативности
 
     //Не забыть иногда praat_info может быть пустым
 
@@ -151,19 +152,33 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
         auto x = start * _zoomCoef + 5;
         double w = (end - start) * _zoomCoef;
 
-        double value = 0.0;
+        //Позже реализовать отрисовку так:
+        //QString praat_info_name, int y_coef, QColor color - чтобы можно было отобразить сколько угодно элементов
 
-        if (event["info"].isObject())
+        auto paintFun = [&](QString infoName)
         {
-            auto info = event["info"].toObject();
-            value = info["Jitter (local)"].toDouble() * 5;
-        }
+            double value = 0.0;
 
-        int y = height() - value * 10;
+            if (event["info"].isObject())
+            {
 
-        painter->drawLine(x, y, x + w, y);
+                auto info = event["info"].toObject();
+                value = info[infoName].toDouble() * 5;
+            }
+
+            int y = height() - value * 10;
+
+            painter->drawLine(x, y, x + w, y);
+
+            if (prevStats.prevXEnd != 0.0)
+                painter->drawLine(prevStats.prevXEnd, prevStats.prevJitter, x, y);
+
+            prevStats.prevXEnd = x + w;
+            prevStats.prevJitter = y;
+        };
+
+        paintFun("Jitter (local)");
     }
-
 }
 
 
