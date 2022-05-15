@@ -32,7 +32,6 @@ Item
             property int pressedX : 0
 
 
-
             VisualReport
             {
                 id: visualReport1
@@ -151,12 +150,12 @@ Item
 
                 onClicked:
                 {
-                    var events = visualReport1.getSelectedEvents()
+                    var events = jsonReport.getSelectedEvents()
 
                     eventsRepeater.model = 0
                     eventsRepeater.model = events.length + 4 //names, chunk, full, full - chunk
 
-                    var fieldsNames = visualReport1.getPraatFieldsNames();
+                    var fieldsNames = jsonReport.getPraatFieldsNames();
                     var fullText = "type, "
 
                     for (var j = 0; j < fieldsNames.length; ++j)
@@ -168,7 +167,7 @@ Item
                     {
                         var eventLine = events[i]
                         var eventIdx = eventLine[0]
-                        var word = visualReport1.getWordByIdx(eventIdx)
+                        var word = jsonReport.getWordByIdx(eventIdx)
 
                         fullText = word + " "
 
@@ -181,7 +180,7 @@ Item
                         //TODO графики полной разницы каждого слова
                     }
 
-                    var chunkInfo = visualReport1.getChunkInfo(parseInt(chunkId.currentText))
+                    var chunkInfo = jsonReport.getChunkInfo(parseInt(chunkId.currentText))
 
                     fullText = "chunk "
                     for (j = 0; j < chunkInfo.length; ++j)
@@ -189,7 +188,7 @@ Item
 
                     eventsRepeater.itemAt( events.length + 1 ).setText( fullText )
 
-                    var fullInfo = visualReport1.getFullInfo()
+                    var fullInfo = jsonReport.getFullInfo()
 
                     fullText = "full "
                     for (j = 0; j < fullInfo.length; ++j)
