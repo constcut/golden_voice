@@ -146,7 +146,7 @@ Item
 
             Button
             {
-                text : "+"
+                text : "Selected info"
 
                 onClicked:
                 {
