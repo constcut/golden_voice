@@ -136,6 +136,8 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
                                   int idx, ReportPrevStats &prevStats)
 {
 
+    //Возможно стоит заменить prevStats
+
     //Не забыть иногда praat_info может быть пустым
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
@@ -145,10 +147,21 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
 
     if (type == "word")
     {
+
         auto x = start * _zoomCoef + 5;
         double w = (end - start) * _zoomCoef;
 
-        painter->drawLine(x, 50, x + w, 50);
+        double value = 0.0;
+
+        if (event["info"].isObject())
+        {
+            auto info = event["info"].toObject();
+            value = info["Jitter (local)"].toDouble() * 5;
+        }
+
+        int y = height() - value * 10;
+
+        painter->drawLine(x, y, x + w, y);
     }
 
 }
