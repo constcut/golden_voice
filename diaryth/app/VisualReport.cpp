@@ -81,7 +81,7 @@ int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 
 
 
-QList<QList<qreal>> VisualReport::getSelectedEvents()
+QVariant VisualReport::getSelectedEvents()
 {
 
     QList<QList<qreal>> fullList;
@@ -119,7 +119,7 @@ QList<QList<qreal>> VisualReport::getSelectedEvents()
         fullList << eventLine;
     }
 
-    return fullList;
+    return QVariant::fromValue(fullList);
 }
 
 

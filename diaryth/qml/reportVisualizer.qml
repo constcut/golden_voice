@@ -189,7 +189,9 @@ Item
                     for (var i = 0; i < events.length; ++i)
                     {
                         var eventLine = events[i]
-                        eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
+
+                        console.log("Event line ", i, " ", eventLine)
+                        //eventsRepeater.itemAt(i).setText( eventLine[0] + " " + eventLine[1] + " " + eventLine[2] )
                     }
 
                     var fullInfo = visualReport1.getFullInfo()
