@@ -53,6 +53,8 @@ void VisualReport::selectChunk(int idx)
         if (chunkId == idx)
             _selectedIdx.insert(i);
     }
+
+    update();
 }
 
 

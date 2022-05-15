@@ -41,16 +41,17 @@ Item
                 y: 5
                 Component.onCompleted:
                 {
-                    //visualReport1.setAmpitudeType()
-
                     //TODO сделать отдельное окно для выбора CheckBox возможных полей и цвета, коэфициента
 
                     visualReport1.addPraatField("Jitter (rap)", "red", 20)
                     visualReport1.addPraatField("Number of pulses", "orange", 1.2)
 
-                    visualReport1.setPraatType()
                     flick.contentWidth = visualReport1.getFullWidth()
                     visualReport1.width = visualReport1.getFullWidth()
+
+                    visualReport1.setPraatType()                     //visualReport1.setAmpitudeType()
+
+                    chunkId.model = visualReport1.getChunksCount() //TODO find perfect place
                 }
 
                 MouseArea
@@ -158,6 +159,18 @@ Item
                 onClicked: {
                     visualReport1.removeAllSelections()
                     visualReport2.removeAllSelections()
+                }
+            }
+
+            ComboBox {
+                id: chunkId
+            }
+
+            Button {
+                text: "Select chunk"
+                onClicked: {
+                    visualReport1.selectChunk(parseInt(chunkId.currentText))
+                    visualReport2.selectChunk(parseInt(chunkId.currentText))
                 }
             }
 
