@@ -126,6 +126,8 @@ namespace diaryth
 
         VisualTypes _type;
 
+
+        //Переместить всё
         double _fullWidth;
         double _zoomCoef;
 

@@ -30,6 +30,7 @@ QMAKE_LFLAGS += -v
 #Wavelets are commented, yet no application for such amazing detalization
 
 SOURCES += \
+    JsonReport.cpp \
     app/AndroidTools.cpp \
     app/Config.cpp \
     app/Init.cpp \
@@ -174,6 +175,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 HEADERS += \
+    JsonReport.hpp \
     app/AndroidTools.hpp \
     app/Clipboard.hpp \
     app/Config.hpp \
