@@ -39,20 +39,6 @@ Item
                 height:  190
                 width: 3000
                 y: 5
-                Component.onCompleted:
-                {
-                    //TODO сделать отдельное окно для выбора CheckBox возможных полей и цвета, коэфициента
-
-                    visualReport1.addPraatField("Jitter (rap)", "red", 20)
-                    visualReport1.addPraatField("Number of pulses", "orange", 1.2)
-
-                    flick.contentWidth = visualReport1.getFullWidth()
-                    visualReport1.width = visualReport1.getFullWidth()
-
-                    visualReport1.setPraatType()                     //visualReport1.setAmpitudeType()
-
-                    chunkId.model = visualReport1.getChunksCount() //TODO find perfect place
-                }
 
                 MouseArea
                 {
@@ -75,10 +61,6 @@ Item
                 height:  500
                 width: 3000
                 y: 5 + visualReport1.height
-                Component.onCompleted: {
-                    visualReport2.setPitchType()
-                    visualReport2.width =  visualReport2.getFullWidth()
-                }
 
                 MouseArea
                 {
@@ -243,8 +225,22 @@ Item
     {
         id: jsonReport
 
-        Component.onCompleted: {
-            console.log("Json chunks count: ", jsonReport.getChunksCount())
+        Component.onCompleted:
+        {
+            flick.contentWidth = jsonReport.getFullWidth()
+            visualReport1.width = jsonReport.getFullWidth()
+            visualReport2.width =  jsonReport.getFullWidth()
+            chunkId.model = jsonReport.getChunksCount()
+
+            visualReport1.setParent(jsonReport)
+            visualReport2.setParent(jsonReport)
+
+            visualReport1.addPraatField("Jitter (rap)", "red", 20)
+            visualReport1.addPraatField("Number of pulses", "orange", 1.2)
+            visualReport1.setPraatType()
+
+            visualReport2.setPitchType()
+
         }
 
     }
