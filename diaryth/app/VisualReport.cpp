@@ -23,6 +23,8 @@ VisualReport::VisualReport()
 
 void VisualReport::paint(QPainter* painter)
 {
+    if (_parentReport == nullptr)
+        return;
 
     ReportPrevStats prevStats;
     PraatPrevStats prevPraats;

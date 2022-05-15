@@ -60,6 +60,11 @@ namespace diaryth
             PraatInfo
         };
 
+        Q_INVOKABLE void setParent(JsonReport* report)
+        {
+            _parentReport = report;
+            update();
+        }
 
         Q_INVOKABLE void setPitchType()
         {
