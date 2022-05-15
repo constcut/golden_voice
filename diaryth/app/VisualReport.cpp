@@ -81,10 +81,10 @@ int VisualReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 
 
 
-QVariantList VisualReport::getSelectedEvents()
+QList<QList<qreal>> VisualReport::getSelectedEvents()
 {
 
-    QVariantList fullList;
+    QList<QList<qreal>> fullList;
 
     for (int i = 0; i < _events.size(); ++i)
     {
@@ -99,19 +99,41 @@ QVariantList VisualReport::getSelectedEvents()
         if (type == "pause")
             continue;
 
-        double start = eObj["startTime"].toDouble();
-        double end = eObj["endTime"].toDouble();
+        //double start = eObj["startTime"].toDouble();
+        //double end = eObj["endTime"].toDouble();
         QString word = eObj["word"].toString();
 
-        QStringList eventLine; //yet best way to send matrix of "variant"
-        eventLine << word << QString::number(start) << QString::number(end); //TODO more
+        QList<qreal> eventLine;
 
-        //Another way is to use first name then QList<qreal> или может даже QMap<QString, qreal>
+        eventLine << i;
 
-        fullList.append(eventLine);
+        if (eObj["info"].isObject())
+        {
+            auto praatInfo = eObj["info"].toObject();
+
+            const auto& keys = praatInfo.keys();
+            for (const auto& key: keys)
+                eventLine << praatInfo[key].toDouble();
+        }
+
+        fullList << eventLine;
     }
 
     return fullList;
+}
+
+
+QString VisualReport::getWordByIdx(int idx)
+{
+    auto e = _events[idx];
+    auto eObj = e.toObject();
+
+    QString type = eObj["type"].toString();
+
+    if (type == "pause")
+        return "";
+
+    return eObj["word"].toString();
 }
 
 

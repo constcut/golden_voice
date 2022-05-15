@@ -99,10 +99,12 @@ namespace diaryth
         Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
         Q_INVOKABLE void selectEvent(int idx);
 
-        Q_INVOKABLE QVariantList getSelectedEvents();
+        Q_INVOKABLE QList<QList<qreal>> getSelectedEvents();
         Q_INVOKABLE QList<qreal> getChunkInfo(int idx); //TODO как и с selection убрать все в класс хранитель JSON общий для всех репортов подключать через QObject*
         Q_INVOKABLE QList<qreal> getFullInfo();
         Q_INVOKABLE QStringList getPraatFieldsNames();
+
+        Q_INVOKABLE QString getWordByIdx(int idx);
 
 
         Q_INVOKABLE void removeAllSelections() {
