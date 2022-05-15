@@ -4,7 +4,9 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QFile>
+
+#include <QFile> //remove when sepparated with json object
+
 #include <QPainter>
 
 

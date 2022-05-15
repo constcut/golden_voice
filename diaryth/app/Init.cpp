@@ -25,6 +25,7 @@
 
 #include "app/RequestClient.hpp"
 #include "app/VisualReport.hpp"
+#include "app/JsonReport.hpp"
 
 #ifdef AuralsLegacy
     #include "audio/wave/AudioHandler.hpp"
@@ -145,6 +146,8 @@ int mainInit(int argc, char *argv[])
 
     qmlRegisterType<diaryth::ConfigTableModel>("diaryth", 1, 0, "ConfigTableModel");
     qmlRegisterType<diaryth::VisualReport>("diaryth", 1, 0, "VisualReport");
+    qmlRegisterType<diaryth::JsonReport>("diaryth", 1, 0, "VisualReport");
+
 #ifdef AuralsLegacy
     qmlRegisterType<diaryth::WaveshapeQML>("diaryth", 1, 0, "Waveshape");
     qmlRegisterType<diaryth::SpectrographQML>("diaryth", 1, 0,"Spectrograph");

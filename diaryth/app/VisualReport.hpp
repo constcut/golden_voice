@@ -7,8 +7,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
-
-#include <QVariantList>
+#include <QVariant>
 
 #include <set>
 #include <map>
