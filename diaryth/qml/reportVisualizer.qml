@@ -240,7 +240,19 @@ Item
         function loadFromVisual(visualReport)
         {
             var praatFields = visualReport.getPraatFields()
-            console.log("Debug: praat fields  ", praatFields)
+
+            console.log("Praat fields ", praatFields.length)
+            console.log("praat fields", praatFields)
+
+            configRepeater.model = 0
+            configRepeater.model = praatFields.length
+
+
+            for (var i = 0; i < praatFields.length; ++i)
+            {
+                var fieldLine = praatFields[i]
+                configRepeater.itemAt(i).loadValues(fieldLine[0], fieldLine[1], fieldLine[2])
+            }
         }
 
 
@@ -253,9 +265,14 @@ Item
             {
                 y: index * 60
 
+                function loadValues(name, color, coef)
+                {
+                    console.log("LOAD ", name, color, coef)
+                }
+
                 ComboBox
                 {
-                    id: praatField
+                    id: praatFieldName
                     model: jsonReport.getPraatFieldsNames()
 
                     implicitWidth: 250
