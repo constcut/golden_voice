@@ -340,7 +340,7 @@ Item
                     onClicked: {
                         configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields(index)
-                        configRepeater.model -= 1
+                        configRepeater.model = configRepeater.model - 1
                         configPopup.loadFields()
                     }
                 }
@@ -351,7 +351,7 @@ Item
                     onClicked: {
                         configPopup.loadFields() //DOES IT FAILS ALWAYS
                         configPopup.storeFields()
-                        configRepeater.model += 1
+                        configRepeater.model = configRepeater.model + 1
                         configPopup.loadFields()
                     }
                 }
