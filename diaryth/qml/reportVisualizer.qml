@@ -239,6 +239,16 @@ Item
             }
     }
 
+    JsonReport
+    {
+        id: jsonReport
+
+        Component.onCompleted: {
+            console.log("Json chunks count: ", jsonReport.getChunksCount())
+        }
+
+    }
+
 
 
 

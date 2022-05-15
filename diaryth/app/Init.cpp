@@ -146,7 +146,7 @@ int mainInit(int argc, char *argv[])
 
     qmlRegisterType<diaryth::ConfigTableModel>("diaryth", 1, 0, "ConfigTableModel");
     qmlRegisterType<diaryth::VisualReport>("diaryth", 1, 0, "VisualReport");
-    qmlRegisterType<diaryth::JsonReport>("diaryth", 1, 0, "VisualReport");
+    qmlRegisterType<diaryth::JsonReport>("diaryth", 1, 0, "JsonReport");
 
 #ifdef AuralsLegacy
     qmlRegisterType<diaryth::WaveshapeQML>("diaryth", 1, 0, "Waveshape");

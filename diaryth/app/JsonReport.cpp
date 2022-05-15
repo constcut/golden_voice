@@ -57,7 +57,7 @@ void JsonReport::selectChunk(int idx)
             _selectedIdx.insert(i);
     }
 
-    update();
+    updateAllVisualReports();
 }
 
 
@@ -103,7 +103,7 @@ QVariant JsonReport::getSelectedEvents()
 
         //double start = eObj["startTime"].toDouble();
         //double end = eObj["endTime"].toDouble();
-        QString word = eObj["word"].toString();
+        //QString word = eObj["word"].toString();
 
         QList<qreal> eventLine;
 
