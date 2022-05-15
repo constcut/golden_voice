@@ -34,6 +34,12 @@ namespace diaryth
         double prevShimmer = 0.0;
     };
 
+    struct PraatFieldDisplayInfo
+    {
+        QColor color;
+        int yCoef;
+    };
+
 
     class VisualReport : public QQuickPaintedItem
     {
@@ -99,11 +105,12 @@ namespace diaryth
 
         VisualTypes _type = VisualTypes::Pitch;
 
-        QJsonArray _events;
-
         double _fullWidth;
         double _zoomCoef;
 
+        std::map<QString, PraatFieldDisplayInfo> _praatFields;
+
+        QJsonArray _events;
         std::set<int> _selectedIdx;
     };
 

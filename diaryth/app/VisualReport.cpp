@@ -25,16 +25,15 @@ VisualReport::VisualReport()
         qDebug() << "JSON File opened";
 
     QString fullString = f.readAll();
-
-    //QJsonParseError *error = new QJsonParseError(); //TODO leak
+    //QJsonParseError *error = new QJsonParseError();
     QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error);
 
     auto root = doc.object();
     _events = root["events"].toArray();
-
-    qDebug() << "Events total count: " << _events.size();
-
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
+
+    _praatFields["Jitter (local)"] = { QColor("green"), 4 };
+    _praatFields["Shimmer (local)"] = { QColor("blue"), 2 };
 }
 
 
@@ -120,16 +119,13 @@ void VisualReport::paint(QPainter* painter)
     {
         auto e = _events[i];
         auto event = e.toObject();
-        auto type = event["type"].toString();
 
         if (_type == VisualTypes::Pitch || _type == VisualTypes::Amplitude)
             paintSequenceType(painter, event, i, prevStats);
 
         if (_type == VisualTypes::PraatInfo)
             paintPraatInfo(painter, event, i, prevPraats);
-
     }
-
 }
 
 
@@ -170,8 +166,8 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
             prevStats.prevValues[infoName] = y;
         };
 
-        paintFun("Jitter (local)", QColor("green"), 1);
-        paintFun("Shimmer (local)", QColor("blue"), 1);
+        paintFun("Jitter (local)", QColor("green"), 4);
+        paintFun("Shimmer (local)", QColor("blue"), 2);
 
         prevStats.prevXEnd = x + w;
     }
