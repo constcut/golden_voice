@@ -52,7 +52,7 @@ class ReportGenerator:
 		self.every_word_praat_report = True
 		self.calc_every_stat = True
 
-		self.use_morph_analysis = False
+		self.use_morph_analysis = True
 
 		self.measure_time = True 
 
@@ -1295,44 +1295,16 @@ def reports_to_csv(r):
 #rename_files(r)
 #async_load_dir(r)
 #async_extract(r) #WHY long runs out of memory?
-#reports_to_csv(r)
+#reports_to_csv(r)\
+#TODO + morph analisys
 #print("CSV DONE!")
 
 #
-
-'''
-wav_file = r._config['dir'] + '/pcm.wav'
-
-r.convert_wav_to_ogg(r._config['dir'] + '/pcm.wav', r._config['dir'] + '/new.ogg')
-
-id = r.request_recognition(r._config['dir'] + '/new.ogg', 'newalias') #r._config['dir'] + '/local.ogg'
-
-#2 feature extractionn
-
-#wav_file = r.convert_ogg_to_wav(r._config['dir'] , r._config['dir'] + '/local.ogg')
-
-seq_dict = r.extract_features(wav_file)
-
-#3 сохраненние данных с сервера
-
-req = r.check_server_recognition(id)
-
-#+++ загрузка из файла (распознавание)
-
-#4 общий репорт
-
-full_report = r.make_json_report(req, seq_dict)
-full_text = json.dumps(req, ensure_ascii=False, indent=2)
-
-r.save_json_products(r._config['dir'], full_report, full_text)
-
-print("DONE!")
-'''
 
 r = ReportGenerator("key.json")
 r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
 
 #r.extract_features(r._config["dir"] + "/pcm.wav")
 
-#1: TODO парсинг директории файлов
+
 

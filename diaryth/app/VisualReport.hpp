@@ -61,7 +61,7 @@ namespace diaryth
             PraatInfoFullDiff,
             PraatInfoChunkDiff,
             ChunksOnly,
-            PlainWords
+            PlainWords //TODO обогатить морфологическим анализом
             //Отображение только чанков ? в них нужна гарантированно скорость слов в чанке
             //PlainWords - просто слова !
             //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
