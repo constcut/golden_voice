@@ -267,7 +267,7 @@ class ReportGenerator:
 
 
 
-	def make_json_report(self, req, seq_dict):
+	def make_json_report(self, req, seq_dict): #TODO refact
 
 		import datetime
 
@@ -546,7 +546,7 @@ class ReportGenerator:
 
 				single_chunk = {"chunkId": chunkId, "altId": altId, 
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
-								"text": chunk_text, "praat_report": self.parse_praat_info(chunk_report)}
+								"text": chunk_text, "info": self.parse_praat_info(chunk_report)}
 
 				if self.calc_every_stat:
 					single_chunk["stats"] = statistics_records 
@@ -579,7 +579,7 @@ class ReportGenerator:
 										cross_start, cross_end, f0min, f0max,
 										1.3, 1.6, 0.03, 0.45) 
 
-					cross_element = {"praat_report": self.parse_praat_info(cross_report), "start" : cross_start,
+					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
 									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
 
 					cross_stats.append(cross_element)
@@ -601,7 +601,7 @@ class ReportGenerator:
 
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
-						"praat_report": praat_dict,
+						"info": praat_dict,
 						"cross_stats": cross_stats, "duration": duration, "steps_sizes": steps}
 
 		if self.use_surf:
@@ -1280,13 +1280,13 @@ def reports_to_csv(r):
 				report_dict["full_stats"]["praat_pitch"]["SD"]
 				report_dict["full_stats"]["intensity"]["SD"]
 				
-				if "duration" not in report_dict["praat_report"]:
+				if "duration" not in report_dict["info"]:
 					continue
 
 				f_name = filename.replace(",","_")
 
-				table.writerow([f_name, report_dict["full_text"], report_dict["praat_report"]["duration"], report_dict["praat_report"]["Median pitch"], report_dict["praat_report"]["Mean pitch"], report_dict["praat_report"]["Number of pulses"],
-				report_dict["praat_report"]["Fraction of locally unvoiced frames"], report_dict["praat_report"]["Jitter (local)"], report_dict["praat_report"]["Shimmer (local)"], report_dict["praat_report"]["Mean harmonics-to-noise ratio"],
+				table.writerow([f_name, report_dict["full_text"], report_dict["info"]["duration"], report_dict["info"]["Median pitch"], report_dict["info"]["Mean pitch"], report_dict["info"]["Number of pulses"],
+				report_dict["info"]["Fraction of locally unvoiced frames"], report_dict["info"]["Jitter (local)"], report_dict["info"]["Shimmer (local)"], report_dict["info"]["Mean harmonics-to-noise ratio"],
 				report_dict["full_stats"]["praat_pitch"]["SD"], report_dict["full_stats"]["intensity"]["SD"]])
 
 				print("FILE ", f_name, " parsed")

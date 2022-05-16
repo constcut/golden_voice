@@ -29,7 +29,7 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
     _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
 
     _chunks = root["chunks"].toArray();
-    _fullPraat = root["praat_report"].toObject(); //TODO + statistics of sequences
+    _fullPraat = root["info"].toObject(); //TODO + statistics of sequences
 }
 
 
@@ -161,7 +161,7 @@ QList<qreal> JsonReport::getChunkInfo(int idx) //TODO ещё одну функц
 {
     QList<qreal> chunkLine;
 
-    auto chunkPraatInfo = _chunks[idx].toObject()["praat_report"].toObject();
+    auto chunkPraatInfo = _chunks[idx].toObject()["info"].toObject();
 
     const auto& keys = chunkPraatInfo.keys();
     for (const auto& key: keys)
