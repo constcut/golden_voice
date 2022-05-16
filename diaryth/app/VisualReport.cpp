@@ -70,84 +70,92 @@ void VisualReport::paint(QPainter* painter)
             painter->drawText(x, 20, word);
             painter->drawLine(x-1, 20, x-1, 0);
             painter->drawLine(x+w-1, 20, x+w-1, 0);
+
+            //TODO морфологический анализ - пометка слов
         }
     }
 
     if (_type == VisualTypes::ChunksOnly) //Возможно потом объединить в paintSequenceType
     {
         qDebug() << "Chunks only " << _parentReport->getChunksCount();
+        paintChunksOnly(painter);
+    }
+}
 
-        PraatPrevStats prevStats;
 
-        for (int i = 0; i < _parentReport->getChunksCount(); ++i)
+void VisualReport::paintChunksOnly(QPainter* painter)
+{
+    qDebug() << "Chunks only " << _parentReport->getChunksCount();
+
+    PraatPrevStats prevStats;
+
+    for (int i = 0; i < _parentReport->getChunksCount(); ++i)
+    {
+        const auto& chunk = _parentReport->getChunks()[i];
+        double start = chunk["start"].toDouble();
+        double end = chunk["end"].toDouble(); //TODO консистентность в репортах!!
+
+        auto x = start * _parentReport->getZoom() + 5;
+        double w = (end - start) * _parentReport->getZoom();
+
+        //TODO info линии - можно смотреть на меньшем масштабе
+
+        //painter->drawRect(x, 50, w, 30);
+        qDebug() << "Paiting " << x << " " << w;
+        qDebug() << start << end;
+        //TODO move into amplitude or pitch
+
+        auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
         {
-            const auto& chunk = _parentReport->getChunks()[i];
-            double start = chunk["start"].toDouble();
-            double end = chunk["end"].toDouble(); //TODO консистентность в репортах!!
+            double value = 0.0;
 
-            auto x = start * _parentReport->getZoom() + 5;
-            double w = (end - start) * _parentReport->getZoom();
-
-            //TODO info линии - можно смотреть на меньшем масштабе
-
-            //painter->drawRect(x, 50, w, 30);
-            qDebug() << "Paiting " << x << " " << w;
-            qDebug() << start << end;
-            //TODO move into amplitude or pitch
-
-            auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+            if (chunk["info"].isObject())
             {
-                double value = 0.0;
+                auto info = chunk["info"].toObject();
 
-                if (chunk["info"].isObject())
+                value = info[infoName].toDouble(); //default PraatInfo
+
+                if (_type == VisualTypes::PraatInfoFullDiff)
+                    value = value - _parentReport->getFullPraat()[infoName].toDouble();
+
+                if (_type == VisualTypes::PraatInfoChunkDiff)
                 {
-                    auto info = chunk["info"].toObject();
-
-                    value = info[infoName].toDouble(); //default PraatInfo
-
-                    if (_type == VisualTypes::PraatInfoFullDiff)
-                        value = value - _parentReport->getFullPraat()[infoName].toDouble();
-
-                    if (_type == VisualTypes::PraatInfoChunkDiff)
-                    {
-                        auto praatInfo = _parentReport->getChunks()[_parentReport->getLastSelectedChunk()]["praat_report"].toObject();
-                        value = value - praatInfo[infoName].toDouble();
-                    }
+                    auto praatInfo = _parentReport->getChunks()[_parentReport->getLastSelectedChunk()]["praat_report"].toObject();
+                    value = value - praatInfo[infoName].toDouble();
                 }
-
-
-                int y = 0;
-
-                if (_type == VisualTypes::PraatInfo)
-                    y = height() - value * yCoef;
-                else
-                    y = height() / 2  - value * yCoef;
-
-                painter->setPen(color);
-                painter->drawLine(x, y, x + w, y);
-
-                if (prevStats.prevXEnd != 0.0)
-                {
-                    painter->drawLine(prevStats.prevXEnd,
-                                      prevStats.prevValues[infoName], x, y);
-                }
-
-                prevStats.prevValues[infoName] = y;
-            };
-
-            for (const auto& [name, fieldDisplayInfo]: _praatFields)
-            {
-                auto color = QColor(fieldDisplayInfo.color);
-
-                //if (_selectedIdx.count(idx)) //Возможно это лишнее
-                   // color = color.lighter(); //TODO parentReport
-
-                paintFun(name, color, fieldDisplayInfo.yCoef);
             }
 
-             prevStats.prevXEnd = x + w;
+
+            int y = 0;
+
+            if (_type == VisualTypes::PraatInfo)
+                y = height() - value * yCoef;
+            else
+                y = height() / 2  - value * yCoef;
+
+            painter->setPen(color);
+            painter->drawLine(x, y, x + w, y);
+
+            if (prevStats.prevXEnd != 0.0)
+            {
+                painter->drawLine(prevStats.prevXEnd,
+                                  prevStats.prevValues[infoName], x, y);
+            }
+
+            prevStats.prevValues[infoName] = y;
+        };
+
+        for (const auto& [name, fieldDisplayInfo]: _praatFields)
+        {
+            auto color = QColor(fieldDisplayInfo.color);
+
+            //if (_selectedIdx.count(idx)) //Возможно это лишнее
+               // color = color.lighter(); //TODO parentReport
+
+            paintFun(name, color, fieldDisplayInfo.yCoef);
         }
 
+         prevStats.prevXEnd = x + w;
     }
 }
 

@@ -133,6 +133,8 @@ namespace diaryth
 
     private:
 
+        void paintChunksOnly(QPainter* painter);
+
         void paintSequenceType(QPainter* painter, QJsonObject& event,
                                int idx, ReportPrevStats &prevStats);
 
