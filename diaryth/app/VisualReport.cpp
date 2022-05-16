@@ -43,7 +43,7 @@ void VisualReport::paint(QPainter* painter)
     ReportPrevStats prevStats;
     PraatPrevStats prevPraats;
 
-    painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
+    //painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
 
     const auto& events = _parentReport->getEvents();
 
@@ -77,6 +77,8 @@ void VisualReport::paint(QPainter* painter)
     {
         qDebug() << "Chunks only " << _parentReport->getChunksCount();
 
+        PraatPrevStats prevStats;
+
         for (int i = 0; i < _parentReport->getChunksCount(); ++i)
         {
             const auto& chunk = _parentReport->getChunks()[i];
@@ -88,10 +90,61 @@ void VisualReport::paint(QPainter* painter)
 
             //TODO info линии - можно смотреть на меньшем масштабе
 
-            painter->drawRect(x, 50, w, 30);
+            //painter->drawRect(x, 50, w, 30);
             qDebug() << "Paiting " << x << " " << w;
             qDebug() << start << end;
             //TODO move into amplitude or pitch
+
+            auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+            {
+                double value = 0.0;
+
+                if (chunk["info"].isObject())
+                {
+                    auto info = chunk["info"].toObject();
+
+                    value = info[infoName].toDouble(); //default PraatInfo
+
+                    if (_type == VisualTypes::PraatInfoFullDiff)
+                        value = value - _parentReport->getFullPraat()[infoName].toDouble();
+
+                    if (_type == VisualTypes::PraatInfoChunkDiff)
+                    {
+                        auto praatInfo = _parentReport->getChunks()[_parentReport->getLastSelectedChunk()]["praat_report"].toObject();
+                        value = value - praatInfo[infoName].toDouble();
+                    }
+                }
+
+
+                int y = 0;
+
+                if (_type == VisualTypes::PraatInfo)
+                    y = height() - value * yCoef;
+                else
+                    y = height() / 2  - value * yCoef;
+
+                painter->setPen(color);
+                painter->drawLine(x, y, x + w, y);
+
+                if (prevStats.prevXEnd != 0.0)
+                {
+                    painter->drawLine(prevStats.prevXEnd,
+                                      prevStats.prevValues[infoName], x, y);
+                }
+
+                prevStats.prevValues[infoName] = y;
+            };
+
+            for (const auto& [name, fieldDisplayInfo]: _praatFields)
+            {
+                auto color = QColor(fieldDisplayInfo.color);
+
+                //if (_selectedIdx.count(idx)) //Возможно это лишнее
+                   // color = color.lighter(); //TODO parentReport
+
+                paintFun(name, color, fieldDisplayInfo.yCoef);
+            }
+
         }
     }
 }
