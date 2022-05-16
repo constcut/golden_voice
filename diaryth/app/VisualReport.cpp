@@ -145,7 +145,9 @@ void VisualReport::paint(QPainter* painter)
                 paintFun(name, color, fieldDisplayInfo.yCoef);
             }
 
+             prevStats.prevXEnd = x + w;
         }
+
     }
 }
 
