@@ -33,6 +33,12 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 }
 
 
+double JsonReport::getFullWidth()
+{
+    _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
+    return _fullWidth + 20; //TODO наверное перестать хранить в классе
+}
+
 void JsonReport::updateAllVisualReports()
 {
     for (auto visualPtr: _connectedVisuals)

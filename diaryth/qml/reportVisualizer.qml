@@ -256,6 +256,28 @@ Item
                     visualReport1.setPlainWordsType()
                 }
             }
+
+            RoundButton {
+                text: "+"
+                onClicked: {
+                    jsonReport.setZoom(jsonReport.getZoom() * 2)
+
+                    flick.contentWidth = jsonReport.getFullWidth()
+                    visualReport1.width = jsonReport.getFullWidth()
+                    visualReport2.width =  jsonReport.getFullWidth()
+                }
+            }
+
+            RoundButton {
+                text: "-"
+                onClicked: {
+                    jsonReport.setZoom(jsonReport.getZoom() / 2)
+
+                    flick.contentWidth = jsonReport.getFullWidth()
+                    visualReport1.width = jsonReport.getFullWidth()
+                    visualReport2.width =  jsonReport.getFullWidth()
+                }
+            }
     }
 
 

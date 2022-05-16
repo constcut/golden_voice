@@ -27,9 +27,7 @@ namespace diaryth
 
         explicit JsonReport(QObject *parent = nullptr);
 
-        Q_INVOKABLE double getFullWidth() {
-            return _fullWidth + 20; //TODO recalvulate
-        }
+        Q_INVOKABLE double getFullWidth();
 
         Q_INVOKABLE double getZoom() { //Time - добавить в название, чтобы было понятно
             return _zoomCoef;
