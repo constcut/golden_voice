@@ -24,8 +24,21 @@ ApplicationWindow {
         }
         else {
             //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
-            mainWindow.width = 1370
-            mainWindow.height = 749
+
+
+            if (Screen.desktopAvailableWidth >= 1920)
+            {
+                mainWindow.width = 1920
+                mainWindow.height = 1080
+
+                if (Screen.desktopAvailableWidth >= 1920)
+                    mainWindow.x = Screen.desktopAvailableWidth - 1920
+            }
+            else
+            {
+                mainWindow.width = 1370
+                mainWindow.height = 749
+            }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
             console.log("Screen.desktopAvailableWidth", Screen.desktopAvailableWidth)
@@ -43,6 +56,8 @@ ApplicationWindow {
         else
             close.accepted = true
     }
+
+
 
     Item
     {
