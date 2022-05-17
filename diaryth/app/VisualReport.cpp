@@ -167,8 +167,6 @@ void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
 
 void VisualReport::paintChunksOnly(QPainter* painter)
 {
-    qDebug() << "Chunks only " << _parentReport->getChunksCount();
-
     PraatPrevStats prevStats;
 
     for (int i = 0; i < _parentReport->getChunksCount(); ++i)

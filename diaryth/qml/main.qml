@@ -26,6 +26,9 @@ ApplicationWindow {
             //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
             mainWindow.width = 1370
             mainWindow.height = 749
+
+            console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
+            console.log("Screen.desktopAvailableWidth", Screen.desktopAvailableWidth)
         }
 
         mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient

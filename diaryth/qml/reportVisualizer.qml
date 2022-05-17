@@ -261,7 +261,8 @@ Item
             Button {
                 text: "Config"
 
-                onClicked: {
+                onClicked:
+                {
                     if (firstReportType.currentIndex + 1 === VisualTypes.ReportFields)
                     {
                         configFieldsPopup.loadFromVisual(visualReport2)
@@ -283,17 +284,23 @@ Item
 
                 value: 190
 
-                onMoved: {
+                onMoved:
+                {
+                    //
+                    //visualReport2.y = 5 + value
+                    //visualReport2.height = item.height - value - 70
+                    visualReport1.y = 5
                     visualReport1.height = value
-                    visualReport2.y = 5 + value
-                    visualReport2.height = value //item.height - value - 70
+                    visualReport2.y = value + 10
+                    visualReport2.height = item.height - value - 70
                 }
             }
 
 
             RoundButton {
                 text: "+"
-                onClicked: {
+                onClicked:
+                {
                     jsonReport.setZoom(jsonReport.getZoom() * 2)
 
                     flick.contentWidth = jsonReport.getFullWidth()
