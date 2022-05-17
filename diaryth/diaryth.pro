@@ -208,6 +208,7 @@ DISTFILES += \
     LICENSE \
     OpenTab.qml \
     README.md \
+    qml/FullHDReport.qml \
     qml/SingleRecord.qml \
     qml/calendar.qml \
     qml/config.qml \

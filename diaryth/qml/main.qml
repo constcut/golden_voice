@@ -17,14 +17,19 @@ ApplicationWindow {
 
     Component.onCompleted:
     {
-        if (Qt.platform.os === "android") {
+        if (Qt.platform.os === "android")
+        {
             exitMenuItem.visible = false
             exitMenuItem.height = 0
             mainWindow.visibility = "FullScreen"
+
+            fullhdReport.visible = false
+            smallItem.visible = true
         }
         else {
             //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
 
+            console.log("Check screen")
 
             if (Screen.desktopAvailableWidth >= 1920)
             {
@@ -33,11 +38,21 @@ ApplicationWindow {
 
                 if (Screen.desktopAvailableWidth >= 1920)
                     mainWindow.x = Screen.desktopAvailableWidth - 1920
+
+                fullhdReport.visible = true
+                smallItem.visible = false
+
+                console.log("Big screen")
             }
             else
             {
                 mainWindow.width = 1370
                 mainWindow.height = 749
+
+                fullhdReport.visible = false
+                smallItem.visible = true
+
+                console.log("Small screen")
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
@@ -55,6 +70,15 @@ ApplicationWindow {
         }
         else
             close.accepted = true
+    }
+
+
+
+    FullHDReport
+    {
+        id: fullhdReport
+
+        anchors.fill: parent
     }
 
 
@@ -139,6 +163,21 @@ ApplicationWindow {
                         Qt.exit(0)
                 }
 
+            }
+        }
+
+
+        Loader
+        {
+            id:mainLoader
+            anchors.fill: parent
+            focus: true
+            Keys.onPressed:
+            {
+                if (event.key === Qt.Key_Home)
+                    mainMenu.open()
+
+                mainLoader.item.keyboardEventSend(event.key, event.modifiers)
             }
         }
 
@@ -233,18 +272,5 @@ ApplicationWindow {
     //Возможно даже по команде загружать несколько свайпов, вместо одного Loader'a N штук
 
 
-    Loader
-    {
-        id:mainLoader
-        anchors.fill: parent
-        focus: true
-        Keys.onPressed:
-        {
-            if (event.key === Qt.Key_Home)
-                mainMenu.open()
-
-            mainLoader.item.keyboardEventSend(event.key, event.modifiers)
-        }
-    }
 
 }
