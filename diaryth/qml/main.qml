@@ -29,7 +29,7 @@ ApplicationWindow {
             if (Screen.desktopAvailableWidth >= 1920)
             {
                 mainWindow.width = 1920
-                mainWindow.height = 1080
+                mainWindow.height = 1061
 
                 if (Screen.desktopAvailableWidth >= 1920)
                     mainWindow.x = Screen.desktopAvailableWidth - 1920
