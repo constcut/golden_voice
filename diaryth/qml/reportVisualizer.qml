@@ -217,6 +217,15 @@ Item
             }
 
             Button {
+                text: "Config 2"
+
+                onClicked: {
+                    configFieldsPopup.loadFromVisual(visualReport1)
+                    configFieldsPopup.open()
+                }
+            }
+
+            Button {
                 text: "Normal praat"
 
                 onClicked: {
@@ -227,6 +236,8 @@ Item
             Button {
                 text: "Chunk diff"
 
+                visible: false
+
                 onClicked: {
                     visualReport1.setPraatInfoChunkType()
                 }
@@ -234,6 +245,8 @@ Item
 
             Button {
                 text: "Full diff"
+
+                visible: false
 
                 onClicked: {
                     visualReport1.setPraatFullDiffType()
@@ -243,9 +256,9 @@ Item
             Button {
                 text: "Chunks only"
 
+
                 onClicked: {
                     visualReport1.setChunksOnlyType()
-                    //TODO move into amplitude or pitch
                 }
             }
 
@@ -288,7 +301,7 @@ Item
     }
 
 
-    Popup
+    Popup //TODO into sepparated component
     {
         id: configPopup
         x: 50
@@ -444,7 +457,6 @@ Item
             }
         }
 
-
         Timer
         {
             id: loadStoredTimer
@@ -513,6 +525,214 @@ Item
 
 
 
+    Popup //TODO into sepparated component
+    {
+        id: configFieldsPopup
+        x: 50
+        y: 50
+        width: item.width - x * 2
+        height: item.height - x * 2
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        property var colorsNames: ["red", "green", "blue", "orange", "black", "darkRed", "darkGreen", "darkBlue",
+                                   "cyan", "magenta", "yellow", "gray", "darkCyan", "darkMagenta",
+                                   "darkYellow", "darkGray", "lightGray"]
+
+        property var lastVisualReport: []
+        property var storedFields: []
+
+        function loadFromVisual(visualReport)
+        {
+            configFieldsPopup.lastVisualReport = visualReport
+            configFieldsRepeater.model = 0
+
+            var reportFields = visualReport.getReportFields()
+            configFieldsRepeater.model = reportFields.length
+
+            for (var i = 0; i < reportFields.length; ++i)
+            {
+                var fieldLine = reportFields[i]
+                configFieldsRepeater.itemAt(i).loadValues(fieldLine[0], fieldLine[1], fieldLine[2])
+            }
+        }
+
+
+        function storeFields(skipIdx = -1)
+        {
+            var fieldsList = []
+
+            for (var i = 0; i < configFieldsRepeater.model; ++i)
+            {
+                if (i === skipIdx)
+                    continue
+
+                var name = configFieldsRepeater.itemAt(i).getName()
+                var color = configFieldsRepeater.itemAt(i).getColor()
+                var yCoef = configFieldsRepeater.itemAt(i).getYCoef()
+                var fieldLine = [name, color, yCoef]
+
+                fieldsList.push(fieldLine)
+            }
+
+            configFieldsPopup.storedFields = fieldsList
+        }
+
+        function loadFields()
+        {
+            for (var i = 0; i < configFieldsPopup.storedFields.length; ++i)
+            {
+                var fieldLine = configFieldsPopup.storedFields[i]
+                configFieldsRepeater.itemAt(i).loadValues(fieldLine[0], fieldLine[1], fieldLine[2])
+            }
+        }
+
+
+
+        Repeater
+        {
+            model: 3
+            id: configFieldsRepeater //TODO cover under flickable
+
+            RowLayout
+            {
+                y: index * 60
+
+                function loadValues(name, color, coef)
+                {
+                    var praatFieldsNames = jsonReport.getReportFields()
+
+                    praatFieldName2.text = name
+                    fieldCoef2.text = coef
+
+                    for (var i = 0; i < configFieldsPopup.colorsNames.length; ++i)
+                        if (configFieldsPopup.colorsNames[i] === color)
+                            break;
+
+                    fieldColor2.currentIndex = i
+                }
+
+                function getName() {
+                    return praatFieldName2.text
+                }
+
+                function getColor() {
+                    return fieldColor2.currentText
+                }
+
+                function getYCoef() {
+                    return fieldCoef2.text
+                }
+
+                TextField
+                {
+                    id: praatFieldName2
+                    implicitWidth: 400
+                }
+
+                ComboBox {
+                    id: fieldColor2
+                    model: configFieldsPopup.colorsNames
+                }
+
+                TextField {
+                    id: fieldCoef2
+                    validator: realValidator
+                    text: "1,0"
+                }
+
+                RoundButton {
+                    text: "-"
+
+                    onClicked: {
+                        configFieldsPopup.storeFields(index)
+                        loadStoredFieldsTimer.start() //Hot fix for ReferenceError: xyz is not defined
+                        configFieldsRepeater.model = configFieldsRepeater.model - 1 //WE got issue here as our current object is child
+                    }
+                }
+
+                RoundButton {
+                    text: "+"
+
+                    onClicked:
+                    {
+                        configFieldsPopup.storeFields()
+                        loadStoredFieldsTimer.start() //Hot fix for ReferenceError: xyz is not defined
+                        configFieldsRepeater.model = configFieldsRepeater.model + 1 //WE got issue here as our current object is child
+                    }
+                }
+            }
+        }
+
+        Timer
+        {
+            id: loadStoredFieldsTimer
+            interval: 50
+            running: false
+            repeat: false
+            onTriggered: {
+                configFieldsPopup.loadFields()
+            }
+        }
+
+        Button
+        {
+            text: "Add new"
+
+            x: parent.width/2 - width/2 - 5
+            y: parent.height - height - 5
+
+            onClicked:
+            {
+                configFieldsPopup.storeFields()
+                loadStoredFieldsTimer.start() //Hot fix for ReferenceError: xyz is not defined
+                configFieldsRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
+            }
+        }
+
+
+        Button
+        {
+            text: "Close"
+
+            x: parent.width - width - 10
+            y: parent.height - height - 5
+
+            onClicked: configFieldsPopup.close()
+        }
+
+        Button
+        {
+            text: "Save"
+
+            x: 10
+            y: parent.height - height - 5
+
+            onClicked:
+            {
+                configFieldsPopup.lastVisualReport.clearPraatFields() //find a way to use parametric values
+
+                for (var i = 0; i < configFieldsRepeater.model; ++i)
+                {
+
+                    var name = configFieldsRepeater.itemAt(i).getName()
+                    var color = configFieldsRepeater.itemAt(i).getColor()
+                    var yCoef = parseFloat(configFieldsRepeater.itemAt(i).getYCoef())
+
+                    configFieldsPopup.lastVisualReport.addPraatField(name, color, yCoef)
+                }
+
+                configFieldsPopup.lastVisualReport.setReportFieldsType()
+                configFieldsPopup.close()
+            }
+        }
+    }
+
+
+
+
+
     JsonReport
     {
         id: jsonReport
@@ -536,6 +756,9 @@ Item
         }
 
     }
+
+
+
 
 
 
