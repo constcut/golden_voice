@@ -18,8 +18,9 @@ VisualReport::VisualReport()
     _praatFields["Jitter (local)"] = { "green", 20 };
     _praatFields["Shimmer (local)"] = { "blue", 10 };
 
-    _reportFields["stats.praat_pitch.SD"] = { "green", 20 }; //TODO later parse praat fields the same way
-    _reportFields["stats.intensity.SD"] = { "green", 20 };
+    _reportFields["stats.praat_pitch.SD"] = { "green", 5 }; //TODO later parse praat fields the same way
+    _reportFields["stats.intensity.SD"] = { "blue", 5 };
+    _reportFields["letters_speed"] = {"red", 200};
 }
 
 
@@ -136,11 +137,11 @@ void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
         };
 
 
-        for (const auto& [name, fieldDisplayInfo]: _praatFields)
+        for (const auto& [name, fieldDisplayInfo]: _reportFields)
         {
             qDebug() << "FULL name: " << name;
 
-            auto nameParts = name.split(".");
+            auto nameParts = name.split("."); //TODO тут же получать и все возможные поля praat
 
             auto value = 0.0;
             auto currentObject = event;
@@ -151,6 +152,8 @@ void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
                     value = currentObject[nameParts[i]].toDouble();
                 else
                     currentObject = currentObject[nameParts[i]].toObject();
+
+                //TODO если не найдено - нужно пропустить отрисовку этого поля (для опциональных librosa+)
             }
 
             auto color = QColor(fieldDisplayInfo.color);

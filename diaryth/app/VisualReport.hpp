@@ -115,8 +115,14 @@ namespace diaryth
         {
             _type = VisualTypes::ChunksOnly;
             update();
-        } //TODO move into amplitude or pitch
+        }
 
+
+        Q_INVOKABLE void setReportFieldsType()
+        {
+            _type = VisualTypes::ReportFields;
+            update();
+        }
 
 
         Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)

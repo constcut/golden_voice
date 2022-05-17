@@ -257,6 +257,13 @@ Item
                 }
             }
 
+            Button {
+                text: "Report fields"
+                onClicked:  {
+                    visualReport1.setReportFieldsType()
+                }
+            }
+
             RoundButton {
                 text: "+"
                 onClicked: {
@@ -300,9 +307,8 @@ Item
                                    "cyan", "magenta", "yellow", "gray", "darkCyan", "darkMagenta",
                                    "darkYellow", "darkGray", "lightGray"]
 
-        property var lastVisualReport: ""
-
-        property var storedFields: ""
+        property var lastVisualReport: []
+        property var storedFields: []
 
         function loadFromVisual(visualReport)
         {
