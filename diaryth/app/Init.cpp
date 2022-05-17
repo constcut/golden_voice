@@ -156,6 +156,9 @@ int mainInit(int argc, char *argv[])
     qmlRegisterType<diaryth::CepstrumgraphQML>("diaryth", 1, 0,"Cepstrumgraph");
 #endif
 
+    qmlRegisterUncreatableMetaObject(diaryth::staticMetaObject,
+    "diaryth", 1, 0, "VisualTypes", "Error: object creation for enum not supported");
+
     QDir dir;
     if (dir.exists("records") == false) { //AudioHandler records, later they would be removed from current project
         if (dir.mkdir("records") == false)

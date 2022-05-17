@@ -43,6 +43,22 @@ namespace diaryth
     };
 
 
+    Q_NAMESPACE
+    enum VisualTypes {
+        TypeNotSet,
+        Pitch,
+        Amplitude,
+        PraatInfo,
+        PraatInfoFullDiff,
+        PraatInfoChunkDiff,
+        ChunksOnly,
+        PlainWords, //TODO обогатить морфологическим анализом
+        ReportFields
+        //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
+        //Отображение letters_speed - как быстро произносятся буквы
+    };
+    Q_ENUM_NS(VisualTypes)
+
     class VisualReport : public QQuickPaintedItem
     {
         Q_OBJECT
@@ -53,24 +69,17 @@ namespace diaryth
 
         void paint(QPainter* painter);
 
-        enum VisualTypes {
-            TypeNotSet,
-            Pitch,
-            Amplitude,
-            PraatInfo,
-            PraatInfoFullDiff,
-            PraatInfoChunkDiff,
-            ChunksOnly,
-            PlainWords, //TODO обогатить морфологическим анализом
-            ReportFields
-            //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
-            //Отображение letters_speed - как быстро произносятся буквы
-        };
+
 
         Q_INVOKABLE void setParent(JsonReport* report)
         {
             _parentReport = report;
             report->registerVisual(this);
+            update();
+        }
+
+        Q_INVOKABLE void setType(VisualTypes newType) {
+            _type = newType;
             update();
         }
 
