@@ -78,8 +78,8 @@ namespace diaryth
             update();
         }
 
-        Q_INVOKABLE void setType(VisualTypes newType) {
-            _type = newType;
+        Q_INVOKABLE void setType(int newType) {
+            _type = static_cast<VisualTypes>(newType);
             update();
         }
 

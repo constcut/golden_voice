@@ -139,7 +139,6 @@ void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
 
         for (const auto& [name, fieldDisplayInfo]: _reportFields)
         {
-            qDebug() << "FULL name: " << name;
 
             auto nameParts = name.split("."); //TODO тут же получать и все возможные поля praat
 

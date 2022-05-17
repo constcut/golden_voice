@@ -4,6 +4,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.1
 
+
 Item
 {
     id: item
@@ -229,7 +230,7 @@ Item
                 text: "Normal praat"
 
                 onClicked: {
-                    visualReport1.setPraatType()
+                    visualReport1.setType(VisualTypes.PraatInfo)
                 }
             }
 
@@ -239,7 +240,7 @@ Item
                 visible: false
 
                 onClicked: {
-                    visualReport1.setPraatInfoChunkType()
+                    visualReport1.setType(VisualTypes.PraatInfoChunkDiff)
                 }
             }
 
@@ -249,7 +250,7 @@ Item
                 visible: false
 
                 onClicked: {
-                    visualReport1.setPraatFullDiffType()
+                    visualReport1.setType(VisualTypes.PraatInfoFullDiff)
                 }
             }
 
@@ -258,7 +259,7 @@ Item
 
 
                 onClicked: {
-                    visualReport1.setChunksOnlyType()
+                    visualReport1.setType(VisualTypes.ChunksOnly)
                 }
             }
 
@@ -266,14 +267,14 @@ Item
                 text: "Plain words"
 
                 onClicked: {
-                    visualReport1.setPlainWordsType()
+                    visualReport1.setType(VisualTypes.PlainWords)
                 }
             }
 
             Button {
                 text: "Report fields"
                 onClicked:  {
-                    visualReport1.setReportFieldsType()
+                    visualReport1.setType(VisualTypes.ReportFields)
                 }
             }
 
