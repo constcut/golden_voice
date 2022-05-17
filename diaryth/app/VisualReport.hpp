@@ -83,54 +83,8 @@ namespace diaryth
             update();
         }
 
-        Q_INVOKABLE void setPitchType() //TODO setType + QML registered enum
-        {
-            _type = VisualTypes::Pitch;
-            update();
-        }
-
-        Q_INVOKABLE void setAmpitudeType()
-        {
-            _type = VisualTypes::Amplitude;
-            update();
-        }
-
-        Q_INVOKABLE void setPraatType()
-        {
-            _type = VisualTypes::PraatInfo;
-            update();
-        }
-
-        Q_INVOKABLE void setPraatFullDiffType()
-        {
-            _type = VisualTypes::PraatInfoFullDiff;
-            update();
-        }
-
-        Q_INVOKABLE void setPraatInfoChunkType()
-        {
-            _type = VisualTypes::PraatInfoChunkDiff;
-            update();
-        }
-
-        Q_INVOKABLE void setPlainWordsType()
-        {
-            _type = VisualTypes::PlainWords;
-            update();
-        }
-
-
-        Q_INVOKABLE void setChunksOnlyType()
-        {
-            _type = VisualTypes::ChunksOnly;
-            update();
-        }
-
-
-        Q_INVOKABLE void setReportFieldsType()
-        {
-            _type = VisualTypes::ReportFields;
-            update();
+        Q_INVOKABLE int getType() {
+            return _type;
         }
 
 

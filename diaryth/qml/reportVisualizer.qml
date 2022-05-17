@@ -127,27 +127,21 @@ Item
             y: visualReport1.y + visualReport1.height + visualReport2.height
 
             Button {
-                text: "Remove selection"
+                text: "Unselect"
                 onClicked: {
                     jsonReport.removeAllSelections()
                 }
-            }
 
-            ComboBox {
-                id: chunkId
+                width: 80
+                implicitWidth: 80
             }
-
-            Button {
-                text: "Select chunk"
-                onClicked: {
-                    jsonReport.selectChunk(parseInt(chunkId.currentText))
-                }
-            }
-
 
             Button
             {
-                text : "Selected info"
+                text : "Info"
+
+                width: 50
+                implicitWidth: 50
 
                 onClicked:
                 {
@@ -209,7 +203,24 @@ Item
             } //Button
 
             Button {
+                text: "Select chunk"
+                onClicked: {
+                    jsonReport.selectChunk(parseInt(chunkId.currentText))
+                }
+            }
+
+            ComboBox {
+                id: chunkId
+
+                width: 40
+                implicitWidth: 40
+            }
+
+
+            Button {
                 text: "Config"
+
+                visible: false
 
                 onClicked: {
                     configPopup.loadFromVisual(visualReport1)
@@ -220,63 +231,55 @@ Item
             Button {
                 text: "Config 2"
 
+                visible: false
+
                 onClicked: {
                     configFieldsPopup.loadFromVisual(visualReport1)
                     configFieldsPopup.open()
                 }
             }
 
+
+            ComboBox {
+                id: firstReportType
+                model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
+                        "Chunks", "Words", "ReportFields"]
+
+                currentIndex: 2
+
+                onCurrentTextChanged: {
+                    visualReport1.setType(currentIndex + 1)
+                }
+            }
+
             Button {
-                text: "Normal praat"
+                text: "Config"
 
                 onClicked: {
-                    visualReport1.setType(VisualTypes.PraatInfo)
+                    configPopup.loadFromVisual(visualReport1)
+                    configPopup.open()
+                }
+            }
+
+            ComboBox {
+                id: secondReportType
+                model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
+                        "Chunks", "Words", "ReportFields"]
+
+                onCurrentTextChanged: {
+                    visualReport2.setType(currentIndex + 1)
                 }
             }
 
             Button {
-                text: "Chunk diff"
-
-                visible: false
+                text: "Config"
 
                 onClicked: {
-                    visualReport1.setType(VisualTypes.PraatInfoChunkDiff)
+                    configPopup.loadFromVisual(visualReport1)
+                    configPopup.open()
                 }
             }
 
-            Button {
-                text: "Full diff"
-
-                visible: false
-
-                onClicked: {
-                    visualReport1.setType(VisualTypes.PraatInfoFullDiff)
-                }
-            }
-
-            Button {
-                text: "Chunks only"
-
-
-                onClicked: {
-                    visualReport1.setType(VisualTypes.ChunksOnly)
-                }
-            }
-
-            Button {
-                text: "Plain words"
-
-                onClicked: {
-                    visualReport1.setType(VisualTypes.PlainWords)
-                }
-            }
-
-            Button {
-                text: "Report fields"
-                onClicked:  {
-                    visualReport1.setType(VisualTypes.ReportFields)
-                }
-            }
 
             RoundButton {
                 text: "+"
