@@ -17,6 +17,9 @@ VisualReport::VisualReport()
 
     _praatFields["Jitter (local)"] = { "green", 20 };
     _praatFields["Shimmer (local)"] = { "blue", 10 };
+
+    _reportFields["stats.praat_pitch.SD"] = { "green", 20 }; //TODO later parse praat fields the same way
+    _reportFields["stats.intensity.SD"] = { "green", 20 };
 }
 
 
@@ -25,6 +28,21 @@ QVariantList VisualReport::getPraatFields()
     QVariantList allFields;
 
     for (const auto& [fieldName, fieldData]: _praatFields)
+    {
+        QStringList fieldLine;
+        fieldLine << fieldName << fieldData.color << QString::number(fieldData.yCoef);
+        allFields << QVariant::fromValue(fieldLine);
+    }
+
+    return allFields;
+}
+
+
+QVariantList VisualReport::getReportFields()
+{
+    QVariantList allFields;
+
+    for (const auto& [fieldName, fieldData]: _reportFields) //TODO refact unite
     {
         QStringList fieldLine;
         fieldLine << fieldName << fieldData.color << QString::number(fieldData.yCoef);
@@ -58,7 +76,10 @@ void VisualReport::paint(QPainter* painter)
         if (_type == VisualTypes::PraatInfo || _type == PraatInfoFullDiff || _type == PraatInfoChunkDiff)
             paintPraatInfo(painter, event, i, prevPraats);
 
-        if (_type == VisualTypes::PlainWords && event["type"].toString() == "word")
+        if (_type == VisualTypes::ReportFields)
+            paintReportFields(painter, event, i, prevPraats);
+
+        if (_type == VisualTypes::PlainWords && event["type"].toString() == "word") //TODO refact
         {
             double start = event["startTime"].toDouble();
             double end = event["endTime"].toDouble();
@@ -69,18 +90,77 @@ void VisualReport::paint(QPainter* painter)
 
             painter->drawText(x, 20, word);
             painter->drawLine(x-1, 20, x-1, 0);
-            painter->drawLine(x+w-1, 20, x+w-1, 0);
-
-            //TODO морфологический анализ - пометка слов
+            painter->drawLine(x+w-1, 20, x+w-1, 0); // ++ TODO морфологический анализ - пометка слов
         }
     }
 
     if (_type == VisualTypes::ChunksOnly) //Возможно потом объединить в paintSequenceType
-    {
-        qDebug() << "Chunks only " << _parentReport->getChunksCount();
         paintChunksOnly(painter);
+
+
+}
+
+
+
+
+void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
+                                     int idx, PraatPrevStats &prevStats)
+{
+
+    auto type = event["type"].toString(); //Возвращать как structure binding?
+    double start = event["startTime"].toDouble();
+    double end = event["endTime"].toDouble();
+
+    const double zoomCoef = _parentReport->getZoom();
+    //const auto& selectedIdx = _parentReport->getSelectedIdx();
+
+    if (type == "word")
+    {
+        auto x = start * zoomCoef + 5;
+        double w = (end - start) * zoomCoef;
+
+        auto paintFun = [&](QString fullName, QColor color, double value, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+        {
+            int y = height() - value * yCoef;
+
+            painter->setPen(color);
+            painter->drawLine(x, y, x + w, y);
+
+            if (prevStats.prevXEnd != 0.0)
+            {
+                painter->drawLine(prevStats.prevXEnd,
+                                  prevStats.prevValues[fullName], x, y);
+            }
+
+            prevStats.prevValues[fullName] = y;
+        };
+
+
+        for (const auto& [name, fieldDisplayInfo]: _praatFields)
+        {
+            qDebug() << "FULL name: " << name;
+
+            auto nameParts = name.split(".");
+
+            auto value = 0.0;
+            auto currentObject = event;
+
+            for (int i = 0; i < nameParts.size(); ++i)
+            {
+                if (i == nameParts.size() - 1)
+                    value = currentObject[nameParts[i]].toDouble();
+                else
+                    currentObject = currentObject[nameParts[i]].toObject();
+            }
+
+            auto color = QColor(fieldDisplayInfo.color);
+            paintFun(name, color, value, fieldDisplayInfo.yCoef);
+        }
+
+        prevStats.prevXEnd = x + w;
     }
 }
+
 
 
 void VisualReport::paintChunksOnly(QPainter* painter)
@@ -98,13 +178,6 @@ void VisualReport::paintChunksOnly(QPainter* painter)
         auto x = start * _parentReport->getZoom() + 5;
         double w = (end - start) * _parentReport->getZoom();
 
-        //TODO info линии - можно смотреть на меньшем масштабе
-
-        //painter->drawRect(x, 50, w, 30);
-        qDebug() << "Paiting " << x << " " << w;
-        qDebug() << start << end;
-        //TODO move into amplitude or pitch
-
         auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
         {
             double value = 0.0;
@@ -112,19 +185,8 @@ void VisualReport::paintChunksOnly(QPainter* painter)
             if (chunk["info"].isObject())
             {
                 auto info = chunk["info"].toObject();
-
                 value = info[infoName].toDouble(); //default PraatInfo
-
-                if (_type == VisualTypes::PraatInfoFullDiff)
-                    value = value - _parentReport->getFullPraat()[infoName].toDouble();
-
-                if (_type == VisualTypes::PraatInfoChunkDiff)
-                {
-                    auto praatInfo = _parentReport->getChunks()[_parentReport->getLastSelectedChunk()]["praat_report"].toObject();
-                    value = value - praatInfo[infoName].toDouble();
-                }
             }
-
 
             int y = 0;
 

@@ -61,9 +61,8 @@ namespace diaryth
             PraatInfoFullDiff,
             PraatInfoChunkDiff,
             ChunksOnly,
-            PlainWords //TODO обогатить морфологическим анализом
-            //Отображение только чанков ? в них нужна гарантированно скорость слов в чанке
-            //PlainWords - просто слова !
+            PlainWords, //TODO обогатить морфологическим анализом
+            ReportFields
             //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
             //Отображение letters_speed - как быстро произносятся буквы
         };
@@ -118,6 +117,8 @@ namespace diaryth
             update();
         } //TODO move into amplitude or pitch
 
+
+
         Q_INVOKABLE void addPraatField(QString name, QString color, double yCoef)
         {
             _praatFields[name] = {color, yCoef};
@@ -131,6 +132,20 @@ namespace diaryth
         Q_INVOKABLE QVariantList getPraatFields();
 
 
+
+        Q_INVOKABLE void addReportField(QString name, QString color, double yCoef)
+        {
+            _reportFields[name] = {color, yCoef};
+            //update();
+        }
+
+        Q_INVOKABLE void clearReportFields() {
+            _reportFields.clear();
+        }
+
+        Q_INVOKABLE QVariantList getReportFields();
+
+
     private:
 
         void paintChunksOnly(QPainter* painter);
@@ -141,10 +156,15 @@ namespace diaryth
         void paintPraatInfo(QPainter* painter, QJsonObject& event,
                             int idx, PraatPrevStats &prevStats);
 
+        void paintReportFields(QPainter* painter, QJsonObject& event,
+                               int idx, PraatPrevStats &prevStats);
+
 
         VisualTypes _type;
 
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
+
+        std::map<QString, PraatFieldDisplayInfo> _reportFields;
 
         JsonReport* _parentReport;
 
