@@ -170,7 +170,7 @@ namespace diaryth
 
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
 
-        std::map<QString, PraatFieldDisplayInfo> _reportFields;
+        std::map<QString, PraatFieldDisplayInfo> _reportFields; //Later merge _praatFields into _reportFields TODO
 
         JsonReport* _parentReport;
 
