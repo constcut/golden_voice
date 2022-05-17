@@ -601,8 +601,6 @@ Item
 
                 function loadValues(name, color, coef)
                 {
-                    var praatFieldsNames = jsonReport.getReportFields()
-
                     praatFieldName2.text = name
                     fieldCoef2.text = coef
 
@@ -711,7 +709,7 @@ Item
 
             onClicked:
             {
-                configFieldsPopup.lastVisualReport.clearPraatFields() //find a way to use parametric values
+                configFieldsPopup.lastVisualReport.clearReportFields()
 
                 for (var i = 0; i < configFieldsRepeater.model; ++i)
                 {
@@ -720,7 +718,7 @@ Item
                     var color = configFieldsRepeater.itemAt(i).getColor()
                     var yCoef = parseFloat(configFieldsRepeater.itemAt(i).getYCoef())
 
-                    configFieldsPopup.lastVisualReport.addPraatField(name, color, yCoef)
+                    configFieldsPopup.lastVisualReport.addReportField(name, color, yCoef)
                 }
 
                 configFieldsPopup.lastVisualReport.setReportFieldsType()
