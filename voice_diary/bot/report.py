@@ -483,6 +483,7 @@ class ReportGenerator:
 					,"token_id" : token_id
 					,"word_idx" : total_words
 					,"letters_speed" : letters_speed
+					,"letters_freq" : 1.0 / letters_speed
 					} #channel tag left away
 					
 
