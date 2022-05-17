@@ -217,29 +217,6 @@ Item
             }
 
 
-            Button {
-                text: "Config"
-
-                visible: false
-
-                onClicked: {
-                    configPopup.loadFromVisual(visualReport1)
-                    configPopup.open()
-                }
-            }
-
-            Button {
-                text: "Config 2"
-
-                visible: false
-
-                onClicked: {
-                    configFieldsPopup.loadFromVisual(visualReport1)
-                    configFieldsPopup.open()
-                }
-            }
-
-
             ComboBox {
                 id: firstReportType
                 model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
@@ -256,8 +233,18 @@ Item
                 text: "Config"
 
                 onClicked: {
-                    configPopup.loadFromVisual(visualReport1)
-                    configPopup.open()
+
+                    if (firstReportType.currentIndex + 1 === VisualTypes.ReportFields)
+                    {
+                        configFieldsPopup.loadFromVisual(visualReport1)
+                        configFieldsPopup.open()
+                    }
+                    else
+                    {
+                        configPopup.loadFromVisual(visualReport1)
+                        configPopup.open()
+                    }
+
                 }
             }
 
@@ -275,8 +262,31 @@ Item
                 text: "Config"
 
                 onClicked: {
-                    configPopup.loadFromVisual(visualReport1)
-                    configPopup.open()
+                    if (firstReportType.currentIndex + 1 === VisualTypes.ReportFields)
+                    {
+                        configFieldsPopup.loadFromVisual(visualReport2)
+                        configFieldsPopup.open()
+                    }
+                    else
+                    {
+                        configPopup.loadFromVisual(visualReport2)
+                        configPopup.open()
+                    }
+                }
+            }
+
+            Slider
+            {
+                from : 50
+                to: item.height - 60
+                stepSize: 5
+
+                value: 190
+
+                onMoved: {
+                    visualReport1.height = value
+                    visualReport2.y = 5 + value
+                    visualReport2.height = value //item.height - value - 70
                 }
             }
 
@@ -751,10 +761,8 @@ Item
 
             visualReport1.addPraatField("Jitter (rap)", "red", 20)
             visualReport1.addPraatField("Number of pulses", "orange", 1.2)
-            visualReport1.setPraatType()
-
-            visualReport2.setPitchType()
-
+            visualReport1.setType(VisualTypes.PraatInfo)
+            visualReport2.setType(VisualTypes.Pitch)
         }
 
     }
