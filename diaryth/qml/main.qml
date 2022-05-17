@@ -34,7 +34,6 @@ ApplicationWindow {
         mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
     }
 
-
     onClosing:
     {
         if (Qt.platform.os == "android") {
@@ -45,83 +44,90 @@ ApplicationWindow {
             close.accepted = true
     }
 
+    Item
+    {
+       id: smallItem
 
-    ToolButton {
-        id: mainMenuButton
-        text: ":"
-        x: parent.width - width - 5
-        y: 5
-        onClicked: {
-            mainMenu.x = parent.width - mainMenu.width
-            mainMenu.open()
+       anchors.fill: parent
+
+
+        ToolButton {
+            id: mainMenuButton
+            text: ":"
+            x: parent.width - width - 5
+            y: 5
+            onClicked: {
+                mainMenu.x = parent.width - mainMenu.width
+                mainMenu.open()
+            }
         }
+
+
+        Menu {
+            id: mainMenu
+            MenuItem {
+                text: "Console"
+                onTriggered: {
+                    mainLoader.setSource("consoleLog.qml")
+                    mainLoader.focus = true
+                }
+            }
+            MenuItem {
+                text: "Config"
+                onTriggered: {
+                    mainLoader.setSource("config.qml")
+                }
+            }
+            MenuItem {
+                text: "Page"
+                onTriggered: mainLoader.setSource("pageView.qml")
+            }
+            MenuItem {
+                text: "Audio"
+                onTriggered: mainLoader.setSource("audioHandler.qml")
+            }
+            MenuItem {
+                text: "Recorder"
+                onTriggered: mainLoader.setSource("recorder.qml")
+            }
+            MenuItem {
+                text: "Text"
+                onTriggered: mainLoader.setSource("text.qml")
+            }
+            MenuItem {
+                text: "Diary card"
+                onTriggered: mainLoader.setSource("diaryCard.qml")
+            }
+            MenuItem {
+                text: "Calendar"
+                onTriggered: mainLoader.setSource("calendar.qml")
+            }
+            MenuItem {
+                text: "Tests"
+                onTriggered: mainLoader.setSource("testsEngine.qml")
+            }
+            MenuItem {
+                text: "Net"
+                onTriggered: mainLoader.setSource("networkClient.qml")
+            }
+            MenuItem {
+                text: "Visualizer"
+                onTriggered: mainLoader.setSource("reportVisualizer.qml")
+            }
+
+
+            MenuItem {
+                id: exitMenuItem
+                text: "Exit"
+                onTriggered:  {
+                    if (Qt.platform.os !== "android")
+                        Qt.exit(0)
+                }
+
+            }
+        }
+
     }
-
-
-    Menu {
-        id: mainMenu
-        MenuItem {
-            text: "Console"
-            onTriggered: {
-                mainLoader.setSource("consoleLog.qml")
-                mainLoader.focus = true
-            }
-        }
-        MenuItem {
-            text: "Config"
-            onTriggered: {
-                mainLoader.setSource("config.qml")
-            }
-        }
-        MenuItem {
-            text: "Page"
-            onTriggered: mainLoader.setSource("pageView.qml")
-        }
-        MenuItem {
-            text: "Audio"
-            onTriggered: mainLoader.setSource("audioHandler.qml")
-        }
-        MenuItem {
-            text: "Recorder"
-            onTriggered: mainLoader.setSource("recorder.qml")
-        }
-        MenuItem {
-            text: "Text"
-            onTriggered: mainLoader.setSource("text.qml")
-        }
-        MenuItem {
-            text: "Diary card"
-            onTriggered: mainLoader.setSource("diaryCard.qml")
-        }
-        MenuItem {
-            text: "Calendar"
-            onTriggered: mainLoader.setSource("calendar.qml")
-        }
-        MenuItem {
-            text: "Tests"
-            onTriggered: mainLoader.setSource("testsEngine.qml")
-        }
-        MenuItem {
-            text: "Net"
-            onTriggered: mainLoader.setSource("networkClient.qml")
-        }
-        MenuItem {
-            text: "Visualizer"
-            onTriggered: mainLoader.setSource("reportVisualizer.qml")
-        }
-
-
-        MenuItem {
-            id: exitMenuItem
-            text: "Exit"
-            onTriggered:  {
-                if (Qt.platform.os !== "android")
-                    Qt.exit(0)
-            }
-
-        }
-    }
-
 
     function requestWaveshape(filename) {
         //Delayed: open many tabs, just like in athenum
