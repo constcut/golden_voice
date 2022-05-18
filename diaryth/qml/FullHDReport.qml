@@ -89,17 +89,14 @@ Item {
                     MouseArea
                     {
                         anchors.fill: parent
-
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                         onClicked:
                         {
 
-
                         }
-                        onDoubleClicked: {
-
-
+                        onDoubleClicked:
+                        {
                             if (mouse.button == Qt.RightButton)
                             {
                                 console.log("Right mouse dbl click")
@@ -126,13 +123,12 @@ Item {
                             }
                         }
 
-                        onPressAndHold: {
-
+                        onPressAndHold:
+                        {
                             if (mouse.button == Qt.RightButton)
                             {
-                                console.log("Right press and hold")
-
-
+                                configVisualReportPopup.connectWithReport(visualReport)
+                                configVisualReportPopup.open()
                             }
                         }
 
@@ -146,6 +142,51 @@ Item {
 
     } //ScrollView
 
+
+
+//================Configure single report view=============================================
+
+    Popup
+    {
+        id: configVisualReportPopup
+        x: 50
+        y: fullHDReport.height - height - 50
+        width: fullHDReport.width - x * 2
+        height: 200
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        property var lastVisualReport: []
+
+        function connectWithReport(visualReport)
+        {
+            configVisualReportPopup.lastVisualReport = visualReport
+            var reportType = visualReport.getType()
+            visualReportType.currentIndex = reportType - 1
+        }
+
+
+        ComboBox
+        {
+            y: 20
+            x: 150
+            width: 200
+
+            id: visualReportType
+            model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
+                    "Chunks", "Words", "ReportFields"]
+
+            onCurrentTextChanged: {
+
+            }
+        }
+
+    }
+
+
+
+//================Configure single report view=============================================
 
 //=====Visual reports fields popups========================================================
 //=========================================================================================
