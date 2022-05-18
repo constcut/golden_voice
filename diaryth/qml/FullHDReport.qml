@@ -61,6 +61,17 @@ Item {
         width: parent.width
         height: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3]
 
+        function updatePositions()
+        {
+            //TODO rewrite with cycle
+            scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3]
+            flick.height = scroll.height
+
+            for (var i = 0; i < reportsRepeater.model; ++i)
+                reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
+
+        }
+
         Flickable
         {
             id: flick
@@ -217,10 +228,8 @@ Item {
             onMoved:
             {
                 fullHDReport.reportsHeight[configVisualReportPopup.reportIndex] = value
-
-                //TODO update y, and total height - function from flick
-
                 configVisualReportPopup.lastVisualReport.height = value
+                scroll.updatePositions()
             }
         }
 
@@ -229,6 +238,8 @@ Item {
 
 
 //================Configure single report view=============================================
+
+
 
 //=====Visual reports fields popups========================================================
 //=========================================================================================
