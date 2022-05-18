@@ -75,6 +75,32 @@ Item {
             validator: realValidator
         }
 
+        Text {
+            text: "Zoom"
+        }
+
+        RoundButton {
+            text: "+"
+            onClicked:
+            {
+                jsonReport.setZoom(jsonReport.getZoom() * 2)
+                flick.contentWidth = jsonReport.getFullWidth()
+
+                for (var i = 0; i < reportsRepeater.model; ++i)
+                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
+            }
+        }
+
+        RoundButton {
+            text: "-"
+            onClicked: {
+                jsonReport.setZoom(jsonReport.getZoom() / 2)
+                flick.contentWidth = jsonReport.getFullWidth()
+
+                for (var i = 0; i < reportsRepeater.model; ++i)
+                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
+            }
+        }
     }
 
 
