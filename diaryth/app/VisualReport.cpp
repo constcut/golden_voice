@@ -86,13 +86,20 @@ void VisualReport::paint(QPainter* painter)
             double start = event["startTime"].toDouble();
             double end = event["endTime"].toDouble();
 
-            auto x = start * _parentReport->getZoom() + 5;
-            double w = (end - start) * _parentReport->getZoom();
+            const double zoom = _parentReport->getZoom();
+
+            auto x = start * zoom + 5;
+            double w = (end - start) * zoom;
             QString word = event["word"].toString();
 
-            painter->drawText(x, 20, word);
-            painter->drawLine(x-1, 20, x-1, 0);
-            painter->drawLine(x+w-1, 20, x+w-1, 0); // ++ TODO морфологический анализ - пометка слов
+            if (zoom > 150) //В идеале делать более умный рассчёт, проверять наложение и рисовать в 2-4 строки
+                painter->drawText(x, 20, word);
+
+            painter->setPen(QColor("red"));
+            painter->drawLine(x - 1, 20, x - 1, 0);
+            painter->setPen(QColor("blue"));
+            painter->drawLine(x + w - 1, 20, x + w - 1, 0); // ++ TODO морфологический анализ - пометка слов
+            painter->setPen(QColor("black"));
         }
     }
 
