@@ -22,35 +22,34 @@ Item {
 
         Component.onCompleted:
         {
-            flick.contentWidth = jsonReport.getFullWidth()
-
-            //visualReport1.width = jsonReport.getFullWidth()
-            //visualReport2.width =  jsonReport.getFullWidth()
-            //chunkId.model = jsonReport.getChunksCount()
-
-            reportsRepeater.itemAt(0).setParent(jsonReport)
-            reportsRepeater.itemAt(1).setParent(jsonReport)
-            reportsRepeater.itemAt(2).setParent(jsonReport)
-            reportsRepeater.itemAt(3).setParent(jsonReport)
-
-            reportsRepeater.itemAt(0).setType(VisualTypes.PlainWords)
-            reportsRepeater.itemAt(1).setType(VisualTypes.PraatInfo)
-            reportsRepeater.itemAt(2).setType(VisualTypes.ReportFields)
-            reportsRepeater.itemAt(3).setType(VisualTypes.Pitch)
+            reloadVisualReports()
         }
 
     }
 
+    function reloadVisualReports()
+    {
+        flick.contentWidth = jsonReport.getFullWidth()
+        for (var i = 0; i < reportsRepeater.model; ++i)
+        {
+            reportsRepeater.itemAt(i).setParent(jsonReport)
+            reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
+            reportsRepeater.itemAt(i).setType(fullHDReport.reportsTypes[i])
+        }
+    }
 
-    property var reportsHeight: [70, 200, 200, 500]
+
+    property var reportsHeight: [35, 200, 200, 500]
+    property var reportsTypes: [VisualTypes.PlainWords, VisualTypes.PraatInfo, VisualTypes.ReportFields, VisualTypes.Pitch]
+
 
     function calculateY(idx)
     {
         var hSum = 0
-        for (var i = 0; i < idx; ++i)
-        {
+        for (var i = 1; i <= idx; ++i)
             hSum += reportsHeight[i - 1]
-        }
+
+        //console.log("ON idx ", idx, " we got ", hSum)
 
         return hSum + 5 * (idx + 1)
     }
