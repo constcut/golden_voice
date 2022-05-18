@@ -84,12 +84,13 @@ Item {
 
         }
 
-        ScrollBar {
+        /*ScrollBar {
             orientation: Qt.Horizontal
             height: 50
-        }
+            active: true
+            interactive: true
+        }*/
 
-        ScrollBar.horizontal.interactive: true
 
         Flickable
         {
@@ -101,6 +102,19 @@ Item {
             contentWidth: 3000
             contentHeight:  parent.height
             property int pressedX : 0
+
+
+            ScrollBar.horizontal: ScrollBar
+            {
+                orientation: Qt.Horizontal
+                height: 30
+
+                active: true
+                interactive: true
+
+                policy: ScrollBar.AlwaysOn
+            }
+
 
 
             Repeater
