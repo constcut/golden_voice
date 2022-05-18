@@ -315,9 +315,13 @@ Item {
             model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
                     "Chunks", "Words", "ReportFields"]
 
-            onCurrentTextChanged: {
+            onCurrentTextChanged:
+            {
                 if (configVisualReportPopup.lastVisualReport !== "")
+                {
                     configVisualReportPopup.lastVisualReport.setType(currentIndex + 1)
+                    //jsonReport.saveLocalConfig()
+                }
             }
         }
 
@@ -341,6 +345,7 @@ Item {
                 fullHDReport.reportsHeight[configVisualReportPopup.reportIndex] = value
                 configVisualReportPopup.lastVisualReport.height = value
                 scroll.updatePositions()
+                //jsonReport.saveLocalConfig()
             }
         }
 
