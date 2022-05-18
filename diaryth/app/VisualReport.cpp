@@ -62,7 +62,8 @@ void VisualReport::paint(QPainter* painter)
     ReportPrevStats prevStats;
     PraatPrevStats prevPraats;
 
-    //painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
+    if (_showBorder)
+        painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
 
     const auto& events = _parentReport->getEvents();
 
@@ -97,7 +98,6 @@ void VisualReport::paint(QPainter* painter)
 
     if (_type == VisualTypes::ChunksOnly) //Возможно потом объединить в paintSequenceType
         paintChunksOnly(painter);
-
 
 }
 

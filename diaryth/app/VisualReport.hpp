@@ -114,6 +114,11 @@ namespace diaryth
 
         Q_INVOKABLE QVariantList getReportFields();
 
+        Q_INVOKABLE void setShowBorder(bool value) {
+            _showBorder = value;
+            update();
+        }
+
 
     private:
 
@@ -130,6 +135,7 @@ namespace diaryth
 
 
         VisualTypes _type;
+        bool _showBorder = false;
 
         std::map<QString, PraatFieldDisplayInfo> _praatFields;
 

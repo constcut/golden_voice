@@ -168,6 +168,15 @@ Item {
             var reportType = visualReport.getType()
             visualReportType.currentIndex = reportType - 1
             reportHeightSlider.value = visualReport.height
+
+            for (var i = 0; i < reportsRepeater.model; ++i)
+                reportsRepeater.itemAt(i).setShowBorder(true)
+        }
+
+        onClosed:
+        {
+            for (var i = 0; i < reportsRepeater.model; ++i)
+                reportsRepeater.itemAt(i).setShowBorder(false)
         }
 
 
