@@ -119,13 +119,19 @@ Item {
             {
                 var heights = jsonReport.loadLocalConfig()
 
+                console.log("Loading reports ", heights.length)
+
                 for (var i = 0; i < heights.length; ++i)
                 {
-                    fullHDReport.reportsHeight[i] = height[i]
+                    fullHDReport.reportsHeight[i] = heights[i]
+                    //reportsRepeater.itemAt(i).height = heights[i]
                     fullHDReport.reportsTypes[i] = reportsRepeater.itemAt(i).getType()
                 }
 
                 scroll.updatePositions()
+
+                for (i = 0; i < heights.length; ++i)
+                     reportsRepeater.itemAt(i).setType(fullHDReport.reportsTypes[i])
             }
         }
     }

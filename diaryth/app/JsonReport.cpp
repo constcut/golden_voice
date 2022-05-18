@@ -148,6 +148,8 @@ QList<int> JsonReport::loadLocalConfig()
             pReport->addPraatField(name, color, yCoef);
         }
 
+        pReport->clearReportFields();
+
         for (int j = 0; j < reportFields.size(); ++j)
         {
             auto singleReportField = reportFields[j].toObject();
