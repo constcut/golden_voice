@@ -54,9 +54,21 @@ Item {
         return hSum + 5 * (idx + 1)
     }
 
+    RowLayout
+    {
+        x: 25
+        y: 10
+
+        Button {
+            text: "text"
+        }
+    }
+
 
     ScrollView
     {
+        y: 50
+
         id: scroll
         width: parent.width
         height: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3]
@@ -71,6 +83,13 @@ Item {
                 reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
 
         }
+
+        ScrollBar {
+            orientation: Qt.Horizontal
+            height: 50
+        }
+
+        ScrollBar.horizontal.interactive: true
 
         Flickable
         {
