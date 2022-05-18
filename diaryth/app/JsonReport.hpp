@@ -8,6 +8,7 @@
 #include <QVariant>
 
 #include <set>
+#include <vector>
 
 
 //TODO clean after JsonReport Merge

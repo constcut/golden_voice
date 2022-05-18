@@ -53,16 +53,57 @@ void JsonReport::saveLocalConfig()
         reportObject["height"] = pReport->height();
 
         auto praatFields = pReport->getPraatFields();
+        QJsonArray praatFieldsArr;
+
+        for (int i = 0; i < praatFields.size(); ++i)
+        {
+            auto line = praatFields[i].toStringList();
+
+            QJsonObject singleField;
+            singleField["name"] = line[0];
+            singleField["color"] = line[1];
+            singleField["y_coef"] = line[2].toDouble();
+
+            praatFieldsArr.append(singleField);
+        }
+
+        reportObject["praat_fields"] = praatFieldsArr;
+
         auto reportFields = pReport->getReportFields();
+        QJsonArray reportFieldsArr;
+
+        for (int i = 0; i < reportFields.size(); ++i)
+        {
+            auto line = reportFields[i].toStringList();
+
+            QJsonObject singleField;
+            singleField["name"] = line[0];
+            singleField["color"] = line[1];
+            singleField["y_coef"] = line[2].toDouble();
+
+            reportFieldsArr.append(singleField);
+        }
+
+        reportObject["report_fields"] = reportFieldsArr;
+
+        visualReports.append(reportObject);
     }
 
     root["visual_reports"] = visualReports;
+
+    auto doc = QJsonDocument(root);
+    auto bytes = doc.toJson();
+
+    QFile f(_configFilename);
+    f.open(QIODevice::WriteOnly);
+    f.write(bytes);
+    f.close();
 }
 
 
 QList<int> JsonReport::loadLocalConfig()
 {
-    QFile f = QFile(_configFilename);
+    QFile f(_configFilename);
     f.open(QIODevice::ReadOnly);
 
     QString fullString = f.readAll();
@@ -84,8 +125,8 @@ QList<int> JsonReport::loadLocalConfig()
 
         heights.append(height);
 
-        auto praatFields = reportObject["praatFields"].toArray();
-        auto reportFields = reportObject["reportFields"].toArray();
+        auto praatFields = reportObject["praat_fields"].toArray();
+        auto reportFields = reportObject["report_fields"].toArray();
 
         //visualReport->clearPraatFields()
 
@@ -135,7 +176,8 @@ void JsonReport::updateAllVisualReports()
 
 void JsonReport::registerVisual(VisualReport* visual)
 {
-    _connectedVisuals.insert(visual);
+    //Check exists?
+    _connectedVisuals.push_back(visual);
 }
 
 void JsonReport::removeVisual(VisualReport* visual)

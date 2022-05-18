@@ -79,7 +79,8 @@ Item {
             text: "Zoom"
         }
 
-        RoundButton {
+        RoundButton
+        {
             text: "+"
             onClicked:
             {
@@ -91,7 +92,8 @@ Item {
             }
         }
 
-        RoundButton {
+        RoundButton
+        {
             text: "-"
             onClicked: {
                 jsonReport.setZoom(jsonReport.getZoom() / 2)
@@ -100,6 +102,13 @@ Item {
                 for (var i = 0; i < reportsRepeater.model; ++i)
                     reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
             }
+        }
+
+        Button
+        {
+            text: "Save config"
+
+            onClicked: jsonReport.saveLocalConfig()
         }
     }
 
