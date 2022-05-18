@@ -121,7 +121,7 @@ Item {
 
                 for (var i = 0; i < heights.length; ++i)
                 {
-                    fullHDReport.reportsHeight[i] = height[s]
+                    fullHDReport.reportsHeight[i] = height[i]
                     fullHDReport.reportsTypes[i] = reportsRepeater.itemAt(i).getType()
                 }
 
