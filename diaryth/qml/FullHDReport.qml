@@ -67,9 +67,12 @@ Item {
         {
             id: infoCoef
             text: "1"
-            width: 40
+            width: 50
+            implicitWidth: 50
 
             placeholderText: "Y Coef"
+
+            validator: realValidator
         }
 
         Text
@@ -120,7 +123,7 @@ Item {
 
             ScrollBar.horizontal: ScrollBar
             {
-                height: 20
+                height: 15
                 active: true
                 interactive: true
                 policy: ScrollBar.AlwaysOn
@@ -149,8 +152,9 @@ Item {
                         onClicked:
                         {
                             var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
+                            var seconds = mouseX / jsonReport.getZoom()
 
-                            infoText.text = "#" + index + " " + realY + " " + mouseX
+                            infoText.text = "#" + index + " value= " + realY + " time= " + seconds + "s"
                             console.log("Pos changed: ", mouseX, mouseY)
                         }
 
