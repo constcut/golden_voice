@@ -19,8 +19,6 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 {
     _zoomCoef = 500.0;
     _configFilename = "config.json";
-
-    loadFromFile("C:/Users/constcut/Desktop/local/full_report.json");
 }
 
 

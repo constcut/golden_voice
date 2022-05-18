@@ -15,13 +15,34 @@ Item {
     }
 
 
+    FileDialog
+    {
+        id: fileDialog
+        title: "Please choose json speech report"
+        folder: shortcuts.home //TODO store last directory
+        onAccepted: {
+            var filename = fileDialog.fileUrls[0].substring(8)
+            jsonReport.loadFromFile(filename)
+            reloadVisualReports()
+            fileDialog.close()
+        }
+        onRejected: {
+            fileDialog.close()
+        }
+        nameFilters: [ "JSON report (*.json)" ]
+    }
+
+
     JsonReport
     {
         id: jsonReport
 
         Component.onCompleted:
         {
-            reloadVisualReports()
+            //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
+            //reloadVisualReports()
+
+            //TODO check last opened
         }
     }
 
@@ -78,31 +99,6 @@ Item {
             text: "Zoom"
         }
 
-        RoundButton
-        {
-            text: "+"
-            onClicked:
-            {
-                jsonReport.setZoom(jsonReport.getZoom() * 2)
-                flick.contentWidth = jsonReport.getFullWidth()
-
-                for (var i = 0; i < reportsRepeater.model; ++i)
-                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
-            }
-        }
-
-        RoundButton
-        {
-            text: "-"
-            onClicked: {
-                jsonReport.setZoom(jsonReport.getZoom() / 2)
-                flick.contentWidth = jsonReport.getFullWidth()
-
-                for (var i = 0; i < reportsRepeater.model; ++i)
-                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
-            }
-        }
-
         Button
         {
             text: "Save config"
@@ -129,6 +125,40 @@ Item {
 
                 for (i = 0; i < heights.length; ++i)
                      reportsRepeater.itemAt(i).setType(fullHDReport.reportsTypes[i])
+            }
+        }
+
+        Button
+        {
+            text: "Open report file"
+
+            onClicked: {
+                fileDialog.open()
+            }
+        }
+
+        RoundButton
+        {
+            text: "Zoom+"
+            onClicked:
+            {
+                jsonReport.setZoom(jsonReport.getZoom() * 2)
+                flick.contentWidth = jsonReport.getFullWidth()
+
+                for (var i = 0; i < reportsRepeater.model; ++i)
+                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
+            }
+        }
+
+        RoundButton
+        {
+            text: "Zoom-"
+            onClicked: {
+                jsonReport.setZoom(jsonReport.getZoom() / 2)
+                flick.contentWidth = jsonReport.getFullWidth()
+
+                for (var i = 0; i < reportsRepeater.model; ++i)
+                    reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
             }
         }
     }
@@ -178,12 +208,12 @@ Item {
             Repeater
             {
                 id: reportsRepeater
-
                 model: 4
 
                 VisualReport
                 {
                     id: visualReport
+
                     height: fullHDReport.reportsHeight[index]
                     width: 3000
                     y: fullHDReport.calculateY(index)
@@ -192,9 +222,10 @@ Item {
                         id: localToolTip
                     }
 
-                    Component.onDestroyed: {
+                    /*Component.onDestroyed:
+                    {
                         jsonReport.removeVisual(visualReport)
-                    }
+                    }*/ //We need it if reportsRepeater.model will change
 
                     MouseArea
                     {
