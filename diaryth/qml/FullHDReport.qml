@@ -12,7 +12,6 @@ Item {
 
     Component.onCompleted:
     {
-
     }
 
 
@@ -24,8 +23,8 @@ Item {
         {
             reloadVisualReports()
         }
-
     }
+
 
     function reloadVisualReports()
     {
@@ -185,9 +184,9 @@ Item {
                 VisualReport
                 {
                     id: visualReport
-                    height:  fullHDReport.reportsHeight[index]
+                    height: fullHDReport.reportsHeight[index]
                     width: 3000
-                    y:  fullHDReport.calculateY(index)
+                    y: fullHDReport.calculateY(index)
 
                     ToolTip {
                         id: localToolTip
