@@ -127,7 +127,7 @@ Item {
                         {
                             if (mouse.button == Qt.RightButton)
                             {
-                                configVisualReportPopup.connectWithReport(visualReport)
+                                configVisualReportPopup.connectWithReport(visualReport, index)
                                 configVisualReportPopup.open()
                             }
                         }
@@ -161,10 +161,13 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         property var lastVisualReport: "" //undefined?
+        property int reportIndex: 0
 
-        function connectWithReport(visualReport)
+        function connectWithReport(visualReport, idx)
         {
             configVisualReportPopup.lastVisualReport = visualReport
+            configVisualReportPopup.reportIndex = idx
+
             var reportType = visualReport.getType()
             visualReportType.currentIndex = reportType - 1
             reportHeightSlider.value = visualReport.height
@@ -213,6 +216,10 @@ Item {
 
             onMoved:
             {
+                fullHDReport.reportsHeight[configVisualReportPopup.reportIndex] = value
+
+                //TODO update y, and total height - function from flick
+
                 configVisualReportPopup.lastVisualReport.height = value
             }
         }
