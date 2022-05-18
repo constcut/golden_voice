@@ -316,6 +316,8 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
     double eventH = 0.0;
 
+    const int verticalShift = 40;
+
     if (type == "word")
     {
 
@@ -335,8 +337,8 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
         auto x = start * zoomCoef + 5;
         double w = (end - start) * zoomCoef;
-        y = value["min"].toDouble() * verticalZoom + 40;
-        eventH = value["max"].toDouble() * verticalZoom + 40 - y;
+        y = value["min"].toDouble() * verticalZoom + verticalShift;
+        eventH = value["max"].toDouble() * verticalZoom + verticalShift - y;
 
         if (selectedIdx.count(idx))
             painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor("darkgray")));
@@ -346,30 +348,30 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
         painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
         painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
 
-        painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
-        painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - verticalShift, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - verticalShift, 4, 4);
 
         auto pen = painter->pen();
 
         painter->setPen(QColor("green"));
-        painter->drawEllipse(x, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
-        painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x, fullHeight - value["median"].toDouble() * verticalZoom - verticalShift, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["median"].toDouble() * verticalZoom - verticalShift, 4, 4);
 
         if (prevStats.prevMedian != 0.0)
             painter->drawLine(prevStats.prevXEnd, prevStats.prevMedian, x,
-                              fullHeight - value["median"].toDouble() * verticalZoom - 40);
+                              fullHeight - value["median"].toDouble() * verticalZoom - verticalShift);
 
-        prevStats.prevMedian = fullHeight - value["median"].toDouble() * verticalZoom - 40;
+        prevStats.prevMedian = fullHeight - value["median"].toDouble() * verticalZoom - verticalShift;
 
         painter->setPen(QColor("blue"));
-        painter->drawEllipse(x, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
-        painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x, fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift, 4, 4);
+        painter->drawEllipse(x + w, fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift, 4, 4);
 
         if (prevStats.prevMean != 0)
             painter->drawLine(prevStats.prevXEnd, prevStats.prevMean, x,
-                              fullHeight - value["mean"].toDouble() * verticalZoom - 40);
+                              fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift);
 
-        prevStats.prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - 40;
+        prevStats.prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift;
         prevStats.prevXEnd = x + w;
 
 
@@ -392,16 +394,16 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
             double pY = sequence[i].toDouble() * verticalZoom;
 
             double newX = x + i * pixelPerSample;
-            double newY = fullHeight - pY - 40;
+            double newY = fullHeight - pY - verticalShift;
 
-            if (pY != 0.0 && prevY != fullHeight - 40)
+            if (pY != 0.0 && prevY != fullHeight - verticalShift)
             {
                 if (prevX != 0.0 || prevY != 0.0)
                     painter->drawLine(prevX, prevY, newX, newY);
             }
 
             prevX = x + i * pixelPerSample;
-            prevY = fullHeight - pY - 40;
+            prevY = fullHeight - pY - verticalShift;
         }
 
         painter->setPen(QColor("gray"));
