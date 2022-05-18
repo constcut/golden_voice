@@ -51,8 +51,6 @@ Item {
         for (var i = 1; i <= idx; ++i)
             hSum += reportsHeight[i - 1]
 
-        //console.log("ON idx ", idx, " we got ", hSum)
-
         return hSum + 5 * (idx + 1)
     }
 
@@ -60,6 +58,10 @@ Item {
     {
         x: 25
         y: 10
+
+        Text {
+            text: "Y coef: "
+        }
 
         TextField
         {
@@ -73,10 +75,6 @@ Item {
             validator: realValidator
         }
 
-        Text
-        {
-            id: infoText //Возможно отказаться от ROW или же разместить это поле последним!
-        }
     }
 
 
@@ -97,13 +95,6 @@ Item {
                 reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
 
         }
-
-        /*ScrollBar {
-            orientation: Qt.Horizontal
-            height: 50
-            active: true
-            interactive: true
-        }*/
 
 
         Flickable
@@ -128,6 +119,8 @@ Item {
 
 
 
+
+
             Repeater
             {
                 id: reportsRepeater
@@ -141,6 +134,11 @@ Item {
                     width: 3000
                     y:  fullHDReport.calculateY(index)
 
+                    ToolTip {
+                        id: localToolTip
+                    }
+
+
                     MouseArea
                     {
                         anchors.fill: parent
@@ -150,7 +148,9 @@ Item {
                         {
                             var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
                             var seconds = mouseX / jsonReport.getZoom()
-                            infoText.text = "#" + index + " value= " + realY + " time= " + seconds + "s"
+                            localToolTip.show("value= " + realY + " time= " + seconds + "s")
+                            localToolTip.x = mouseX
+                            localToolTip.y = mouseY
                         }
 
                         onDoubleClicked:
