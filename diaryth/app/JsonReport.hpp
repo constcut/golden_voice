@@ -61,10 +61,6 @@ namespace diaryth
             return _lastSelectedChunk;
         }
 
-        //void addVisualReport
-        //void removeVisualReport
-        //void clearAllVisualReport
-
         const QJsonArray& getEvents() { return _events; }
         const QJsonArray& getChunks() { return _chunks; }
         const QJsonObject& getFullPraat() { return _fullPraat; }
@@ -73,6 +69,13 @@ namespace diaryth
         void registerVisual(VisualReport* visual); //Not Q_INVOKABLE  beasue must be registered from VR set parent
         Q_INVOKABLE void removeVisual(VisualReport* visual);
         Q_INVOKABLE void clearVisuals();
+
+        Q_INVOKABLE void saveLocalConfig(QList<int> heights);
+        Q_INVOKABLE QList<int> loadLocalConfig();
+
+        Q_INVOKABLE void setConfiпFilename(QString filename) {
+            _configFilename = filename;
+        }
 
     private:
 
@@ -88,7 +91,9 @@ namespace diaryth
         std::set<int> _selectedIdx;
         int _lastSelectedChunk = 0;
 
-        std::set<VisualReport*> _connectedVisuals;
+        std::set<VisualReport*> _connectedVisuals; //Todo replace with vector
+
+        QString _configFilename;
 
     };
 

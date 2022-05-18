@@ -16,7 +16,9 @@ using namespace diaryth;
 JsonReport::JsonReport(QObject *parent) : QObject(parent)
 {
     _zoomCoef = 500.0;
+    _configFilename = "config.json";
 
+    //TODO вынести отдельно функцию открытия файла
     QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
     f.open(QIODevice::ReadOnly); //Проверка на открытие и реакция TODO
 
@@ -30,6 +32,91 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 
     _chunks = root["chunks"].toArray();
     _fullPraat = root["info"].toObject(); //TODO + statistics of sequences
+}
+
+
+void JsonReport::saveLocalConfig(QList<int> heights)
+{
+    //TODO insure all registered in proper sequence - there is a match between type and height
+
+    QJsonObject root;
+
+    root["zoom"] = _zoomCoef;
+
+    QJsonArray visualReports;
+
+    for (auto pReport: _connectedVisuals)
+    {
+        QJsonObject reportObject;
+
+        reportObject["type"] = pReport->getType();
+        reportObject["height"] = pReport->height();
+
+        auto praatFields = pReport->getPraatFields();
+        auto reportFields = pReport->getReportFields();
+    }
+
+    root["visual_reports"] = visualReports;
+}
+
+
+QList<int> JsonReport::loadLocalConfig()
+{
+    QFile f = QFile(_configFilename);
+    f.open(QIODevice::ReadOnly);
+
+    QString fullString = f.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8());
+
+    auto root = doc.object();
+    _zoomCoef = root["zoom"].toDouble();
+
+    auto visualReports = root["visual_reports"].toArray();
+
+    QList<int> heights;
+
+    for (int i = 0; i < visualReports.size(); ++i)
+    {
+        auto reportObject = visualReports[i].toObject();
+
+        int type = reportObject["type"].toInt();
+        int height = reportObject["height"].toInt(); //Нужно вынести наружу
+
+        heights.append(height);
+
+        auto praatFields = reportObject["praatFields"].toArray();
+        auto reportFields = reportObject["reportFields"].toArray();
+
+        //visualReport->clearPraatFields()
+
+        for (int j = 0; j < praatFields.size(); ++j)
+        {
+            auto singlePraatField = praatFields[j].toObject();
+
+            auto name = singlePraatField["name"].toString();
+            auto color = singlePraatField["color"].toString();
+            auto yCoef = singlePraatField["y_coef"].toString();
+
+            //visualReport->addPraatField(name, color, yCoef)
+        }
+
+        for (int j = 0; j < reportFields.size(); ++j)
+        {
+            auto singleReportField = reportFields[j].toObject();
+
+            auto name = singleReportField["name"].toString();
+            auto color = singleReportField["color"].toString();
+            auto yCoef = singleReportField["y_coef"].toString();
+
+            //visualReport->addReportField(name, color, yCoef)
+        }
+
+        //visualReport->setType(type)
+    }
+
+    updateAllVisualReports();
+
+    return heights;
 }
 
 
