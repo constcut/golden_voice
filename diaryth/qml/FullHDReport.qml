@@ -176,8 +176,6 @@ Item {
 
 
 
-
-
             Repeater
             {
                 id: reportsRepeater
@@ -195,6 +193,9 @@ Item {
                         id: localToolTip
                     }
 
+                    Component.onDestroyed: {
+                        jsonReport.removeVisual(visualReport)
+                    }
 
                     MouseArea
                     {
@@ -215,11 +216,8 @@ Item {
 
                         onDoubleClicked:
                         {
-
-
                             if (mouse.button == Qt.RightButton)
                             {
-
                                 var reportType = visualReport.getType()
 
                                 if (reportType === VisualTypes.PraatInfo || reportType === VisualTypes.PraatInfoFullDiff ||
@@ -234,7 +232,6 @@ Item {
                                     reportFieldsConfigPopup.loadFromVisual(visualReport)
                                     reportFieldsConfigPopup.open()
                                 }
-
                             }
                             else
                             {
