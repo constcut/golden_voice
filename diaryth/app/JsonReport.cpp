@@ -7,6 +7,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include <algorithm>
+
 #include "VisualReport.hpp"
 
 using namespace diaryth;
@@ -176,13 +178,18 @@ void JsonReport::updateAllVisualReports()
 
 void JsonReport::registerVisual(VisualReport* visual)
 {
-    //Check exists?
-    _connectedVisuals.push_back(visual);
+    auto findResult = std::find(_connectedVisuals.begin(), _connectedVisuals.end(), visual);
+
+    if (findResult == _connectedVisuals.end())
+        _connectedVisuals.push_back(visual);
 }
 
 void JsonReport::removeVisual(VisualReport* visual)
 {
-    _connectedVisuals.erase(visual);
+    auto findResult = std::find(_connectedVisuals.begin(), _connectedVisuals.end(), visual);
+
+    if (findResult != _connectedVisuals.end())
+        _connectedVisuals.erase(findResult);
 }
 
 void JsonReport::clearVisuals()

@@ -67,16 +67,15 @@ namespace diaryth
         const QJsonObject& getFullPraat() { return _fullPraat; }
         const std::set<int>& getSelectedIdx() { return _selectedIdx; }
 
+
         void registerVisual(VisualReport* visual); //Not Q_INVOKABLE  beasue must be registered from VR set parent
         Q_INVOKABLE void removeVisual(VisualReport* visual);
         Q_INVOKABLE void clearVisuals();
 
+
         Q_INVOKABLE void saveLocalConfig();
         Q_INVOKABLE QList<int> loadLocalConfig();
 
-        Q_INVOKABLE void setConfiпFilename(QString filename) {
-            _configFilename = filename;
-        }
 
     private:
 
@@ -92,7 +91,7 @@ namespace diaryth
         std::set<int> _selectedIdx;
         int _lastSelectedChunk = 0;
 
-        std::set<VisualReport*> _connectedVisuals; //Todo replace with vector
+        std::vector<VisualReport*> _connectedVisuals;
 
         QString _configFilename;
 
