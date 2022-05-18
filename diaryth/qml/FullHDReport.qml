@@ -62,6 +62,20 @@ Item {
         Button {
             text: "text"
         }
+
+        TextField
+        {
+            id: infoCoef
+            text: "1"
+            width: 40
+
+            placeholderText: "Y Coef"
+        }
+
+        Text
+        {
+            id: infoText
+        }
     }
 
 
@@ -106,12 +120,9 @@ Item {
 
             ScrollBar.horizontal: ScrollBar
             {
-                orientation: Qt.Horizontal
-                height: 30
-
+                height: 20
                 active: true
                 interactive: true
-
                 policy: ScrollBar.AlwaysOn
             }
 
@@ -137,8 +148,12 @@ Item {
 
                         onClicked:
                         {
+                            var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
 
+                            infoText.text = "#" + index + " " + realY + " " + mouseX
+                            console.log("Pos changed: ", mouseX, mouseY)
                         }
+
                         onDoubleClicked:
                         {
                             if (mouse.button == Qt.RightButton)
