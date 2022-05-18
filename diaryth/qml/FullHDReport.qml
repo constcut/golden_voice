@@ -204,8 +204,8 @@ Item {
                                 var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
                                 var seconds = mouseX / jsonReport.getZoom()
                                 localToolTip.show("value= " + realY + " time= " + seconds + "s")
-                                localToolTip.x = mouseX
-                                localToolTip.y = mouseY
+                                localToolTip.x = mouseX + 2
+                                localToolTip.y = mouseY + 2
                             }
                         }
 
@@ -234,8 +234,6 @@ Item {
                             }
                             else
                             {
-                                console.log("Dbl to select")
-
                                 var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
                                 jsonReport.selectEvent(idx)
                             }
