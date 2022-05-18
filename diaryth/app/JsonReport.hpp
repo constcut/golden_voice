@@ -70,7 +70,7 @@ namespace diaryth
         Q_INVOKABLE void removeVisual(VisualReport* visual);
         Q_INVOKABLE void clearVisuals();
 
-        Q_INVOKABLE void saveLocalConfig(QList<int> heights);
+        Q_INVOKABLE void saveLocalConfig();
         Q_INVOKABLE QList<int> loadLocalConfig();
 
         Q_INVOKABLE void setConfiпFilename(QString filename) {

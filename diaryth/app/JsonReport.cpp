@@ -35,7 +35,7 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 }
 
 
-void JsonReport::saveLocalConfig(QList<int> heights)
+void JsonReport::saveLocalConfig()
 {
     //TODO insure all registered in proper sequence - there is a match between type and height
 
