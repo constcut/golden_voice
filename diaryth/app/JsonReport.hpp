@@ -28,6 +28,8 @@ namespace diaryth
 
         explicit JsonReport(QObject *parent = nullptr);
 
+        Q_INVOKABLE void loadFromFile(QString filename);
+
         Q_INVOKABLE double getFullWidth();
 
         Q_INVOKABLE double getZoom() { //Time - добавить в название, чтобы было понятно
@@ -81,11 +83,12 @@ namespace diaryth
 
         void updateAllVisualReports();
 
-        double _fullWidth = 0.0;
         double _zoomCoef = 250.0;
 
-        QJsonArray _events; //TODO вероятно позже лучше хранить в отдельном классе, который связывать с множеством репортов - иначе дублировани
-        QJsonArray _chunks; //Операции выделения итд можно тоже поместить в этот отдельный класс
+        QJsonObject _root; //Возможно стоит хранить только этот объект
+
+        QJsonArray _events;
+        QJsonArray _chunks;
         QJsonObject _fullPraat;
 
         std::set<int> _selectedIdx;

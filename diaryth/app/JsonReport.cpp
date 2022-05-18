@@ -20,20 +20,22 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
     _zoomCoef = 500.0;
     _configFilename = "config.json";
 
-    //TODO вынести отдельно функцию открытия файла
-    QFile f = QFile("C:/Users/constcut/Desktop/local/full_report.json"); //full report
-    f.open(QIODevice::ReadOnly); //Проверка на открытие и реакция TODO
+    loadFromFile("C:/Users/constcut/Desktop/local/full_report.json");
+}
+
+
+void JsonReport::loadFromFile(QString filename)
+{
+    QFile f(filename);
+    f.open(QIODevice::ReadOnly);
 
     QString fullString = f.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //, error); //QJsonParseError *error = new QJsonParseError();
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8());
 
-    auto root = doc.object();
-
-    _events = root["events"].toArray();
-    _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
-
-    _chunks = root["chunks"].toArray();
-    _fullPraat = root["info"].toObject(); //TODO + statistics of sequences
+    _root = doc.object();
+    _events = _root["events"].toArray();
+    _chunks = _root["chunks"].toArray();
+    _fullPraat = _root["info"].toObject();
 }
 
 
@@ -172,8 +174,7 @@ QList<int> JsonReport::loadLocalConfig()
 
 double JsonReport::getFullWidth()
 {
-    _fullWidth = _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef;
-    return _fullWidth + 20; //TODO наверное перестать хранить в классе
+    return _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef + 20;
 }
 
 void JsonReport::updateAllVisualReports()
