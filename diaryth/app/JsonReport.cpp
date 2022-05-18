@@ -122,6 +122,11 @@ QList<int> JsonReport::loadLocalConfig()
     {
         auto reportObject = visualReports[i].toObject();
 
+        if (_connectedVisuals.size() <= static_cast<size_t>(i))
+            break;
+
+        auto pReport = _connectedVisuals[i];
+
         int type = reportObject["type"].toInt();
         int height = reportObject["height"].toInt(); //Нужно вынести наружу
 
@@ -130,7 +135,7 @@ QList<int> JsonReport::loadLocalConfig()
         auto praatFields = reportObject["praat_fields"].toArray();
         auto reportFields = reportObject["report_fields"].toArray();
 
-        //visualReport->clearPraatFields()
+        pReport->clearPraatFields();
 
         for (int j = 0; j < praatFields.size(); ++j)
         {
@@ -138,9 +143,9 @@ QList<int> JsonReport::loadLocalConfig()
 
             auto name = singlePraatField["name"].toString();
             auto color = singlePraatField["color"].toString();
-            auto yCoef = singlePraatField["y_coef"].toString();
+            auto yCoef = singlePraatField["y_coef"].toDouble();
 
-            //visualReport->addPraatField(name, color, yCoef)
+            pReport->addPraatField(name, color, yCoef);
         }
 
         for (int j = 0; j < reportFields.size(); ++j)
@@ -149,12 +154,12 @@ QList<int> JsonReport::loadLocalConfig()
 
             auto name = singleReportField["name"].toString();
             auto color = singleReportField["color"].toString();
-            auto yCoef = singleReportField["y_coef"].toString();
+            auto yCoef = singleReportField["y_coef"].toDouble();
 
-            //visualReport->addReportField(name, color, yCoef)
+            pReport->addReportField(name, color, yCoef);
         }
 
-        //visualReport->setType(type)
+        pReport->setType(type);
     }
 
     updateAllVisualReports();

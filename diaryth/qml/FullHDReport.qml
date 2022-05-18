@@ -110,6 +110,24 @@ Item {
 
             onClicked: jsonReport.saveLocalConfig()
         }
+
+        Button
+        {
+            text: "Load config"
+
+            onClicked:
+            {
+                var heights = jsonReport.loadLocalConfig()
+
+                for (var i = 0; i < heights.length; ++i)
+                {
+                    fullHDReport.reportsHeight[i] = height[s]
+                    fullHDReport.reportsTypes[i] = reportsRepeater.itemAt(i).getType()
+                }
+
+                scroll.updatePositions()
+            }
+        }
     }
 
 
