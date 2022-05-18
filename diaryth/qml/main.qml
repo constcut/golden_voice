@@ -26,10 +26,8 @@ ApplicationWindow {
             fullhdReport.visible = false
             smallItem.visible = true
         }
-        else {
-            //TODO проверить размер экрана, и если возможно сделать загрузку версии full hd
-
-            console.log("Check screen")
+        else
+        {
 
             if (Screen.desktopAvailableWidth >= 1920)
             {
@@ -41,8 +39,6 @@ ApplicationWindow {
 
                 fullhdReport.visible = true
                 smallItem.visible = false
-
-                console.log("Big screen")
             }
             else
             {
@@ -51,8 +47,6 @@ ApplicationWindow {
 
                 fullhdReport.visible = false
                 smallItem.visible = true
-
-                console.log("Small screen")
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
@@ -77,7 +71,6 @@ ApplicationWindow {
     FullHDReport
     {
         id: fullhdReport
-
         anchors.fill: parent
     }
 

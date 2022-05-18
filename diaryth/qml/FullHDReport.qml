@@ -119,8 +119,6 @@ Item {
             {
                 var heights = jsonReport.loadLocalConfig()
 
-                console.log("Loading reports ", heights.length)
-
                 for (var i = 0; i < heights.length; ++i)
                 {
                     fullHDReport.reportsHeight[i] = heights[i]
