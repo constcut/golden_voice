@@ -149,36 +149,62 @@ Item {
     Popup
     {
         id: configVisualReportPopup
-        x: 50
+
+        x: fullHDReport.width/2 - width/2 - 25
         y: fullHDReport.height - height - 50
-        width: fullHDReport.width - x * 2
-        height: 200
+
+        width: 500
+        height: 160
+
         modal: true
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-        property var lastVisualReport: []
+        property var lastVisualReport: "" //undefined?
 
         function connectWithReport(visualReport)
         {
             configVisualReportPopup.lastVisualReport = visualReport
             var reportType = visualReport.getType()
             visualReportType.currentIndex = reportType - 1
+            reportHeightSlider.value = visualReport.height
         }
 
 
         ComboBox
         {
             y: 20
-            x: 150
-            width: 200
+            x: 25
+            width: parent.width - 50
 
             id: visualReportType
             model: ["Pitch", "Intensity", "Praat", "PraatChunkDiff", "PraatFullDiff",
                     "Chunks", "Words", "ReportFields"]
 
             onCurrentTextChanged: {
+                if (configVisualReportPopup.lastVisualReport !== "")
+                    configVisualReportPopup.lastVisualReport.setType(currentIndex + 1)
+            }
+        }
 
+        Slider
+        {
+            id: reportHeightSlider
+
+            y: 30 + visualReportType.height
+
+            x: 25
+            width: parent.width - 50
+
+            from: 35
+            to: 600
+            stepSize: 5
+
+            value: 190
+
+            onMoved:
+            {
+                configVisualReportPopup.lastVisualReport.height = value
             }
         }
 
