@@ -199,18 +199,23 @@ Item {
 
                         onClicked:
                         {
-                            var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
-                            var seconds = mouseX / jsonReport.getZoom()
-                            localToolTip.show("value= " + realY + " time= " + seconds + "s")
-                            localToolTip.x = mouseX
-                            localToolTip.y = mouseY
+                            if (mouse.button === Qt.LeftButton)
+                            {
+                                var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
+                                var seconds = mouseX / jsonReport.getZoom()
+                                localToolTip.show("value= " + realY + " time= " + seconds + "s")
+                                localToolTip.x = mouseX
+                                localToolTip.y = mouseY
+                            }
                         }
 
                         onDoubleClicked:
                         {
+
+
                             if (mouse.button == Qt.RightButton)
                             {
-                                console.log("Right mouse dbl click")
+
                                 var reportType = visualReport.getType()
 
                                 if (reportType === VisualTypes.PraatInfo || reportType === VisualTypes.PraatInfoFullDiff ||
@@ -229,6 +234,8 @@ Item {
                             }
                             else
                             {
+                                console.log("Dbl to select")
+
                                 var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
                                 jsonReport.selectEvent(idx)
                             }
