@@ -316,7 +316,7 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
     double eventH = 0.0;
 
-    const int verticalShift = 40;
+    const int verticalShift = 0;
 
     if (type == "word")
     {
@@ -337,6 +337,7 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
 
         auto x = start * zoomCoef + 5;
         double w = (end - start) * zoomCoef;
+
         y = value["min"].toDouble() * verticalZoom + verticalShift;
         eventH = value["max"].toDouble() * verticalZoom + verticalShift - y;
 
@@ -345,8 +346,8 @@ void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
         else
             painter->fillRect(x, fullHeight - y, w, - eventH, QBrush(QColor(240, 240, 240)));
 
-        painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - 40, 4, 4);
-        painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - 40, 4, 4);
+        painter->drawEllipse(x, fullHeight - value["min"].toDouble() * verticalZoom - verticalShift, 4, 4);
+        painter->drawEllipse(x, fullHeight - value["max"].toDouble() * verticalZoom - verticalShift, 4, 4);
 
         painter->drawEllipse(x + w, fullHeight - value["min"].toDouble() * verticalZoom - verticalShift, 4, 4);
         painter->drawEllipse(x + w, fullHeight - value["max"].toDouble() * verticalZoom - verticalShift, 4, 4);

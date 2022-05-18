@@ -36,6 +36,8 @@ Item {
             reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
             reportsRepeater.itemAt(i).setType(fullHDReport.reportsTypes[i])
         }
+
+        scroll.updatePositions()
     }
 
 
@@ -59,10 +61,6 @@ Item {
         x: 25
         y: 10
 
-        Button {
-            text: "text"
-        }
-
         TextField
         {
             id: infoCoef
@@ -77,7 +75,7 @@ Item {
 
         Text
         {
-            id: infoText
+            id: infoText //Возможно отказаться от ROW или же разместить это поле последним!
         }
     }
 
@@ -92,8 +90,7 @@ Item {
 
         function updatePositions()
         {
-            //TODO rewrite with cycle
-            scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3]
+            scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + 10 * 4
             flick.height = scroll.height
 
             for (var i = 0; i < reportsRepeater.model; ++i)
@@ -153,9 +150,7 @@ Item {
                         {
                             var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
                             var seconds = mouseX / jsonReport.getZoom()
-
                             infoText.text = "#" + index + " value= " + realY + " time= " + seconds + "s"
-                            console.log("Pos changed: ", mouseX, mouseY)
                         }
 
                         onDoubleClicked:
@@ -511,7 +506,8 @@ Item {
                     praatFieldsConfigPopup.lastVisualReport.addPraatField(name, color, yCoef)
                 }
 
-                praatFieldsConfigPopup.lastVisualReport.setPraatType() //way to repaint
+                var type = praatFieldsConfigPopup.lastVisualReport.getType()
+                praatFieldsConfigPopup.lastVisualReport.setType(type) //trick for reloading
 
                 praatFieldsConfigPopup.close()
             }
@@ -717,7 +713,9 @@ Item {
                     reportFieldsConfigPopup.lastVisualReport.addReportField(name, color, yCoef)
                 }
 
-                reportFieldsConfigPopup.lastVisualReport.setReportFieldsType()
+                var type = reportFieldsConfigPopup.lastVisualReport.getType()
+                reportFieldsConfigPopup.lastVisualReport.setType(type)
+
                 reportFieldsConfigPopup.close()
             }
         }
