@@ -407,19 +407,19 @@ Item {
                 }
             }
 
-            RowLayout
+            Item
             {
-                Item {
-                    Layout.fillWidth: true
-                }
+                height: 60
 
                 Button
                 {
+                    x: 15
                     text: "Cancel"
                 }
 
                 Button
                 {
+                    x: markupPopup.width - width - 35
                     text: "Save"
                 }
             }
