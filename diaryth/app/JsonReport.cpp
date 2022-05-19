@@ -353,3 +353,44 @@ void JsonReport::selectEvent(int idx)
 }
 
 
+
+QString JsonReport::getSelectedEventsString()
+{
+    QString selectedString = "[";
+
+    for (auto idx: _selectedIdx)
+        selectedString += QString::number(idx) + ", ";
+
+    if (_selectedIdx.empty() == false)
+        selectedString.chop(2);
+
+    selectedString += "]";
+
+    return selectedString;
+}
+
+
+QStringList JsonReport::getSelectedEventsMarkup()
+{
+    QStringList tagsAndComments;
+
+    if (_root.contains("markup"))
+    {
+        auto selectedEventsString = getSelectedEventsString();
+        const auto& markupObject = _root["markup"].toObject();
+
+        if (markupObject.contains(selectedEventsString))
+        {
+            const auto& singleMarkup = markupObject[selectedEventsString].toObject();
+            tagsAndComments << singleMarkup["tags"].toString() << singleMarkup["comments"].toString();
+        }
+    }
+
+    return tagsAndComments;
+}
+
+
+void JsonReport::saveSelectedEventsMarkup(QString tags, QString comments)
+{
+
+}

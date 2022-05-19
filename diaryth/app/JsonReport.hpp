@@ -49,6 +49,12 @@ namespace diaryth
         Q_INVOKABLE QList<qreal> getFullInfo();
         Q_INVOKABLE QStringList getPraatFieldsNames();
 
+
+        Q_INVOKABLE QString getSelectedEventsString();
+        Q_INVOKABLE QStringList getSelectedEventsMarkup();
+        Q_INVOKABLE void saveSelectedEventsMarkup(QString tags, QString comments);
+
+
         Q_INVOKABLE QString getWordByIdx(int idx);
 
 

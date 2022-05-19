@@ -42,7 +42,8 @@ Item {
             jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
             reloadVisualReports()
 
-            markupPopup.open()
+            //markupPopup.loadMarkup("test1", "test2")
+            //markupPopup.open()
 
             //fileDialog.open()
         }
@@ -326,6 +327,12 @@ Item {
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+
+        function loadMarkup(tags, comments)
+        {
+            tagsArea.text = tags
+            commentsArea.text = comments
+        }
 
         ColumnLayout
         {
