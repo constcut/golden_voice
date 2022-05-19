@@ -132,7 +132,7 @@ void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event
         auto x = start * zoomCoef + 5;
         double w = (end - start) * zoomCoef;
 
-        auto paintFun = [&](QString fullName, QColor color, double value, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+        auto paintFun = [&](QString fullName, QColor color, double value, double yCoef)
         {
             int y = height() - value * yCoef;
 
@@ -157,15 +157,26 @@ void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event
             auto value = 0.0;
             auto currentObject = event;
 
+            bool fieldNotFound = false;
+
             for (int i = 0; i < nameParts.size(); ++i)
             {
                 if (i == nameParts.size() - 1)
                     value = currentObject[nameParts[i]].toDouble();
                 else
-                    currentObject = currentObject[nameParts[i]].toObject();
-
-                //TODO если не найдено - нужно пропустить отрисовку этого поля (для опциональных librosa+)
+                {
+                    if (currentObject.contains(nameParts[i]))
+                        currentObject = currentObject[nameParts[i]].toObject();
+                    else
+                    {
+                        fieldNotFound = true;
+                        break;
+                    }
+                }
             }
+
+            if (fieldNotFound)
+                continue;
 
             auto color = QColor(fieldDisplayInfo.color);
             paintFun(name, color, value, fieldDisplayInfo.yCoef);
