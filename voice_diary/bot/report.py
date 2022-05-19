@@ -1293,8 +1293,6 @@ def reports_to_csv(r):
 #TODO + morph analisys
 #print("CSV DONE!")
 
-from flask import Flask, redirect, url_for, request
-
 r = ReportGenerator("key.json")
 r.start_bot()
 
