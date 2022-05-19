@@ -19,7 +19,7 @@ Item {
     {
         id: fileDialog
         title: "Please choose json speech report"
-        folder: shortcuts.home //TODO store last directory
+        folder: shortcuts.desktop
         onAccepted: {
             var filename = fileDialog.fileUrls[0].substring(8)
             jsonReport.loadFromFile(filename)
@@ -39,10 +39,11 @@ Item {
 
         Component.onCompleted:
         {
-            //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
-            //reloadVisualReports()
+            jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
+            reloadVisualReports()
 
             //TODO check last opened
+            //fileDialog.open()
         }
     }
 
@@ -71,7 +72,8 @@ Item {
         for (var i = 1; i <= idx; ++i)
             hSum += reportsHeight[i - 1]
 
-        return hSum + 5 * (idx + 1)
+        var yValue =  hSum + 5 * (idx + 1)
+        return yValue
     }
 
     RowLayout
@@ -178,7 +180,11 @@ Item {
             flick.height = scroll.height
 
             for (var i = 0; i < reportsRepeater.model; ++i)
+            {
+                var newY = fullHDReport.calculateY(i)
                 reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
+                reportsRepeater.itemAt(i).height = fullHDReport.reportsHeight[i]
+            }
 
         }
 
