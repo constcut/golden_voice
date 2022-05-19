@@ -41,11 +41,6 @@ Item {
         {
             jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
             reloadVisualReports()
-
-            //markupPopup.loadMarkup("test1", "test2")
-            //markupPopup.open()
-
-            //fileDialog.open()
         }
     }
 
@@ -172,7 +167,8 @@ Item {
 
             onClicked:
             {
-                //load data from jsonReport into popup
+                var tagsAndComments = jsonReport.getSelectedEventsMarkup();
+                markupPopup.loadMarkup(tagsAndComments[0], tagsAndComments[1])
                 markupPopup.open()
             }
         }
@@ -422,12 +418,21 @@ Item {
                 {
                     x: 15
                     text: "Cancel"
+
+                    onClicked: {
+                        markupPopup.close()
+                    }
                 }
 
                 Button
                 {
                     x: markupPopup.width - width - 35
                     text: "Save"
+
+                    onClicked:
+                    {
+                        jsonReport.saveSelectedEventsMarkup(tagsArea.text, commentsArea.text)
+                    }
                 }
             }
         }
