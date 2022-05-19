@@ -42,6 +42,8 @@ Item {
             jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
             reloadVisualReports()
 
+            markupPopup.open()
+
             //fileDialog.open()
         }
     }
@@ -318,7 +320,7 @@ Item {
         y: fullHDReport.height - height - 50
 
         width: 900
-        height: 500
+        height: 450
 
         modal: true
         focus: true
@@ -407,19 +409,18 @@ Item {
 
             RowLayout
             {
-
-                Button {
-                    x: 10
-                    text: "Cancel"
-
-                    Layout.alignment: Qt.AlignLeft
+                Item {
+                    Layout.fillWidth: true
                 }
 
-                Button {
-                    x: parent.width - width - 10
-                    text: "Save"
+                Button
+                {
+                    text: "Cancel"
+                }
 
-                    Layout.alignment: Qt.AlignRight
+                Button
+                {
+                    text: "Save"
                 }
             }
         }
