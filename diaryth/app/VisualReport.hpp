@@ -133,6 +133,8 @@ namespace diaryth
         void paintReportFields(QPainter* painter, const QJsonObject& event,
                                int idx, FieldPrevStats &prevStats) const;
 
+        void paintPlainWords(QPainter* painter, const QJsonObject& event) const;
+
 
         QVariantList getFields(const std::map<QString, FieldDisplayInfo>& fields) const;
 

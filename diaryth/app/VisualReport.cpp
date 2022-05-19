@@ -60,7 +60,7 @@ void VisualReport::paint(QPainter* painter)
     FieldPrevStats prevPraats;
 
     if (_showBorder)
-        painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
+        painter->drawRect(2, 2, width() - 4, height() - 4);я
 
     const auto& events = _parentReport->getEvents();
 
@@ -78,26 +78,8 @@ void VisualReport::paint(QPainter* painter)
         if (_type == VisualTypes::ReportFields)
             paintReportFields(painter, event, i, prevPraats);
 
-        if (_type == VisualTypes::PlainWords && event["type"].toString() == "word") //TODO refact
-        {
-            double start = event["startTime"].toDouble();
-            double end = event["endTime"].toDouble();
-
-            const double zoom = _parentReport->getZoom();
-
-            auto x = start * zoom + 5;
-            double w = (end - start) * zoom;
-            QString word = event["word"].toString();
-
-            if (zoom > 150) //В идеале делать более умный рассчёт, проверять наложение и рисовать в 2-4 строки
-                painter->drawText(x, 20, word);
-
-            painter->setPen(QColor("red"));
-            painter->drawLine(x - 1, 20, x - 1, 0);
-            painter->setPen(QColor("blue"));
-            painter->drawLine(x + w - 1, 20, x + w - 1, 0); // ++ TODO морфологический анализ - пометка слов
-            painter->setPen(QColor("black"));
-        }
+        if (_type == VisualTypes::PlainWords) //TODO refact
+            paintPlainWords(painter, event);
     }
 
     if (_type == VisualTypes::ChunksOnly) //Возможно потом объединить в paintSequenceType
@@ -105,6 +87,32 @@ void VisualReport::paint(QPainter* painter)
 
 }
 
+
+void VisualReport::paintPlainWords(QPainter* painter, const QJsonObject& event) const
+{
+    if (event["type"].toString() != "word")
+        return;
+
+    double start = event["startTime"].toDouble();
+    double end = event["endTime"].toDouble();
+
+    const double zoom = _parentReport->getZoom();
+
+    auto x = start * zoom + 5;
+    double w = (end - start) * zoom;
+    QString word = event["word"].toString();
+
+    if (zoom > 150) //В идеале делать более умный рассчёт, проверять наложение и рисовать в 2-4 строки
+        painter->drawText(x, 20, word);
+
+    painter->setPen(QColor("red"));
+    painter->drawLine(x - 1, 20, x - 1, 0);
+    painter->setPen(QColor("blue"));
+    painter->drawLine(x + w - 1, 20, x + w - 1, 0);
+    painter->setPen(QColor("black"));
+
+    //Тут возможен морфологический анализ
+}
 
 
 
@@ -144,7 +152,7 @@ void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event
         for (const auto& [name, fieldDisplayInfo]: _reportFields)
         {
 
-            auto nameParts = name.split("."); //TODO тут же получать и все возможные поля praat
+            auto nameParts = name.split(".");
 
             auto value = 0.0;
             auto currentObject = event;
