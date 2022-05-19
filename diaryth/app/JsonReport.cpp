@@ -398,5 +398,19 @@ QStringList JsonReport::getSelectedEventsMarkup()
 
 void JsonReport::saveSelectedEventsMarkup(QString tags, QString comments)
 {
+    QJsonObject newMarkup;
 
+    newMarkup["tags"] = tags;
+    newMarkup["comments"] = comments;
+
+    auto selectedEventsString = getSelectedEventsString();
+
+    _root["markup"].toObject()[selectedEventsString] = newMarkup;
+
+    QJsonDocument newJson(_root);
+    auto bytes = newJson.toJson();
+
+    QFile f(_lastFilename);
+    f.open(QIODevice::WriteOnly);
+    f.write(bytes);
 }
