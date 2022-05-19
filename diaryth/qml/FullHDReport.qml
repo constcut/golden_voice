@@ -23,6 +23,7 @@ Item {
         onAccepted: {
             var filename = fileDialog.fileUrls[0].substring(8)
             jsonReport.loadFromFile(filename)
+            chunkId.model = jsonReport.getChunksCount()
             reloadVisualReports()
             fileDialog.close()
         }
@@ -39,7 +40,8 @@ Item {
 
         Component.onCompleted:
         {
-            jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
+            //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
+            fileDialog.open()
             reloadVisualReports()
         }
     }
@@ -160,6 +162,36 @@ Item {
                     reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
             }
         }
+
+        Button
+        {
+            text: "Unselect"
+            onClicked: {
+                jsonReport.removeAllSelections()
+            }
+
+            width: 80
+            implicitWidth: 80
+        }
+
+        ComboBox
+        {
+            id: chunkId
+
+            width: 40
+            implicitWidth: 40
+
+            ToolTip.visible: hovered
+            ToolTip.text: "Chunk id"
+        }
+
+        Button {
+            text: "Select chunk"
+            onClicked: {
+                jsonReport.selectChunk(parseInt(chunkId.currentText))
+            }
+        }
+
 
         Button
         {
