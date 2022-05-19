@@ -26,7 +26,7 @@ namespace diaryth
         double prevXEnd = 0.0;
     };
 
-    struct PraatPrevStats
+    struct FieldPrevStats
     {
         double prevXEnd = 0.0;
 
@@ -36,7 +36,7 @@ namespace diaryth
         double prevShimmer = 0.0;
     };
 
-    struct PraatFieldDisplayInfo
+    struct FieldDisplayInfo
     {
         QString color;
         double yCoef;
@@ -58,6 +58,7 @@ namespace diaryth
         //Отображение letters_speed - как быстро произносятся буквы
     };
     Q_ENUM_NS(VisualTypes)
+
 
     class VisualReport : public QQuickPaintedItem
     {
@@ -127,18 +128,21 @@ namespace diaryth
                                int idx, ReportPrevStats &prevStats) const;
 
         void paintPraatInfo(QPainter* painter, const QJsonObject& event,
-                            int idx, PraatPrevStats &prevStats) const;
+                            int idx, FieldPrevStats &prevStats) const;
 
         void paintReportFields(QPainter* painter, const QJsonObject& event,
-                               int idx, PraatPrevStats &prevStats) const;
+                               int idx, FieldPrevStats &prevStats) const;
+
+
+        QVariantList getFields(const std::map<QString, FieldDisplayInfo>& fields) const;
 
 
         VisualTypes _type;
         bool _showBorder = false;
 
-        std::map<QString, PraatFieldDisplayInfo> _praatFields;
+        std::map<QString, FieldDisplayInfo> _praatFields;
 
-        std::map<QString, PraatFieldDisplayInfo> _reportFields; //Later merge _praatFields into _reportFields TODO
+        std::map<QString, FieldDisplayInfo> _reportFields; //Later merge _praatFields into _reportFields TODO
 
         JsonReport* _parentReport;
 

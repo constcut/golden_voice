@@ -18,7 +18,7 @@ VisualReport::VisualReport()
     _praatFields["Jitter (local)"] = { "green", 20 };
     _praatFields["Shimmer (local)"] = { "blue", 10 };
 
-    _reportFields["stats.praat_pitch.SD"] = { "green", 5 }; //TODO later parse praat fields the same way
+    _reportFields["stats.praat_pitch.SD"] = { "green", 5 }; //В поздних версиях отказаться от _praatFields и только позволят ввести их черех Combo в QML
     _reportFields["stats.intensity.SD"] = { "blue", 5 };
     _reportFields["letters_speed"] = {"red", 200};
 }
@@ -26,24 +26,21 @@ VisualReport::VisualReport()
 
 QVariantList VisualReport::getPraatFields() const
 {
-    QVariantList allFields;
-
-    for (const auto& [fieldName, fieldData]: _praatFields)
-    {
-        QStringList fieldLine;
-        fieldLine << fieldName << fieldData.color << QString::number(fieldData.yCoef);
-        allFields << QVariant::fromValue(fieldLine);
-    }
-
-    return allFields;
+    return getFields(_praatFields);
 }
 
 
 QVariantList VisualReport::getReportFields() const
 {
+    return getFields(_reportFields);
+}
+
+
+QVariantList VisualReport::getFields(const std::map<QString, FieldDisplayInfo>& fields) const
+{
     QVariantList allFields;
 
-    for (const auto& [fieldName, fieldData]: _reportFields) //TODO refact unite
+    for (const auto& [fieldName, fieldData]: fields)
     {
         QStringList fieldLine;
         fieldLine << fieldName << fieldData.color << QString::number(fieldData.yCoef);
@@ -60,7 +57,7 @@ void VisualReport::paint(QPainter* painter)
         return;
 
     ReportPrevStats prevStats;
-    PraatPrevStats prevPraats;
+    FieldPrevStats prevPraats;
 
     if (_showBorder)
         painter->drawRect(2, 2, width() - 4, height() - 4); // Обводка Для удобства тестирования
@@ -112,7 +109,7 @@ void VisualReport::paint(QPainter* painter)
 
 
 void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event,
-                                     int idx, PraatPrevStats &prevStats) const
+                                     int idx, FieldPrevStats &prevStats) const
 {
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
@@ -174,7 +171,7 @@ void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event
 
 void VisualReport::paintChunksOnly(QPainter* painter) const
 {
-    PraatPrevStats prevStats;
+    FieldPrevStats prevStats;
 
     for (int i = 0; i < _parentReport->getChunksCount(); ++i)
     {
@@ -230,7 +227,7 @@ void VisualReport::paintChunksOnly(QPainter* painter) const
 
 
 void VisualReport::paintPraatInfo(QPainter* painter, const QJsonObject &event,
-                                  int idx, PraatPrevStats &prevStats) const
+                                  int idx, FieldPrevStats &prevStats) const
 {
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
