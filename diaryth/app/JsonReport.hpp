@@ -92,6 +92,7 @@ namespace diaryth
         double _zoomCoef = 250.0;
 
         QJsonObject _root; //Возможно стоит хранить только этот объект
+        QString _lastFilename;
 
         QJsonArray _events;
         QJsonArray _chunks;

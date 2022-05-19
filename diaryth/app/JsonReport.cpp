@@ -27,8 +27,12 @@ void JsonReport::loadFromFile(QString filename)
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
 
+    //TODO check opened
+
+    _lastFilename = filename;
+
     QString fullString = f.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8());
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //TODO check errors
 
     _root = doc.object();
     _events = _root["events"].toArray();
@@ -335,7 +339,9 @@ QStringList JsonReport::getPraatFieldsNames()
 {
     QStringList fullFileLine;
 
-    for (const auto& key: _fullPraat.keys())
+    const auto& keys = _fullPraat.keys();
+
+    for (const auto& key: keys)
         fullFileLine << key;
 
     return fullFileLine;
