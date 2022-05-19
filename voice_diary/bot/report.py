@@ -705,16 +705,17 @@ class ReportGenerator:
 
 		id = self.request_recognition(record_file_path, alias_name)
 
-		voice_report, f0, rms, pitch, intensity, duration = self.save_images(record_file_path, spectrum_dir_path) 
+		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path)
 
-		self.save_images_info(spectrum_dir_path, message, voice_report)
+		seq_dict = self.extract_features(wav_file)
+
+		if self.skip_plots == False:
+			self.save_images(seq_dict)
 
 		req = self.check_server_recognition(id)
 
-		wav_file = spectrum_dir_path + "/pcm.wav"
-
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-		json_report = self.make_json_report(req, f0, rms, pitch, intensity, duration, wav_file)
+		json_report = self.make_json_report(req, seq_dict)
 
 		self.save_json_products(spectrum_dir_path, json_report, full_string)
 
