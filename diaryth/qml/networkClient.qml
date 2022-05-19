@@ -180,7 +180,7 @@ Item {
 
         function onFileProcessed(id, result)
         {
-            processInfo.text = "DONE" //TODO real status here with no report
+            processInfo.text = "DONE" //Возможно предлагать открыть визуализатор
             textArea.text = result
         }
     }

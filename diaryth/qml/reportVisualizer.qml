@@ -124,7 +124,7 @@ Item
 
         Repeater
         {
-            id: eventsRepeater //TODO cover under flickable
+            id: eventsRepeater
 
             RowLayout
             {
@@ -201,9 +201,6 @@ Item
                             fullText += eventLine[j].toString() + ", "
 
                         eventsRepeater.itemAt(i + 1).setText( fullText )
-
-                        //TODO полная разница full и chunk с каждым словом
-                        //TODO графики полной разницы каждого слова
                     }
 
                     var chunkInfo = jsonReport.getChunkInfo(parseInt(chunkId.currentText))
@@ -358,7 +355,7 @@ Item
     }
 
 
-    Popup //TODO into sepparated component
+    Popup
     {
         id: configPopup
         x: 50
@@ -431,7 +428,7 @@ Item
         Repeater
         {
             model: 3
-            id: configRepeater //TODO cover under flickable
+            id: configRepeater
 
             RowLayout
             {
@@ -535,8 +532,8 @@ Item
             onClicked:
             {
                 configPopup.storeFields()
-                loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
-                configRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
+                loadStoredTimer.start()
+                configRepeater.model += 1 //Как в HD версии
             }
         }
 
@@ -582,7 +579,7 @@ Item
 
 
 
-    Popup //TODO into sepparated component
+    Popup
     {
         id: configFieldsPopup
         x: 50
@@ -650,7 +647,7 @@ Item
         Repeater
         {
             model: 3
-            id: configFieldsRepeater //TODO cover under flickable
+            id: configFieldsRepeater
 
             RowLayout
             {
@@ -741,8 +738,8 @@ Item
             onClicked:
             {
                 configFieldsPopup.storeFields()
-                loadStoredFieldsTimer.start() //Hot fix for ReferenceError: xyz is not defined
-                configFieldsRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
+                loadStoredFieldsTimer.start()
+                configFieldsRepeater.model += 1 //Как в HD версии
             }
         }
 

@@ -750,7 +750,7 @@ Item {
             {
                 praatFieldsConfigPopup.storeFields()
                 loadStoredTimer.start()
-                configRepeater.model += 1 //решени этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
+                configRepeater.model += 1 //решением этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
             }
         }
 
@@ -957,7 +957,7 @@ Item {
             {
                 reportFieldsConfigPopup.storeFields()
                 loadStoredFieldsTimer.start()
-                configFieldsRepeater.model += 1 // //решени этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
+                configFieldsRepeater.model += 1 // //решением этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
             }
         }
 
