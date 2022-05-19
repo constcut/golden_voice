@@ -30,9 +30,9 @@ namespace diaryth
 
         Q_INVOKABLE void loadFromFile(QString filename);
 
-        Q_INVOKABLE double getFullWidth();
+        Q_INVOKABLE double getFullWidth() const;
 
-        Q_INVOKABLE double getZoom() { //Time - добавить в название, чтобы было понятно
+        Q_INVOKABLE double getZoom() const { //Time - добавить в название, чтобы было понятно
             return _zoomCoef;
         }
 
@@ -41,21 +41,21 @@ namespace diaryth
             updateAllVisualReports();
         }
 
-        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY);
+        Q_INVOKABLE int eventIdxOnClick(int mouseX, int mouseY) const;
         Q_INVOKABLE void selectEvent(int idx);
 
-        Q_INVOKABLE QVariant getSelectedEvents();
-        Q_INVOKABLE QList<qreal> getChunkInfo(int idx); //TODO как и с selection убрать все в класс хранитель JSON общий для всех репортов подключать через QObject*
-        Q_INVOKABLE QList<qreal> getFullInfo();
-        Q_INVOKABLE QStringList getPraatFieldsNames();
+        Q_INVOKABLE QVariant getSelectedEvents() const;
+        Q_INVOKABLE QList<qreal> getChunkInfo(int idx) const;
+        Q_INVOKABLE QList<qreal> getFullInfo() const;
+        Q_INVOKABLE QStringList getPraatFieldsNames() const;
 
 
-        Q_INVOKABLE QString getSelectedEventsString();
-        Q_INVOKABLE QStringList getSelectedEventsMarkup();
+        Q_INVOKABLE QString getSelectedEventsString() const;
+        Q_INVOKABLE QStringList getSelectedEventsMarkup() const;
         Q_INVOKABLE void saveSelectedEventsMarkup(QString tags, QString comments);
 
 
-        Q_INVOKABLE QString getWordByIdx(int idx);
+        Q_INVOKABLE QString getWordByIdx(int idx) const;
 
 
         Q_INVOKABLE void removeAllSelections() {
@@ -63,17 +63,17 @@ namespace diaryth
             updateAllVisualReports();
         }
 
-        Q_INVOKABLE int getChunksCount();
+        Q_INVOKABLE int getChunksCount() const;
         Q_INVOKABLE void selectChunk(int idx);
 
-        Q_INVOKABLE int getLastSelectedChunk() {
+        Q_INVOKABLE int getLastSelectedChunk() const {
             return _lastSelectedChunk;
         }
 
-        const QJsonArray& getEvents() { return _events; }
-        const QJsonArray& getChunks() { return _chunks; }
-        const QJsonObject& getFullPraat() { return _fullPraat; }
-        const std::set<int>& getSelectedIdx() { return _selectedIdx; }
+        const QJsonArray& getEvents() const { return _events; }
+        const QJsonArray& getChunks() const { return _chunks; }
+        const QJsonObject& getFullPraat() const { return _fullPraat; }
+        const std::set<int>& getSelectedIdx() const { return _selectedIdx; }
 
 
         void registerVisual(VisualReport* visual); //Not Q_INVOKABLE  beasue must be registered from VR set parent
@@ -81,7 +81,7 @@ namespace diaryth
         Q_INVOKABLE void clearVisuals();
 
 
-        Q_INVOKABLE void saveLocalConfig();
+        Q_INVOKABLE void saveLocalConfig() const;
         Q_INVOKABLE QList<int> loadLocalConfig();
 
 

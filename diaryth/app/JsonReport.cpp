@@ -41,7 +41,7 @@ void JsonReport::loadFromFile(QString filename)
 }
 
 
-void JsonReport::saveLocalConfig()
+void JsonReport::saveLocalConfig() const
 {
     //TODO insure all registered in proper sequence - there is a match between type and height
 
@@ -174,7 +174,7 @@ QList<int> JsonReport::loadLocalConfig()
 }
 
 
-double JsonReport::getFullWidth()
+double JsonReport::getFullWidth() const
 {
     return _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef + 20;
 }
@@ -208,7 +208,7 @@ void JsonReport::clearVisuals()
 }
 
 
-int JsonReport::getChunksCount()
+int JsonReport::getChunksCount() const
 {
     return _chunks.size();
 }
@@ -235,7 +235,7 @@ void JsonReport::selectChunk(int idx)
 
 
 
-int JsonReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
+int JsonReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY) const
 {
     double second = mouseX / _zoomCoef;
 
@@ -256,7 +256,7 @@ int JsonReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY)
 
 
 
-QVariant JsonReport::getSelectedEvents()
+QVariant JsonReport::getSelectedEvents() const
 {
 
     QList<QList<qreal>> fullList;
@@ -295,7 +295,7 @@ QVariant JsonReport::getSelectedEvents()
 
 
 
-QString JsonReport::getWordByIdx(int idx)
+QString JsonReport::getWordByIdx(int idx) const
 {
     auto e = _events[idx];
     auto eObj = e.toObject();
@@ -309,7 +309,7 @@ QString JsonReport::getWordByIdx(int idx)
 }
 
 
-QList<qreal> JsonReport::getChunkInfo(int idx) //TODO ещё одну функцию для общей статистики
+QList<qreal> JsonReport::getChunkInfo(int idx) const
 {
     QList<qreal> chunkLine;
 
@@ -323,7 +323,7 @@ QList<qreal> JsonReport::getChunkInfo(int idx) //TODO ещё одну функц
 }
 
 
-QList<qreal> JsonReport::getFullInfo()
+QList<qreal> JsonReport::getFullInfo() const
 {
     QList<qreal> fullFileLine;
 
@@ -335,7 +335,7 @@ QList<qreal> JsonReport::getFullInfo()
 }
 
 
-QStringList JsonReport::getPraatFieldsNames()
+QStringList JsonReport::getPraatFieldsNames() const
 {
     QStringList fullFileLine;
 
@@ -360,7 +360,7 @@ void JsonReport::selectEvent(int idx)
 
 
 
-QString JsonReport::getSelectedEventsString()
+QString JsonReport::getSelectedEventsString() const
 {
     QString selectedString = "[";
 
@@ -376,7 +376,7 @@ QString JsonReport::getSelectedEventsString()
 }
 
 
-QStringList JsonReport::getSelectedEventsMarkup()
+QStringList JsonReport::getSelectedEventsMarkup() const
 {
     QStringList tagsAndComments;
 
