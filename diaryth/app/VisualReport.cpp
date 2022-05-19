@@ -195,19 +195,19 @@ void VisualReport::paintChunksOnly(QPainter* painter) const
     {
         const auto& chunk = _parentReport->getChunks()[i];
         double start = chunk["start"].toDouble();
-        double end = chunk["end"].toDouble(); //TODO консистентность в репортах!!
+        double end = chunk["end"].toDouble();
 
         auto x = start * _parentReport->getZoom() + 5;
         double w = (end - start) * _parentReport->getZoom();
 
-        auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+        auto paintFun = [&](QString infoName, QColor color, double yCoef)
         {
             double value = 0.0;
 
             if (chunk["info"].isObject())
             {
                 auto info = chunk["info"].toObject();
-                value = info[infoName].toDouble(); //default PraatInfo
+                value = info[infoName].toDouble();
             }
 
             int y = 0;
@@ -232,10 +232,6 @@ void VisualReport::paintChunksOnly(QPainter* painter) const
         for (const auto& [name, fieldDisplayInfo]: _praatFields)
         {
             auto color = QColor(fieldDisplayInfo.color);
-
-            //if (_selectedIdx.count(idx)) //Возможно это лишнее
-               // color = color.lighter(); //TODO parentReport
-
             paintFun(name, color, fieldDisplayInfo.yCoef);
         }
 
@@ -248,7 +244,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, const QJsonObject &event,
                                   int idx, FieldPrevStats &prevStats) const
 {
 
-    auto type = event["type"].toString(); //Возвращать как structure binding?
+    auto type = event["type"].toString();
     double start = event["startTime"].toDouble();
     double end = event["endTime"].toDouble();
 
@@ -260,7 +256,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, const QJsonObject &event,
         auto x = start * zoomCoef + 5;
         double w = (end - start) * zoomCoef;
 
-        auto paintFun = [&](QString infoName, QColor color, double yCoef) //TODO Возможно разумнее вынести в отдельную фукцию с кучей аргументов
+        auto paintFun = [&](QString infoName, QColor color, double yCoef)
         {
             double value = 0.0;
 

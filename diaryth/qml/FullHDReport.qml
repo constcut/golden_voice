@@ -572,7 +572,7 @@ Item {
 //=========================================================================================
 
 
-    Popup //TODO into sepparated component
+    Popup
     {
         id: praatFieldsConfigPopup
         x: 50
@@ -645,7 +645,7 @@ Item {
         Repeater
         {
             model: 3
-            id: configRepeater //TODO cover under flickable
+            id: configRepeater
 
             RowLayout
             {
@@ -749,8 +749,8 @@ Item {
             onClicked:
             {
                 praatFieldsConfigPopup.storeFields()
-                loadStoredTimer.start() //Hot fix for ReferenceError: xyz is not defined
-                configRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
+                loadStoredTimer.start()
+                configRepeater.model += 1 //решени этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
             }
         }
 
@@ -865,7 +865,7 @@ Item {
         Repeater
         {
             model: 3
-            id: configFieldsRepeater //TODO cover under flickable
+            id: configFieldsRepeater
 
             RowLayout
             {
@@ -956,8 +956,8 @@ Item {
             onClicked:
             {
                 reportFieldsConfigPopup.storeFields()
-                loadStoredFieldsTimer.start() //Hot fix for ReferenceError: xyz is not defined
-                configFieldsRepeater.model += 1 //TODO решени этого хотфикса можно сделать за счёт запуска таймера с инкрементом и декриментом
+                loadStoredFieldsTimer.start()
+                configFieldsRepeater.model += 1 // //решени этого хотфикса выше можно сделать за счёт запуска таймера с инкрементом и декриментом, но это не критично
             }
         }
 

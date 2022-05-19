@@ -48,7 +48,7 @@ namespace diaryth {
         std::unordered_map<std::string, CardField> fields;
     };
 
-    //TODO добавить новый тип names для записи нескольких значений, например список лекарств
+    //Возможно добавить новый тип names для записи нескольких значений, например список лекарств, или же делать это как множество отдельных записей
 
     class DiaryCardEngine : public QObject
     {
@@ -63,7 +63,7 @@ namespace diaryth {
         Q_INVOKABLE void parseJSON(const QString& json);
         Q_INVOKABLE void mergeJSON(const QString& json);
 
-        //Q_INVOKABLE QString exportJSON(); TODO
+        //Q_INVOKABLE QString exportJSON(); //Потребуется на этапе констркутора дневниковых карточек
 
         Q_INVOKABLE QString getCardName() const { return _cardName; }
         Q_INVOKABLE QString getCardDescription() const { return _cardDescription; }

@@ -52,10 +52,8 @@ namespace diaryth
         PraatInfoFullDiff,
         PraatInfoChunkDiff,
         ChunksOnly,
-        PlainWords, //TODO обогатить морфологическим анализом
+        PlainWords,
         ReportFields
-        //Отображение статистических значений stats.praat_pitch.median etc - возможно понадобится наложение на PraatInfo чтобы например сравнить средний питч
-        //Отображение letters_speed - как быстро произносятся буквы
     };
     Q_ENUM_NS(VisualTypes)
 
@@ -143,8 +141,7 @@ namespace diaryth
         bool _showBorder = false;
 
         std::map<QString, FieldDisplayInfo> _praatFields;
-
-        std::map<QString, FieldDisplayInfo> _reportFields; //Later merge _praatFields into _reportFields TODO
+        std::map<QString, FieldDisplayInfo> _reportFields;
 
         JsonReport* _parentReport;
 
