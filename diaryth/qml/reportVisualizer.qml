@@ -15,6 +15,43 @@ Item
 
     }
 
+
+    FileDialog
+    {
+        id: fileDialog
+        title: "Please choose json speech report"
+        folder: shortcuts.desktop
+        onAccepted: {
+            var filename = fileDialog.fileUrls[0].substring(8)
+            jsonReport.loadFromFile(filename)
+
+            flick.contentWidth = jsonReport.getFullWidth()
+            visualReport1.width = jsonReport.getFullWidth()
+            visualReport2.width =  jsonReport.getFullWidth()
+            chunkId.model = jsonReport.getChunksCount()
+
+            visualReport1.setParent(jsonReport)
+            visualReport2.setParent(jsonReport)
+
+            visualReport1.addPraatField("Jitter (rap)", "red", 20)
+            visualReport1.addPraatField("Number of pulses", "orange", 1.2)
+            visualReport1.setType(VisualTypes.PraatInfo)
+            visualReport2.setType(VisualTypes.Pitch)
+
+            fileDialog.close()
+        }
+        onRejected: {
+            fileDialog.close()
+        }
+        nameFilters: [ "JSON report (*.json)" ]
+    }
+
+    Component.onCompleted:
+    {
+        fileDialog.open()
+    }
+
+
     ScrollView
     {
         id: scroll
@@ -750,34 +787,16 @@ Item
 
 
 
-
-
     JsonReport
     {
         id: jsonReport
 
         Component.onCompleted:
         {
-            flick.contentWidth = jsonReport.getFullWidth()
-            visualReport1.width = jsonReport.getFullWidth()
-            visualReport2.width =  jsonReport.getFullWidth()
-            chunkId.model = jsonReport.getChunksCount()
 
-            visualReport1.setParent(jsonReport)
-            visualReport2.setParent(jsonReport)
-
-            visualReport1.addPraatField("Jitter (rap)", "red", 20)
-            visualReport1.addPraatField("Number of pulses", "orange", 1.2)
-            visualReport1.setType(VisualTypes.PraatInfo)
-            visualReport2.setType(VisualTypes.Pitch)
         }
 
     }
-
-
-
-
-
 
 
     function keyboardEventSend(key, mode) {
