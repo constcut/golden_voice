@@ -39,6 +39,8 @@ ApplicationWindow
 
                 fullhdReport.visible = true
                 smallItem.visible = false
+
+                fullhdReport.requestFileDialog()
             }
             else
             {
@@ -47,6 +49,8 @@ ApplicationWindow
 
                 fullhdReport.visible = false
                 smallItem.visible = true
+
+                mainLoader.item.requestFileDialog()
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)

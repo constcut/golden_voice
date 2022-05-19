@@ -9,13 +9,6 @@ Item
 {
     id: item
 
-    property string filename: "default"
-
-    function reloadFile() {
-
-    }
-
-
     FileDialog
     {
         id: fileDialog
@@ -46,8 +39,10 @@ Item
         nameFilters: [ "JSON report (*.json)" ]
     }
 
-    Component.onCompleted:
+
+    function requestFileDialog()
     {
+        fileDialog.open()
     }
 
 

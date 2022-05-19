@@ -34,16 +34,16 @@ Item {
     }
 
 
+    function requestFileDialog()
+    {
+        //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
+        fileDialog.open()
+        reloadVisualReports()
+    }
+
     JsonReport
     {
         id: jsonReport
-
-        Component.onCompleted:
-        {
-            //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
-            fileDialog.open()
-            reloadVisualReports()
-        }
     }
 
 
