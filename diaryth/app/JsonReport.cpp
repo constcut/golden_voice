@@ -27,12 +27,24 @@ void JsonReport::loadFromFile(QString filename)
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
 
-    //TODO check opened
+    if (f.isOpen() == false)
+    {
+        qDebug() << "Failed to open JR file " << filename;
+        return;
+    }
 
     _lastFilename = filename;
 
     QString fullString = f.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8()); //TODO check errors
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(fullString.toUtf8(), &parseError);
+
+    if (parseError.error != QJsonParseError::NoError)
+    {
+        qDebug() << "JR json parse error " << parseError.error << " : " << parseError.errorString();
+        return;
+    }
 
     _root = doc.object();
     _events = _root["events"].toArray();
