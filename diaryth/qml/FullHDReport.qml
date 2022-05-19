@@ -335,9 +335,9 @@ Item {
                 text: "[]"
             }
 
-            RowLayout
+            Item
             {
-                spacing: 10
+                height: tagsArea.height + 15
 
                 Text {
                     text: "Tags: "
@@ -345,6 +345,7 @@ Item {
 
                 ScrollView
                 {
+                    x: 150
 
                     width: 650
                     clip: true
@@ -368,9 +369,11 @@ Item {
                 }
             }
 
-            RowLayout
+            Item
             {
-                spacing: 10
+                //spacing: 10
+
+                height: commentsArea.height + 15
 
                 Text {
                     text: "Comments: "
@@ -378,6 +381,7 @@ Item {
 
                 ScrollView
                 {
+                    x: 150
 
                     width: 650
                     clip: true
@@ -403,14 +407,19 @@ Item {
 
             RowLayout
             {
-                spacing: 10
 
                 Button {
+                    x: 10
                     text: "Cancel"
+
+                    Layout.alignment: Qt.AlignLeft
                 }
 
                 Button {
+                    x: parent.width - width - 10
                     text: "Save"
+
+                    Layout.alignment: Qt.AlignRight
                 }
             }
         }
