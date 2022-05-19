@@ -52,7 +52,7 @@ class ReportGenerator:
 		self.every_word_praat_report = True
 		self.calc_every_stat = True
 
-		self.use_morph_analysis = True
+		self.use_morph_analysis = False
 
 		self.measure_time = True 
 
@@ -457,7 +457,7 @@ class ReportGenerator:
 
 					morph_analysis = [] #
 
-					if self.use_morph_analysis:
+					if self.use_morph_analysis or duration < 20.0:
 						morph_analysis = self.make_morph_analysis(word['word'])
 
 					token_id = 0
