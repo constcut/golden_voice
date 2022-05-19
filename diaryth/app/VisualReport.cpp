@@ -111,7 +111,7 @@ void VisualReport::paint(QPainter* painter)
 
 
 
-void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
+void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event,
                                      int idx, PraatPrevStats &prevStats) const
 {
 
@@ -229,7 +229,7 @@ void VisualReport::paintChunksOnly(QPainter* painter) const
 }
 
 
-void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
+void VisualReport::paintPraatInfo(QPainter* painter, const QJsonObject &event,
                                   int idx, PraatPrevStats &prevStats) const
 {
 
@@ -301,7 +301,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
 
 
 
-void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
+void VisualReport::paintSequenceType(QPainter* painter, const QJsonObject &event,
                                  int idx, ReportPrevStats& prevStats) const
 {
     const auto fullHeight = height() ;

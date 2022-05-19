@@ -123,13 +123,13 @@ namespace diaryth
 
         void paintChunksOnly(QPainter* painter) const;
 
-        void paintSequenceType(QPainter* painter, QJsonObject& event,
+        void paintSequenceType(QPainter* painter, const QJsonObject& event,
                                int idx, ReportPrevStats &prevStats) const;
 
-        void paintPraatInfo(QPainter* painter, QJsonObject& event,
+        void paintPraatInfo(QPainter* painter, const QJsonObject& event,
                             int idx, PraatPrevStats &prevStats) const;
 
-        void paintReportFields(QPainter* painter, QJsonObject& event,
+        void paintReportFields(QPainter* painter, const QJsonObject& event,
                                int idx, PraatPrevStats &prevStats) const;
 
 
