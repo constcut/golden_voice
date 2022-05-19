@@ -168,7 +168,8 @@ Item {
             onClicked:
             {
                 var tagsAndComments = jsonReport.getSelectedEventsMarkup();
-                markupPopup.loadMarkup(tagsAndComments[0], tagsAndComments[1])
+                markupPopup.loadMarkup(tagsAndComments[0], tagsAndComments[1],
+                                       jsonReport.getSelectedEventsString())
                 markupPopup.open()
             }
         }
@@ -324,7 +325,7 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
 
-        function loadMarkup(tags, comments)
+        function loadMarkup(tags, comments, selectedString)
         {
             tagsArea.text = tags
             commentsArea.text = comments

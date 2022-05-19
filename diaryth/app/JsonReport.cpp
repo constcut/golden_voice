@@ -392,6 +392,9 @@ QStringList JsonReport::getSelectedEventsMarkup()
         }
     }
 
+    if (tagsAndComments.empty())
+        tagsAndComments << "" << "";
+
     return tagsAndComments;
 }
 
