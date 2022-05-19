@@ -25,6 +25,8 @@ ApplicationWindow
 
             fullhdReport.visible = false
             smallItem.visible = true
+
+            mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
         }
         else
         {
@@ -50,6 +52,7 @@ ApplicationWindow
                 fullhdReport.visible = false
                 smallItem.visible = true
 
+                mainLoader.setSource("reportVisualizer.qml")
                 mainLoader.item.requestFileDialog()
             }
 
@@ -57,7 +60,6 @@ ApplicationWindow
             console.log("Screen.desktopAvailableWidth", Screen.desktopAvailableWidth)
         }
 
-        mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
     }
 
 
