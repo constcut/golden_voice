@@ -1,14 +1,14 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-
 import QtQml 2.12
-
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-ApplicationWindow {
 
+ApplicationWindow
+{
     id: mainWindow
+
     visible: true
     title: "diaryth"
 
@@ -56,6 +56,7 @@ ApplicationWindow {
         mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
     }
 
+
     onClosing:
     {
         if (Qt.platform.os == "android") {
@@ -67,13 +68,11 @@ ApplicationWindow {
     }
 
 
-
     FullHDReport
     {
         id: fullhdReport
         anchors.fill: parent
     }
-
 
 
     Item
@@ -263,7 +262,5 @@ ApplicationWindow {
     //Реализовать более удобную навигацию, используя свайп
     //https://doc.qt.io/qt-5/qml-qtquick-controls2-swipeview.html
     //Возможно даже по команде загружать несколько свайпов, вместо одного Loader'a N штук
-
-
 
 }
