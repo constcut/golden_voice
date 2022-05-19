@@ -48,7 +48,6 @@ Item
 
     Component.onCompleted:
     {
-        fileDialog.open()
     }
 
 
@@ -355,6 +354,11 @@ Item
                     visualReport1.width = jsonReport.getFullWidth()
                     visualReport2.width =  jsonReport.getFullWidth()
                 }
+            }
+
+            Button {
+                text: "Open file"
+                onClicked: fileDialog.open()
             }
     }
 
