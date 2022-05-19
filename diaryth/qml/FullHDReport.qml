@@ -42,7 +42,6 @@ Item {
             jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
             reloadVisualReports()
 
-            //TODO check last opened
             //fileDialog.open()
         }
     }
@@ -161,6 +160,17 @@ Item {
 
                 for (var i = 0; i < reportsRepeater.model; ++i)
                     reportsRepeater.itemAt(i).width = jsonReport.getFullWidth()
+            }
+        }
+
+        Button
+        {
+            text: "Data markup"
+
+            onClicked:
+            {
+                //load data from jsonReport into popup
+                markupPopup.open()
             }
         }
     }
@@ -294,6 +304,119 @@ Item {
         } //Flickable
 
     } //ScrollView
+
+
+
+
+//=====================Data markup=========================================================
+
+    Popup
+    {
+        id: markupPopup
+
+        x: fullHDReport.width/2 - width/2 - 25
+        y: fullHDReport.height - height - 50
+
+        width: 900
+        height: 500
+
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+
+        ColumnLayout
+        {
+            spacing: 10
+
+            Text
+            {
+                id: datasetInfo
+                text: "[]"
+            }
+
+            RowLayout
+            {
+                spacing: 10
+
+                Text {
+                    text: "Tags: "
+                }
+
+                ScrollView
+                {
+
+                    width: 650
+                    clip: true
+                    implicitWidth: 650
+                    implicitHeight: 150
+
+                    TextArea {
+
+                        background: Rectangle {
+                            border.color: "lightgreen"
+                        }
+
+                        implicitWidth: parent.width
+
+                        id: tagsArea
+                        text: ""
+                        placeholderText: "Input tags here"
+                    }
+
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                }
+            }
+
+            RowLayout
+            {
+                spacing: 10
+
+                Text {
+                    text: "Comments: "
+                }
+
+                ScrollView
+                {
+
+                    width: 650
+                    clip: true
+                    implicitWidth: 650
+                    implicitHeight: 150
+
+                    TextArea {
+
+                        background: Rectangle {
+                            border.color: "lightgreen"
+                        }
+
+                        implicitWidth: parent.width
+
+                        id: commentsArea
+                        text: ""
+                        placeholderText: "Input comments here"
+                    }
+
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                }
+            }
+
+            RowLayout
+            {
+                spacing: 10
+
+                Button {
+                    text: "Cancel"
+                }
+
+                Button {
+                    text: "Save"
+                }
+            }
+        }
+
+    }
+
 
 
 

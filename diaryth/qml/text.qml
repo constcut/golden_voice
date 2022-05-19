@@ -111,7 +111,8 @@ Item {
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
         }
 
-        ScrollView {
+        ScrollView
+        {
             id: view
             width: 650
             clip: true
