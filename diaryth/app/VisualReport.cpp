@@ -60,14 +60,13 @@ void VisualReport::paint(QPainter* painter)
     FieldPrevStats prevPraats;
 
     if (_showBorder)
-        painter->drawRect(2, 2, width() - 4, height() - 4);я
+        painter->drawRect(2, 2, width() - 4, height() - 4);
 
     const auto& events = _parentReport->getEvents();
 
     for (int i = 0; i < events.size(); ++i)
     {
-        auto e = events[i];
-        auto event = e.toObject();
+        auto event = events[i].toObject();
 
         if (_type == VisualTypes::Pitch || _type == VisualTypes::Amplitude)
             paintSequenceType(painter, event, i, prevStats);
@@ -78,7 +77,7 @@ void VisualReport::paint(QPainter* painter)
         if (_type == VisualTypes::ReportFields)
             paintReportFields(painter, event, i, prevPraats);
 
-        if (_type == VisualTypes::PlainWords) //TODO refact
+        if (_type == VisualTypes::PlainWords)
             paintPlainWords(painter, event);
     }
 
