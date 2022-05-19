@@ -55,8 +55,6 @@ void JsonReport::loadFromFile(QString filename)
 
 void JsonReport::saveLocalConfig() const
 {
-    //TODO insure all registered in proper sequence - there is a match between type and height
-
     QJsonObject root;
 
     root["zoom"] = _zoomCoef;

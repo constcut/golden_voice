@@ -11,8 +11,6 @@
 #include <vector>
 
 
-//TODO clean after JsonReport Merge
-//TODO const correct for all JsonReport\Visual\Network
 
 namespace diaryth
 {
@@ -32,11 +30,11 @@ namespace diaryth
 
         Q_INVOKABLE double getFullWidth() const;
 
-        Q_INVOKABLE double getZoom() const { //Time - добавить в название, чтобы было понятно
+        Q_INVOKABLE double getZoom() const {
             return _zoomCoef;
         }
 
-        Q_INVOKABLE void setZoom(double newZoom) { //TODO Move all to cpp even single liners, uses them first in file
+        Q_INVOKABLE void setZoom(double newZoom) {
             _zoomCoef = newZoom;
             updateAllVisualReports();
         }
@@ -76,7 +74,7 @@ namespace diaryth
         const std::set<int>& getSelectedIdx() const { return _selectedIdx; }
 
 
-        void registerVisual(VisualReport* visual); //Not Q_INVOKABLE  beasue must be registered from VR set parent
+        void registerVisual(VisualReport* visual);
         Q_INVOKABLE void removeVisual(VisualReport* visual);
         Q_INVOKABLE void clearVisuals();
 
