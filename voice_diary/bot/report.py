@@ -1154,14 +1154,6 @@ class ReportGenerator:
 
 
 
-#r = ReportGenerator('key.json')
-#r.start_bot()
-
-#TODO learn to use recognition from file, to avoid need send it to server each time
-
-#Разбить функцию ниже на 3 крупных сегмента
-
-#1 отправка данных на сервер + опция отправлять wav
 
 def async_load_dir(r):
 
@@ -1300,10 +1292,11 @@ def reports_to_csv(r):
 #TODO + morph analisys
 #print("CSV DONE!")
 
-#
 
 r = ReportGenerator("key.json")
-r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
+r.start_bot()
+
+#r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
 
 #r.extract_features(r._config["dir"] + "/pcm.wav")
 
