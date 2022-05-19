@@ -83,7 +83,7 @@ namespace diaryth
             update();
         }
 
-        Q_INVOKABLE int getType() {
+        Q_INVOKABLE int getType() const {
             return _type;
         }
 
@@ -98,8 +98,7 @@ namespace diaryth
             _praatFields.clear();
         }
 
-        Q_INVOKABLE QVariantList getPraatFields();
-
+        Q_INVOKABLE QVariantList getPraatFields() const;
 
 
         Q_INVOKABLE void addReportField(QString name, QString color, double yCoef)
@@ -112,7 +111,7 @@ namespace diaryth
             _reportFields.clear();
         }
 
-        Q_INVOKABLE QVariantList getReportFields();
+        Q_INVOKABLE QVariantList getReportFields() const;
 
         Q_INVOKABLE void setShowBorder(bool value) {
             _showBorder = value;
@@ -122,16 +121,16 @@ namespace diaryth
 
     private:
 
-        void paintChunksOnly(QPainter* painter);
+        void paintChunksOnly(QPainter* painter) const;
 
         void paintSequenceType(QPainter* painter, QJsonObject& event,
-                               int idx, ReportPrevStats &prevStats);
+                               int idx, ReportPrevStats &prevStats) const;
 
         void paintPraatInfo(QPainter* painter, QJsonObject& event,
-                            int idx, PraatPrevStats &prevStats);
+                            int idx, PraatPrevStats &prevStats) const;
 
         void paintReportFields(QPainter* painter, QJsonObject& event,
-                               int idx, PraatPrevStats &prevStats);
+                               int idx, PraatPrevStats &prevStats) const;
 
 
         VisualTypes _type;

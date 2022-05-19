@@ -24,7 +24,7 @@ VisualReport::VisualReport()
 }
 
 
-QVariantList VisualReport::getPraatFields()
+QVariantList VisualReport::getPraatFields() const
 {
     QVariantList allFields;
 
@@ -39,7 +39,7 @@ QVariantList VisualReport::getPraatFields()
 }
 
 
-QVariantList VisualReport::getReportFields()
+QVariantList VisualReport::getReportFields() const
 {
     QVariantList allFields;
 
@@ -112,7 +112,7 @@ void VisualReport::paint(QPainter* painter)
 
 
 void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
-                                     int idx, PraatPrevStats &prevStats)
+                                     int idx, PraatPrevStats &prevStats) const
 {
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
@@ -172,7 +172,7 @@ void VisualReport::paintReportFields(QPainter* painter, QJsonObject& event,
 
 
 
-void VisualReport::paintChunksOnly(QPainter* painter)
+void VisualReport::paintChunksOnly(QPainter* painter) const
 {
     PraatPrevStats prevStats;
 
@@ -230,7 +230,7 @@ void VisualReport::paintChunksOnly(QPainter* painter)
 
 
 void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
-                                  int idx, PraatPrevStats &prevStats)
+                                  int idx, PraatPrevStats &prevStats) const
 {
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
@@ -302,7 +302,7 @@ void VisualReport::paintPraatInfo(QPainter* painter, QJsonObject& event,
 
 
 void VisualReport::paintSequenceType(QPainter* painter, QJsonObject& event,
-                                 int idx, ReportPrevStats& prevStats)
+                                 int idx, ReportPrevStats& prevStats) const
 {
     const auto fullHeight = height() ;
 
