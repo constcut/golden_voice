@@ -408,7 +408,18 @@ void JsonReport::saveSelectedEventsMarkup(QString tags, QString comments)
 
     auto selectedEventsString = getSelectedEventsString();
 
-    _root["markup"].toObject()[selectedEventsString] = newMarkup;
+    if (_root.contains("markup"))
+    {
+        auto rootMarkupObject = _root["markup"].toObject();
+        rootMarkupObject[selectedEventsString] = newMarkup;
+        _root["markup"] = rootMarkupObject;
+    }
+    else
+    {
+        QJsonObject rootMarkupObject;
+        rootMarkupObject[selectedEventsString] = newMarkup;
+        _root["markup"] = rootMarkupObject;
+    }
 
     QJsonDocument newJson(_root);
     auto bytes = newJson.toJson();

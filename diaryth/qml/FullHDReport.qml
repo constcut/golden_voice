@@ -329,6 +329,7 @@ Item {
         {
             tagsArea.text = tags
             commentsArea.text = comments
+            datasetInfo.text = selectedString
         }
 
         ColumnLayout
@@ -338,7 +339,7 @@ Item {
             Text
             {
                 id: datasetInfo
-                text: "[]"
+                text: ""
             }
 
             Item
@@ -433,6 +434,7 @@ Item {
                     onClicked:
                     {
                         jsonReport.saveSelectedEventsMarkup(tagsArea.text, commentsArea.text)
+                        markupPopup.close()
                     }
                 }
             }
