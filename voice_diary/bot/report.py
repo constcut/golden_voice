@@ -22,7 +22,6 @@ import requests
 from cloud_storage import upload_file
 
 
-
 class ReportGenerator:
 
 	def __init__(self, config_name):
@@ -74,10 +73,9 @@ class ReportGenerator:
 		req = requests.post(POST, headers=header, json=body)
 		data = req.json()
 
-		print("DEBUG: ")
-		print(data) #Log of received data
-
 		id = data['id']
+		print("Y id", id)
+
 		return id
 
 
@@ -330,11 +328,10 @@ class ReportGenerator:
 		chunkId = 0
 
 
-
 		for chunk in req['response']['chunks']:
 
 			altId = 0
-			for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts
+			for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts ATTENTION
 
 				first_start = -1.0
 
@@ -348,7 +345,6 @@ class ReportGenerator:
 
 					all_starts.append(start)
 					all_ends.append(end)
-					#TIME TRICK
 
 					if first_start == -1.0:
 						first_start = start
@@ -427,8 +423,7 @@ class ReportGenerator:
 								1.3, 1.6, 0.03, 0.45)
 
 					
-
-					morph_analysis = [] #
+					morph_analysis = []
 
 					if self.use_morph_analysis or duration < 20.0:
 						morph_analysis = self.make_morph_analysis(word['word'])
@@ -457,7 +452,7 @@ class ReportGenerator:
 					,"word_idx" : total_words
 					,"letters_speed" : letters_speed
 					,"letters_freq" : 1.0 / letters_speed
-					} #channel tag left away
+					} #channel tag left away TODO attention
 					
 
 					if self.calc_every_stat:
@@ -484,8 +479,6 @@ class ReportGenerator:
 						words_freq[token_id] += 1
 					else:
 						words_freq[token_id] = 1
-
-				#FILL chunk
 
 				
 				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
@@ -692,7 +685,7 @@ class ReportGenerator:
 
 			id = r.request_recognition(new_file, alias)
 
-			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file) #record_file_path
+			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file) 
 			seq_dict = self.extract_features(wav_file)
 
 			req = self.check_server_recognition(id)
@@ -839,6 +832,7 @@ class ReportGenerator:
 	def plot_pitches(self, seq_dict, output_filepath):
 
 		import matplotlib.pyplot as plt
+		import librosa
 
 		fig = plt.figure()
 
@@ -881,8 +875,7 @@ class ReportGenerator:
 
 		snd = seq_dict["praat_sound"]
 		intensity = seq_dict["praat_intensity"]
-
-		pitch = seq_dict["praat_pitch"] #OR! snd.to_pitch()
+		pitch = seq_dict["praat_pitch"] 
 
 		fig = plt.figure()
 		
@@ -1024,10 +1017,9 @@ class ReportGenerator:
 
 		seq_dict = {}
 
-		start_moment =  datetime.datetime.now()
-
+		start_moment =  datetime.datetime.now() #Позже убрать или закамуфлировать
 		librosa_loaded_moment =  datetime.datetime.now()
-		librosa_stft_moment =  datetime.datetime.now() #TODO remove all
+		librosa_stft_moment =  datetime.datetime.now()
 
 		if self.use_rosa:
 
@@ -1035,14 +1027,13 @@ class ReportGenerator:
 
 			y, sr = librosa.load(wav_file)
 			S, phase = librosa.magphase(librosa.stft(y))  #can be avoided, if no plots!
-			#librosa.feature.rms(y=y)
 			
 			rms = librosa.feature.rms(S=S)
 			times = librosa.times_like(rms)
 
 			f0 = librosa.yin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
 
-			#f0, voiced_flag, voiced_probs = librosa.pyin(y,
+			#f0, voiced_flag, voiced_probs = librosa.pyin(y, #Работает дольше
 			#	fmin=librosa.note_to_hz('C2'),
 			#	fmax=librosa.note_to_hz('C7'))
 
@@ -1052,8 +1043,6 @@ class ReportGenerator:
 			seq_dict["librosa_S"] = S #TODO can be avoided if not plots!
 
 		librosa_done_moment = datetime.datetime.now()
-
-		#PRAAT
 
 		snd = parselmouth.Sound(wav_file) 
 		
@@ -1107,9 +1096,7 @@ class ReportGenerator:
 
 		surf_done_moment = datetime.datetime.now()
 
-		show_time_spent = False #TODO сделать полем класа
-
-		if show_time_spent:
+		if self.measure_time:
 
 			librosa_load_spent = librosa_loaded_moment - start_moment
 			librosa_stft_spent = librosa_stft_moment - librosa_loaded_moment
@@ -1135,7 +1122,7 @@ class ReportGenerator:
 		if os.path.exists(path_user_logs + '/pcm.wav'):
 			os.remove(path_user_logs +"/pcm.wav")
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {path_user_logs}/pcm.wav" #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {path_user_logs}/pcm.wav"
 		_ = check_call(command.split())
 
 		wav_file = f"{path_user_logs}/pcm.wav"
@@ -1147,9 +1134,8 @@ class ReportGenerator:
 		if os.path.exists(output_file): 
 			os.remove(output_file)
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" 
 		_ = check_call(command.split())
-
 
 
 
@@ -1177,15 +1163,12 @@ class ReportGenerator:
 
 		recognition_received_moment = datetime.datetime.now()
 
-		##
-
 		json_report = self.make_json_report(req, seq_dict)
 
 		full_report_generated = datetime.datetime.now()
 
 		self.save_json_products(path_user_logs, json_report, full_string)
 
-		
 
 		if self.measure_time:
 
@@ -1223,20 +1206,20 @@ def async_load_dir(r):
 
 	for filename in os.listdir(r._config['temp']):
 
-		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+		f = os.path.join(r._config['temp'], filename)
 
 		if os.path.isfile(f):
 
 			print('FILE', f)
 
 			i += 1
-			filename_no_ext =  "idfile" + str(i) #filename[0:filename.find('.') ]
+			filename_no_ext =  "idfile" + str(i) 
 
 			new_file = r._config['out'] + '/' + filename + '_out.ogg'
 
 			r.convert_wav_to_ogg(f, new_file) 
 
-			id = r.request_recognition(new_file, filename_no_ext) #r._config['dir'] + '/local.ogg'
+			id = r.request_recognition(new_file, filename_no_ext) 
 
 			files_dict[filename] = id
 			continue
@@ -1258,7 +1241,7 @@ def async_extract(r):
 
 	for filename in os.listdir(r._config['temp']):
 
-		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+		f = os.path.join(r._config['temp'], filename) 
 
 		if os.path.isfile(f):
 
@@ -1294,7 +1277,7 @@ def rename_files(r):
 
 	for filename in os.listdir(r._config['temp']):
 
-		f = os.path.join(r._config['temp'], filename) #Возможно так не правильно
+		f = os.path.join(r._config['temp'], filename) 
 
 		if os.path.isfile(f):
 
