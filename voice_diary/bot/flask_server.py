@@ -1,6 +1,6 @@
 from email.mime import application
-from flask import Flask, redirect, url_for, request, make_response
-from flask_restful import Resource, Api, reqparse
+from flask import Flask, request, make_response
+from flask_restful import Resource, Api
 
 application = Flask(__name__)
 api = Api(application)
@@ -87,12 +87,12 @@ class Home(Resource):
         return response     
 
 
-
 api.add_resource(Login, '/login')
 api.add_resource(Processed, '/processed')
 api.add_resource(AudioUpload, "/audio")
 api.add_resource(ImageUpload, "/image")
 api.add_resource(Home, "/")
+
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0') #debug=True
