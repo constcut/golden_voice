@@ -26,7 +26,7 @@ ApplicationWindow
             fullhdReport.visible = false
             smallItem.visible = true
 
-            mainLoader.setSource("reportVisualizer.qml") //calendar, diaryCard, networkClient
+            mainLoader.setSource("calendar.qml") //calendar, diaryCard, networkClient
         }
         else
         {
@@ -52,7 +52,7 @@ ApplicationWindow
                 fullhdReport.visible = false
                 smallItem.visible = true
 
-                mainLoader.setSource("networkClient.qml")
+                mainLoader.setSource("calendar.qml")
                 //mainLoader.item.requestFileDialog()
             }
 
