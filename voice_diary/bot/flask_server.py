@@ -18,7 +18,6 @@ class Login(Resource):
 
         response = make_response(response_string, 200)
         response.mimetype = "text/plain"
-
         return response
 
 
@@ -38,12 +37,30 @@ class Processed(Resource):
 
         response = make_response(response_string, 200)
         response.mimetype = "text/plain"
-
         return response
+
+
+class AudioUpload(Resource): #add get later - to load last file back
+
+    def put(self):
+
+        args = request.args
+        login = args["login"]
+
+        filepath = login + "/audio/id0.ogg"
+
+        with open(filepath, 'wb') as f:
+            f.write(request.stream.read())
+
+        response = make_response("Created", 200)
+        response.mimetype = "text/plain"
+        return response
+
 
 
 api.add_resource(Login, '/login')
 api.add_resource(Processed, '/processed')
+api.add_resource(AudioUpload, "/audio")
 
 if __name__ == '__main__':
     app.run(debug=True) #avoid debug later
