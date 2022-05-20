@@ -107,7 +107,7 @@ void RequestClient::fileSentNotification(QString type, QString result)
 
 void RequestClient::requestCompleteStatus(QString id, QString key)
 {
-    QString urlString = QString("http://localhost:5000/process?id=%1&key=%2&login=%3")
+    QString urlString = QString("http://localhost:5000/processed?id=%1&key=%2&login=%3")
                                 .arg(id, key, _username);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
