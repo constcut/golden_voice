@@ -266,6 +266,13 @@ Item
             contentHeight:  parent.height
             property int pressedX : 0
 
+            ScrollBar.horizontal: ScrollBar
+            {
+                height: 15
+                active: true
+                interactive: true
+                policy: ScrollBar.AlwaysOn
+            }
 
             VisualReport
             {

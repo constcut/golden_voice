@@ -10,10 +10,6 @@ Item {
     id: fullHDReport
 
 
-    Component.onCompleted:
-    {
-    }
-
 
     FileDialog
     {
@@ -36,7 +32,6 @@ Item {
 
     function requestFileDialog()
     {
-        //jsonReport.loadFromFile("C:/Users/constcut/Desktop/local/full_report.json")
         fileDialog.open()
         reloadVisualReports()
     }
@@ -250,7 +245,6 @@ Item {
                 interactive: true
                 policy: ScrollBar.AlwaysOn
             }
-
 
 
             Repeater
