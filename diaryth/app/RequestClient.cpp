@@ -20,11 +20,10 @@ using namespace diaryth;
 
 
 
-
 void RequestClient::logIn(QString username, QString password)
 {
-    QString urlString = QString("http://localhost:5000/login?password=%1&login=%2")
-                                .arg(password, username);
+    QString urlString = QString("http://localhost:5000/login?login=%1&password=%2")
+                                .arg(username, password);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
     auto getReply = _mgr.get(_lastRequest);
@@ -34,6 +33,8 @@ void RequestClient::logIn(QString username, QString password)
     QObject::connect(getReply, &QNetworkReply::finished, [this, getReply=getReply]()
     {
          QString result = getReply->readAll();
+
+         qDebug() << "Result from server: " << result;
 
          this->_loggedIn = result == "Logged in!";
          this->loginNotification();
