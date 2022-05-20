@@ -8,15 +8,10 @@ import datetime
 import telebot
 import json
 
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
 import numpy as np
 
 import parselmouth
 from parselmouth.praat import call
-
-import seaborn as sns
 
 from subprocess import check_call #used for ffmpeg ogg to wav
 
@@ -25,9 +20,6 @@ import time
 import requests
 
 from cloud_storage import upload_file
-
-
-#TODO 2: search for keywords from diary cards
 
 
 
@@ -796,14 +788,16 @@ class ReportGenerator:
 		from synth_speech import text_to_audio
 		text_to_audio("123.ogg", message.text)
 
-		self._bot.reply_to(message, 'Озвучивание:')
+		self.bot.reply_to(message, 'Озвучивание:')
 		voice = open("123.ogg", 'rb')
-		self._bot.send_voice(message.chat.id, voice)
+		self.bot.send_voice(message.chat.id, voice)
 
 		print("Текст озвучен")
 
 
 	def draw_intensity_praat(self, intensity): #Отделить всю отрисовку в отдельный класс
+
+		import matplotlib.pyplot as plt
 
 		plt.plot(intensity.xs(), intensity.values.T, linewidth=3, color='g')
 		plt.plot(intensity.xs(), intensity.values.T, linewidth=1)
@@ -814,6 +808,8 @@ class ReportGenerator:
 
 
 	def draw_pitch_praat(self, pitch):
+
+		import matplotlib.pyplot as plt
 
 		pitch_values = pitch.selected_array['frequency']
 		pitch_values[pitch_values==0] = np.nan
@@ -826,6 +822,8 @@ class ReportGenerator:
 
 
 	def plot_pitches(self, seq_dict, output_filepath):
+
+		import matplotlib.pyplot as plt
 
 		fig = plt.figure()
 
@@ -850,7 +848,7 @@ class ReportGenerator:
 
 
 	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
-	def save_images(self, seq_dict):
+	def save_images(self, seq_dict):	
 
 		if self.use_rosa:
 			self.plot_librosa(seq_dict, self._config["dir"])
@@ -863,6 +861,9 @@ class ReportGenerator:
 
 
 	def plot_praat(self, seq_dict, output_filepath): 
+
+		import matplotlib.pyplot as plt
+		import seaborn as sns #TODO move under when asked
 
 		snd = seq_dict["praat_sound"]
 		intensity = seq_dict["praat_intensity"]
@@ -889,6 +890,8 @@ class ReportGenerator:
 		f0 = seq_dict["librosa_pitch"]
 		S = seq_dict["librosa_S"]
 
+		import matplotlib.pyplot as plt
+
 		fig, ax = plt.subplots(nrows=2, sharex=True)
 
 		ax[0].semilogy(times, rms[0], label='RMS Energy')
@@ -896,6 +899,9 @@ class ReportGenerator:
 		ax[0].label_outer()
 
 		#Can be avoided?
+		import librosa
+		import librosa.display
+
 		librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
 								y_axis='log', x_axis='time', ax=ax[1])
 
@@ -959,6 +965,9 @@ class ReportGenerator:
 		librosa_stft_moment =  datetime.datetime.now() #TODO remove all
 
 		if self.use_rosa:
+
+			import librosa
+
 			y, sr = librosa.load(wav_file)
 
 			#TODO can be avoided, if no plots!
@@ -1292,6 +1301,10 @@ def reports_to_csv(r):
 #reports_to_csv(r)\
 #TODO + morph analisys
 #print("CSV DONE!")
+
+print("Waiting for wifi")
+
+time.sleep(10) # Для Raspbery Pi установить связь с Wifi
 
 r = ReportGenerator("key.json")
 r.start_bot()
