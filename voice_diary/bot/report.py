@@ -931,8 +931,10 @@ class ReportGenerator:
 
 		@self.bot.message_handler(func=lambda message: True)
 		def echo_all(message):
-			t = threading.Timer(1.0, self.send_delayed_text, [message])
-			t.start()
+			#t = threading.Timer(1.0, self.send_delayed_text, [message])
+			#t.start()
+			self.bot.reply_to(message, 'На текст больше не отвечаю :P')
+			print("Input message blocked: ", message.text)
 
 
 		@self.bot.message_handler(content_types=['voice'])
@@ -1304,13 +1306,12 @@ def reports_to_csv(r):
 
 print("Waiting for wifi")
 
-time.sleep(10) # Для Raspbery Pi установить связь с Wifi
+#time.sleep(10) # Для Raspbery Pi установить связь с Wifi
 
 r = ReportGenerator("key.json")
 r.start_bot()
 
 #r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
-
 #r.extract_features(r._config["dir"] + "/pcm.wav")
 
 
