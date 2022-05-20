@@ -45,117 +45,9 @@ Item
         fileDialog.open()
     }
 
-
-    ScrollView
-    {
-        id: scroll
-        width: parent.width
-        height: visualReport1.height + visualReport2.height
-
-        Flickable
-        {
-            id: flick
-            y: 5
-            x: 0
-            width: parent.width
-            height: visualReport1.height + visualReport2.height
-            contentWidth: 3000
-            contentHeight:  parent.height
-            property int pressedX : 0
-
-
-            VisualReport
-            {
-                id: visualReport1
-                height:  190
-                width: 3000
-                y: 5
-
-                MouseArea
-                {
-                    anchors.fill: parent
-                    onClicked:{
-
-                    }
-                    onDoubleClicked: {
-                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
-                        jsonReport.selectEvent(idx)
-                    }
-
-                }
-            } //VisualReport
-
-            VisualReport
-            {
-                id: visualReport2
-                height:  500
-                width: 3000
-                y: 5 + visualReport1.height
-
-                MouseArea
-                {
-                    anchors.fill: parent
-                    onClicked:{
-
-                    }
-                    onDoubleClicked: {
-                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
-                        jsonReport.selectEvent(idx)
-                    }
-
-                }
-            } //VisualReport
-
-        } //Flickable
-
-    } //ScrollView
-
-
-    Popup
-    {
-        id: popup
-        x: 50
-        y: 50
-        width: item.width - x * 2
-        height: item.height - x * 2
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
-        Repeater
-        {
-            id: eventsRepeater
-
-            RowLayout
-            {
-                x: 10
-                y: index * 40
-
-                Text {
-                    id: eventText
-                }
-
-                function setText(text) {
-                    eventText.text = text
-                }
-            }
-        }
-
-        Button
-        {
-            text: "Close"
-
-            x: parent.width - width - 10
-            y: parent.height - height - 5
-
-            onClicked: popup.close()
-        }
-    }
-
-
     RowLayout
     {
-            y: visualReport1.y + visualReport1.height + visualReport2.height
+            y: 5
 
             Button {
                 text: "Unselect"
@@ -352,6 +244,115 @@ Item
                 text: "Open file"
                 onClicked: fileDialog.open()
             }
+    }
+
+
+    ScrollView
+    {
+        id: scroll
+        width: parent.width
+        height: visualReport1.height + visualReport2.height
+
+        y: 50
+
+        Flickable
+        {
+            id: flick
+            y: 0
+            x: 0
+            width: parent.width
+            height: visualReport1.height + visualReport2.height
+            contentWidth: 3000
+            contentHeight:  parent.height
+            property int pressedX : 0
+
+
+            VisualReport
+            {
+                id: visualReport1
+                height:  190
+                width: 3000
+                y: 5
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:{
+
+                    }
+                    onDoubleClicked: {
+                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
+                        jsonReport.selectEvent(idx)
+                    }
+
+                }
+            } //VisualReport
+
+            VisualReport
+            {
+                id: visualReport2
+                height:  500
+                width: 3000
+                y: visualReport1.y + visualReport1.height + 5
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:{
+
+                    }
+                    onDoubleClicked: {
+                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
+                        jsonReport.selectEvent(idx)
+                    }
+
+                }
+            } //VisualReport
+
+        } //Flickable
+
+    } //ScrollView
+
+
+    Popup
+    {
+        id: popup
+        x: 50
+        y: 50
+        width: item.width - x * 2
+        height: item.height - x * 2
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        Repeater
+        {
+            id: eventsRepeater
+
+            RowLayout
+            {
+                x: 10
+                y: index * 40
+
+                Text {
+                    id: eventText
+                }
+
+                function setText(text) {
+                    eventText.text = text
+                }
+            }
+        }
+
+        Button
+        {
+            text: "Close"
+
+            x: parent.width - width - 10
+            y: parent.height - height - 5
+
+            onClicked: popup.close()
+        }
     }
 
 
