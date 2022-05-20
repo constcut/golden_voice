@@ -198,11 +198,14 @@ Item
 
             Slider
             {
-                from : 50
+                from : 35
                 to: item.height - 60
                 stepSize: 5
 
                 value: 190
+
+                ToolTip.visible: hovered
+                ToolTip.text: "Height " + value
 
                 onMoved:
                 {
@@ -222,7 +225,6 @@ Item
                 onClicked:
                 {
                     jsonReport.setZoom(jsonReport.getZoom() * 2)
-
                     flick.contentWidth = jsonReport.getFullWidth()
                     visualReport1.width = jsonReport.getFullWidth()
                     visualReport2.width =  jsonReport.getFullWidth()
