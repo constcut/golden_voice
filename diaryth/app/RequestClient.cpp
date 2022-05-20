@@ -77,7 +77,7 @@ void RequestClient::sendFile(QString type, QString filename)
         return;
     }
 
-    QString urlString = QString("http://localhost:5000/%1?login=%2").arg(type, _username);
+    QString urlString = QString("https://accumerite.ru/%1?login=%2").arg(type, _username);
     QUrl url(urlString);
 
     QNetworkRequest req(url);
@@ -111,7 +111,7 @@ void RequestClient::fileSentNotification(QString type, QString result)
 
 void RequestClient::requestCompleteStatus(QString id, QString key)
 {
-    QString urlString = QString("http://localhost:5000/processed?id=%1&key=%2&login=%3")
+    QString urlString = QString("https://accumerite.ru/processed?id=%1&key=%2&login=%3")
                                 .arg(id, key, _username);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
