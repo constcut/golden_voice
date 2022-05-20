@@ -110,6 +110,16 @@ void VisualReport::paintPlainWords(QPainter* painter, const QJsonObject& event) 
     painter->drawLine(x + w - 1, 20, x + w - 1, 0);
     painter->setPen(QColor("black"));
 
+    if (zoom > 150 && height() > 35 && event.contains("morph")) //Условие как и выше
+    {
+        const auto morphObj = event["morph"].toObject();
+        if (morphObj.contains("part_of_speech"))
+        {
+            QString partOfSpeech = morphObj["part_of_speech"].toString();
+            painter->drawText(x, 35, partOfSpeech);
+        }
+    }
+
     //Тут возможен морфологический анализ
 }
 
