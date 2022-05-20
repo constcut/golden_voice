@@ -23,7 +23,7 @@ using namespace diaryth;
 
 void RequestClient::logIn(QString username, QString password)
 {
-    QString urlString = QString("http://localhost:8000/login?password=%1&login=%2")
+    QString urlString = QString("http://localhost:5000/login?password=%1&login=%2")
                                 .arg(password, username);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
@@ -72,7 +72,7 @@ void RequestClient::sendFile(QString type, QString filename)
         return;
     }
 
-    QString urlString = QString("http://localhost:8000/%1?login=%2").arg(type, _username);
+    QString urlString = QString("http://localhost:5000/%1?login=%2").arg(type, _username);
     QUrl url(urlString);
 
     QNetworkRequest req(url);
@@ -106,7 +106,7 @@ void RequestClient::fileSentNotification(QString type, QString result)
 
 void RequestClient::requestCompleteStatus(QString id, QString key)
 {
-    QString urlString = QString("http://localhost:8000/process?id=%1&key=%2&login=%3")
+    QString urlString = QString("http://localhost:5000/process?id=%1&key=%2&login=%3")
                                 .arg(id, key, _username);
 
     _lastRequest = QNetworkRequest(QUrl(urlString));
