@@ -626,7 +626,7 @@ class ReportGenerator:
 		return record_file_path, alias_name
 
 
-	def save_images_info(self, path_user_logs, message, voice_report): #TODO lately sepprate bot and generator
+	def save_images_info(self, path_user_logs, message, voice_report): #TODO разделить бота и генератор репортов
 
 		rosaInfo = open(path_user_logs + '/rosaInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, rosaInfo)
@@ -646,7 +646,7 @@ class ReportGenerator:
 			outfile.write(full_string)
 
 
-	def merge_text_from_request(self, req): #TODO использовать эту функцию при генерации полного текста
+	def merge_text_from_request(self, req): 
 
 		text_lines = []
 		message_text = ""
@@ -654,7 +654,7 @@ class ReportGenerator:
 		print("Text chunks:")
 		for chunk in req['response']['chunks']:
 			print(chunk['alternatives'][0]['text'])
-			text_lines.append(chunk['alternatives'][0]['text']) #TODO check alternatives
+			text_lines.append(chunk['alternatives'][0]['text']) #Внимание не собираются alternatives ATTENTION
 			message_text += chunk['alternatives'][0]['text'] + "\n"
 
 		return message_text
@@ -751,13 +751,11 @@ class ReportGenerator:
 		start_aim_pos = text.find(request_string)
 		if start_aim_pos != -1:
 			return "Начата задача с именем: " + text[start_aim_pos + len(request_string):]
-			#TODO datetime - в словарь
 
 		request_string = "завершить задачу"
 		finish_aim_pos = text.find(request_string)
 		if finish_aim_pos != -1:
 			return "Завершена задача с именем: " + text[finish_aim_pos + len(request_string):]
-			#TODO datetime - из словаря + разница
 
 		request_string = "я съел"
 		eat_pos = text.find(request_string)
@@ -864,7 +862,6 @@ class ReportGenerator:
 
 
 
-	#TODO REVIEW OPTIMIZE проверять расширение входного файла, вынести от сюда всю загрзуку и оставить только отрисовку
 	def save_images(self, seq_dict):	
 
 		if self.use_rosa:
@@ -880,7 +877,7 @@ class ReportGenerator:
 	def plot_praat(self, seq_dict, output_filepath): 
 
 		import matplotlib.pyplot as plt
-		import seaborn as sns #TODO move under when asked
+		import seaborn as sns 
 
 		snd = seq_dict["praat_sound"]
 		intensity = seq_dict["praat_intensity"]
@@ -1029,8 +1026,6 @@ class ReportGenerator:
 
 		start_moment =  datetime.datetime.now()
 
-		#LIBROSA if extractr_from_librosa:
-
 		librosa_loaded_moment =  datetime.datetime.now()
 		librosa_stft_moment =  datetime.datetime.now() #TODO remove all
 
@@ -1039,9 +1034,7 @@ class ReportGenerator:
 			import librosa
 
 			y, sr = librosa.load(wav_file)
-
-			#TODO can be avoided, if no plots!
-			S, phase = librosa.magphase(librosa.stft(y)) 
+			S, phase = librosa.magphase(librosa.stft(y))  #can be avoided, if no plots!
 			#librosa.feature.rms(y=y)
 			
 			rms = librosa.feature.rms(S=S)
@@ -1056,7 +1049,7 @@ class ReportGenerator:
 			seq_dict["librosa_pitch"] = f0
 			seq_dict["librosa_rms"] = rms
 			seq_dict["librosa_times"] = times
-			seq_dict["librosa_S"] = S #TODO can be avoided if not plots?
+			seq_dict["librosa_S"] = S #TODO can be avoided if not plots!
 
 		librosa_done_moment = datetime.datetime.now()
 
@@ -1064,21 +1057,14 @@ class ReportGenerator:
 
 		snd = parselmouth.Sound(wav_file) 
 		
-
-		f0min = 60
+		f0min = 60 #КАК и выше по стеку вызова!
 		f0max = 600
-
-		#TODO замерить время каждый из 4х рассчётов
-
 
 		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  
 		intensity = snd.to_intensity()
 
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
-		#TODO отключение каждого отдельно - питч, интенсивность, форманты
-
-		#https://www.fon.hum.uva.nl/praat/manual/Time_step_settings___.html#:~:text=As%20described%20in%20Sound%3A%20To%20Intensity...%2C%20Praat's,step%20will%20be%2010.6666667%20milliseconds.
 
 		#formants = snd.to_formant_burg()
 		#print("Formants ", len(formants), " ", formants) # nFormants
@@ -1087,8 +1073,6 @@ class ReportGenerator:
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
 
-		#TODO step size pitch, step size intensity - рассчитать сразу здесь размер шага в секундах
-
 		seq_dict["duration"] = duration
 
 		seq_dict["praat_sound"] = snd
@@ -1096,24 +1080,17 @@ class ReportGenerator:
 
 		praat_done_moment = datetime.datetime.now()
 
-		#SURFBOARD if extractr_from_surfburd:
-
-
 		if self.use_surf == True:
 
-			from surfboard.sound import Waveform #SAME THING UPPER, IF WE TURN OFF ANY, WE DON"T HAVE TO INSTALL THEM
-			sound = Waveform(path=wav_file, sample_rate=44100) #TODO опциоальный, отключать иногда
+			from surfboard.sound import Waveform 
+			sound = Waveform(path=wav_file, sample_rate=44100) 
 
 			swipe_pitch = sound.f0_contour()
-			surf_intensity = sound.intensity()  #TODO SPREAD everywhere
+			surf_intensity = sound.intensity() 
 
 			#formants_sequence = sound.formants_slidingwindow()
 			#print("Formants sequence: ", len(formants_sequence), " and signle ",
 			#	len(formants_sequence[0]))
-
-			#SAVE IT!
-
-			#TODO try change window size, librosa like is ok, we save data x2
 
 			global_shimmers = sound.shimmers()
 			global_jitters = sound.jitters()
@@ -1130,21 +1107,25 @@ class ReportGenerator:
 
 		surf_done_moment = datetime.datetime.now()
 
-		librosa_load_spent = librosa_loaded_moment - start_moment
-		librosa_stft_spent = librosa_stft_moment - librosa_loaded_moment
-		librosa_rest_spent = librosa_done_moment - librosa_loaded_moment
-		praat_spent = praat_done_moment - librosa_done_moment
-		surf_spent = surf_done_moment - praat_done_moment
-		total_spent = surf_done_moment - start_moment
+		show_time_spent = False #TODO сделать полем класа
 
-		print("Total ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
+		if show_time_spent:
 
-		print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds / 1000.0, " ms")
-		print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds / 1000.0, " ms")
-		print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds / 1000.0, " ms")
+			librosa_load_spent = librosa_loaded_moment - start_moment
+			librosa_stft_spent = librosa_stft_moment - librosa_loaded_moment
+			librosa_rest_spent = librosa_done_moment - librosa_loaded_moment
+			praat_spent = praat_done_moment - librosa_done_moment
+			surf_spent = surf_done_moment - praat_done_moment
+			total_spent = surf_done_moment - start_moment
 
-		print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds / 1000.0, " ms")
-		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds / 1000.0, " ms")
+			print("Total ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
+
+			print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds / 1000.0, " ms")
+			print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds / 1000.0, " ms")
+			print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds / 1000.0, " ms")
+
+			print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds / 1000.0, " ms")
+			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds / 1000.0, " ms")
 
 		return seq_dict
 
@@ -1182,13 +1163,12 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		#1: export from ogg to PCM here - TODO option to use PCM on start
 		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
 
 		seq_dict = self.extract_features(wav_file)
 
 		if self.skip_plots == False:
-			self.save_images(seq_dict) #TODO возможно надо сохранять ещё директорию, но вначале возьмём из конфига
+			self.save_images(seq_dict) #возможно надо сохранять ещё директорию, но вначале возьмём из конфига - abadoned
 
 		images_saved_moment = datetime.datetime.now()
 
@@ -1291,8 +1271,6 @@ def async_extract(r):
 
 			req = r.check_server_recognition(id)
 
-			#TODO check chunk or continue
-
 			if 'chunks' not in req['response']:
 				continue
 
@@ -1307,7 +1285,6 @@ def async_extract(r):
 			
 			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
 				outfile.write(full_report)
-
 
 			print("File done")
 
@@ -1369,7 +1346,6 @@ def reports_to_csv(r):
 #async_load_dir(r)
 #async_extract(r) #WHY long runs out of memory?
 #reports_to_csv(r)\
-#TODO + morph analisys
 #print("CSV DONE!")
 
 print("Waiting for wifi")
