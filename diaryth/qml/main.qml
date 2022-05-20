@@ -52,8 +52,8 @@ ApplicationWindow
                 fullhdReport.visible = false
                 smallItem.visible = true
 
-                mainLoader.setSource("calendar.qml")
-                //mainLoader.item.requestFileDialog()
+                mainLoader.setSource("reportVisualizer.qml")
+                mainLoader.item.requestFileDialog()
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
