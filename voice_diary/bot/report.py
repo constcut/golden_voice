@@ -712,7 +712,7 @@ class ReportGenerator:
 
 			id = r.request_recognition(new_file, alias)
 
-			wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
+			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file) #record_file_path
 			seq_dict = self.extract_features(wav_file)
 
 			req = self.check_server_recognition(id)
