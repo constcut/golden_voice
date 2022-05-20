@@ -694,7 +694,7 @@ class ReportGenerator:
 
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
 
-			record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.file_name
+			record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
 			print(record_file_path, " <- document file path")
 
 			with open(os.path.join(record_file_path), 'wb') as new_file:
@@ -708,15 +708,18 @@ class ReportGenerator:
 
 			id = r.request_recognition(new_file, alias)
 
-			wav_file = self.convert_ogg_to_wav(spectrum_dir_path, record_file_path)
-			#TODO conver to ogg
-			#Send to Yandex
+			wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
+			seq_dict = self.extract_features(wav_file)
 
-			#Convert to wav
-			#Extract features
+			req = self.check_server_recognition(id)
 
-			#check server
-			#make report and send it
+			full_string = json.dumps(req, ensure_ascii=False, indent=2)
+			json_report = self.make_json_report(req, seq_dict)
+
+			self.save_json_products(path_user_logs, json_report, full_string)
+
+			message_text = self.merge_text_from_request(req)
+			self.send_message_and_reports(path_user_logs, message, message_text)
 			
 
 
@@ -745,9 +748,9 @@ class ReportGenerator:
 			
 		self.send_message_and_reports(spectrum_dir_path, message, message_text)
 
-		commands_response = self.detect_commands(message_text)
-		if commands_response != '':
-			self.bot.reply_to(message, commands_response)
+		#commands_response = self.detect_commands(message_text) #blocked:)
+		#if commands_response != '':
+		#	self.bot.reply_to(message, commands_response)
 			
 
 
@@ -977,7 +980,7 @@ class ReportGenerator:
 			file_info = self.bot.get_file(message.document.file_id)
 			downloaded_file = self.bot.download_file(file_info.file_path)
 
-			file_extenstion = message.document.file_name[:-3]
+			file_extenstion = message.document.file_name[-3:]
 
 			print("Doc file-name", message.document.file_name, "ext", file_extenstion)
 
