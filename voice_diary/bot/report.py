@@ -694,8 +694,12 @@ class ReportGenerator:
 
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
 
-			record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
-			print(record_file_path, " <- document file path")
+			if message.document != None:
+				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
+			else:
+				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.audio.file_name
+
+			print(record_file_path, " <- document\audio file path")
 
 			with open(os.path.join(record_file_path), 'wb') as new_file:
 				new_file.write(downloaded_file)
@@ -970,7 +974,7 @@ class ReportGenerator:
 			print("Input message blocked: ", message.text)
 
 
-		@self.bot.message_handler(content_types=['document', 'audio'])
+		@self.bot.message_handler(content_types=['document'])
 		def process_docs_audio(message):
 
 			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
@@ -983,6 +987,31 @@ class ReportGenerator:
 			file_extenstion = message.document.file_name[-3:]
 
 			print("Doc file-name", message.document.file_name, "ext", file_extenstion)
+
+			if file_extenstion != "mp3" and file_extenstion != "wav":
+				self.bot.reply_to(message, "Допускаются только .wav или .mp3")
+			else:
+				self.bot.reply_to(message, f"Аудио обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+				t = threading.Timer(1.0, self.deplayed_audio_document, [path_user_logs, message, downloaded_file])
+				t.start()
+
+				print("Document saved")
+
+
+		@self.bot.message_handler(content_types=['audio'])
+		def process_docs_audio(message):
+
+			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
+			if not os.path.exists(path_user_logs):
+				os.makedirs(path_user_logs)
+
+			file_info = self.bot.get_file(message.audio.file_id)
+			downloaded_file = self.bot.download_file(file_info.file_path)
+
+			file_extenstion = message.audio.file_name[-3:]
+
+			print("Doc file-name", message.audio.file_name, "ext", file_extenstion)
 
 			if file_extenstion != "mp3" and file_extenstion != "wav":
 				self.bot.reply_to(message, "Допускаются только .wav или .mp3")
