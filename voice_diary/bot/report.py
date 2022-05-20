@@ -643,7 +643,7 @@ class ReportGenerator:
 
 		alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
 
-		return record_file_path, alias_name, spectrum_dir_path
+		return record_file_path, alias_name, spectrum_dir_path #TODO spectrum_dir_path rename it just path_user_logs
 
 
 	def save_images_info(self, spectrum_dir_path, message, voice_report): #TODO lately sepprate bot and generator
@@ -691,13 +691,43 @@ class ReportGenerator:
 		self.bot.send_document(message.chat.id, doc)
 
 
+
+	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
+
+			record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.file_name
+			print(record_file_path, " <- document file path")
+
+			with open(os.path.join(record_file_path), 'wb') as new_file:
+				new_file.write(downloaded_file)
+
+			new_file = path_user_logs + "/converted.ogg"
+
+			self.convert_wav_to_ogg(record_file_path, new_file)
+
+			alias = "doc" + str(message.id) + "x" + str(message.chat.id)
+
+			id = r.request_recognition(new_file, alias)
+
+			wav_file = self.convert_ogg_to_wav(spectrum_dir_path, record_file_path)
+			#TODO conver to ogg
+			#Send to Yandex
+
+			#Convert to wav
+			#Extract features
+
+			#check server
+			#make report and send it
+			
+
+
+
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
 
 		record_file_path, alias_name, spectrum_dir_path = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
 
 		id = self.request_recognition(record_file_path, alias_name)
 
-		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path)
+		wav_file = self.convert_ogg_to_wav(spectrum_dir_path, record_file_path)
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -935,6 +965,32 @@ class ReportGenerator:
 			#t.start()
 			self.bot.reply_to(message, 'На текст больше не отвечаю :P')
 			print("Input message blocked: ", message.text)
+
+
+		@self.bot.message_handler(content_types=['document', 'audio'])
+		def process_docs_audio(message):
+
+			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
+			if not os.path.exists(path_user_logs):
+				os.makedirs(path_user_logs)
+
+			file_info = self.bot.get_file(message.document.file_id)
+			downloaded_file = self.bot.download_file(file_info.file_path)
+
+			file_extenstion = message.document.file_name[:-3]
+
+			print("Doc file-name", message.document.file_name, "ext", file_extenstion)
+
+			if file_extenstion != "mp3" and file_extenstion != "wav":
+				self.bot.reply_to(message, "Допускаются только .wav или .mp3")
+			else:
+				self.bot.reply_to(message, f"Аудио обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+				t = threading.Timer(1.0, self.deplayed_audio_document, [path_user_logs, message, downloaded_file])
+				t.start()
+
+				print("Document saved")
+
 
 
 		@self.bot.message_handler(content_types=['voice'])
