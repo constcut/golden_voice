@@ -374,15 +374,13 @@ class ReportGenerator:
 					if self.use_surf:
 						pause_surf_intens = self.get_full_statistics(pause_surf_intens)
 
-					silence_report = "" # TODO praat info? or get rid
-
+					silence_report = ""#От него отказались пока что
 				
 					single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end}
 
 					single_pause["Intensity"] = pause_intens
 					single_pause["info"] = silence_report
 
-				
 					if self.use_rosa:		
 						single_pause["RMS"] = pause_RMS 		
 
@@ -518,7 +516,7 @@ class ReportGenerator:
 						chunk_text = '-'
 
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
-							1.3, 1.6, 0.03, 0.45) #TODO make configurable
+							1.3, 1.6, 0.03, 0.45) #TODO Перенести в члены класса
 
 				single_chunk = {"chunkId": chunkId, "altId": altId, 
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
@@ -617,7 +615,6 @@ class ReportGenerator:
 	def save_downloaded_and_name(self, path_user_logs, message, downloaded_file):
 
 		record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-		spectrum_dir_path = path_user_logs
 
 		print(record_file_path, " <- dir path")
 
@@ -626,15 +623,15 @@ class ReportGenerator:
 
 		alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
 
-		return record_file_path, alias_name, spectrum_dir_path #TODO spectrum_dir_path rename it just path_user_logs
+		return record_file_path, alias_name
 
 
-	def save_images_info(self, spectrum_dir_path, message, voice_report): #TODO lately sepprate bot and generator
+	def save_images_info(self, path_user_logs, message, voice_report): #TODO lately sepprate bot and generator
 
-		rosaInfo = open(spectrum_dir_path + '/rosaInfo.png', 'rb')
+		rosaInfo = open(path_user_logs + '/rosaInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, rosaInfo)
 
-		praatInfo = open(spectrum_dir_path + '/praatInfo.png', 'rb')
+		praatInfo = open(path_user_logs + '/praatInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, praatInfo)
 
 		self.bot.reply_to(message, voice_report)
@@ -713,11 +710,11 @@ class ReportGenerator:
 
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
 
-		record_file_path, alias_name, spectrum_dir_path = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
+		record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
 
 		id = self.request_recognition(record_file_path, alias_name)
 
-		wav_file = self.convert_ogg_to_wav(spectrum_dir_path, record_file_path)
+		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -729,11 +726,11 @@ class ReportGenerator:
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
 		json_report = self.make_json_report(req, seq_dict)
 
-		self.save_json_products(spectrum_dir_path, json_report, full_string)
+		self.save_json_products(path_user_logs, json_report, full_string)
 
 		message_text = self.merge_text_from_request(req)
 			
-		self.send_message_and_reports(spectrum_dir_path, message, message_text)
+		self.send_message_and_reports(path_user_logs, message, message_text)
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
@@ -1152,21 +1149,21 @@ class ReportGenerator:
 		return seq_dict
 
 
-	def convert_ogg_to_wav(self, spectrum_dir_path, record_file_path):
+	def convert_ogg_to_wav(self, path_user_logs, record_file_path):
 
-		if os.path.exists(spectrum_dir_path + '/pcm.wav'): #TODO rename spectrum_dir_path + осторожней тут
-			os.remove(spectrum_dir_path +"/pcm.wav")
+		if os.path.exists(path_user_logs + '/pcm.wav'):
+			os.remove(path_user_logs +"/pcm.wav")
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {spectrum_dir_path}/pcm.wav" #Optional converting to wav #update SR
+		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {path_user_logs}/pcm.wav" #Optional converting to wav #update SR
 		_ = check_call(command.split())
 
-		wav_file = f"{spectrum_dir_path}/pcm.wav"
+		wav_file = f"{path_user_logs}/pcm.wav"
 		return wav_file
 
 
 	def convert_wav_to_ogg(self, input_file, output_file):
 
-		if os.path.exists(output_file): #TODO rename spectrum_dir_path + осторожней тут
+		if os.path.exists(output_file): 
 			os.remove(output_file)
 
 		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" #Optional converting to wav #update SR
@@ -1175,7 +1172,7 @@ class ReportGenerator:
 
 
 
-	def local_recognition(self, spectrum_dir_path, record_file_path, alias_name):
+	def local_recognition(self, path_user_logs, record_file_path, alias_name):
 
 		import datetime
 
@@ -1186,7 +1183,7 @@ class ReportGenerator:
 		request_sent_moment = datetime.datetime.now()
 
 		#1: export from ogg to PCM here - TODO option to use PCM on start
-		wav_file = self.convert_ogg_to_wav( spectrum_dir_path, record_file_path)
+		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -1206,7 +1203,7 @@ class ReportGenerator:
 
 		full_report_generated = datetime.datetime.now()
 
-		self.save_json_products(spectrum_dir_path, json_report, full_string)
+		self.save_json_products(path_user_logs, json_report, full_string)
 
 		
 
