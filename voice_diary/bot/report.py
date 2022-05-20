@@ -13,7 +13,7 @@ import numpy as np
 import parselmouth
 from parselmouth.praat import call
 
-from subprocess import check_call #used for ffmpeg ogg to wav
+from subprocess import check_call 
 
 import threading
 import time
@@ -47,11 +47,6 @@ class ReportGenerator:
 		self.use_morph_analysis = False
 
 		self.measure_time = True 
-
-		#TODO save_full_sequences
-		#TODO use_praat_pitch
-		#TODO use_praat_intensity
-		#TODO : use, librosa 1,2; surf 1,2
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -101,7 +96,7 @@ class ReportGenerator:
 			if req['done']: break
 			print("Not ready")
 
-			time.sleep(10) #TODO calc
+			time.sleep(10) #Это число можно рассчитывать, но я ленив :)
 
 		return req
 
@@ -133,7 +128,7 @@ class ReportGenerator:
 			try:
 				return statistics.mode(sub_sequence)
 			except:
-				return 0 #TODO, review
+				return 0 #Мода может выпадать если их несколько
 
 
 		if type == "median":
@@ -149,7 +144,7 @@ class ReportGenerator:
 			try:
 				return statistics.stdev(sub_sequence)
 			except:
-				return 0 #TODO, review
+				return 0 #Мода может выпадать если их несколько
 
 		print("WARNING: wrong statistic value: ", type)
 		return 0.0
@@ -244,22 +239,13 @@ class ReportGenerator:
 
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
-				
-				dict_key = field_name
-
-				#use_full_names = True #TODO to config
-				#if use_full_names:
-					#dict_key += field_sepparator
-
 				praat_dict[field_name] = float(field_value)
-
-				#TODO exceptions everywhere..!
 
 		return praat_dict
 
 
 
-	def make_json_report(self, req, seq_dict): #TODO refact
+	def make_json_report(self, req, seq_dict): #REFACTORING - GOD функция TODO
 
 		import datetime
 
@@ -267,7 +253,7 @@ class ReportGenerator:
 
 		#==========================================
 		duration = seq_dict["duration"]
-		intensity = seq_dict["praat_intensity"].values.T #Check copy avoided
+		intensity = seq_dict["praat_intensity"].values.T 
 		pitch = seq_dict["praat_pitch"]
 
 		if self.use_rosa:
@@ -283,7 +269,7 @@ class ReportGenerator:
 		pitch = pitch.selected_array['frequency']
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
 		
-		pitch = np.array(pitch) #TODO CHECK USAGE ONLY BY REFERENCE of list? Just slices
+		pitch = np.array(pitch) 
 		intensity = np.array(intensity)
 
 		if self.use_rosa:
@@ -308,12 +294,11 @@ class ReportGenerator:
 
 		pitch_for_praat = seq_dict["praat_pitch"]
 		pulses = seq_dict["praat_pulses"]
-		f0min = 60 #TODO move under seq_dict or better config
+		f0min = 60 #TODO Перенести в члены класса
 		f0max = 600
 
-		#TODO parse report into dictionary
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
-							1.3, 1.6, 0.03, 0.45) #TODO make configurable
+							1.3, 1.6, 0.03, 0.45)  #TODO Перенести в члены класса
 
 		praat_moment =  datetime.datetime.now()
 		#==========================================Prepare basic information sequences==========================================
@@ -322,8 +307,6 @@ class ReportGenerator:
 		prev_word_end = 0.0
 		chunks = []
 		words_freq = {}
-
-		de_personalization = False #TODO to config
 
 		tokens = {}
 		tokens_count = 0
@@ -463,7 +446,7 @@ class ReportGenerator:
 					else:
 						token_id = tokens[current_word]
 
-					if de_personalization: #TODO CONFIG
+					if self.de_personalization: 
 						current_word = '-'
 
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
