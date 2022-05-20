@@ -51,16 +51,37 @@ class AudioUpload(Resource): #add get later - to load last file back
 
         with open(filepath, 'wb') as f:
             f.write(request.stream.read())
+            f.close()
 
         response = make_response("Created", 200)
         response.mimetype = "text/plain"
         return response
 
 
+class ImageUpload(Resource):
+
+    def put(self):
+
+        args = request.args
+        login = args["login"]
+
+        filepath = login + "/image/id0.png"
+
+        with open(filepath, 'wb') as f:
+            f.write(request.stream.read())
+            f.close()
+
+        response = make_response("Created", 200)
+        response.mimetype = "text/plain"
+        return response
+
+
+#+ toto simple
 
 api.add_resource(Login, '/login')
 api.add_resource(Processed, '/processed')
 api.add_resource(AudioUpload, "/audio")
+api.add_resource(ImageUpload, "/image")
 
 if __name__ == '__main__':
     app.run(debug=True) #avoid debug later

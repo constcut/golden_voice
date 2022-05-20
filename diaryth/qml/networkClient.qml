@@ -87,7 +87,7 @@ Item {
             {
                 id: imagename
                 placeholderText: "image filename"
-                text: "C:/Users/constcut/Desktop/local/sprint.png"
+                text: "C:/Users/constcut/Desktop/local/check.png"
                 implicitWidth: 410
             }
 
