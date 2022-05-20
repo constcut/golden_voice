@@ -291,7 +291,7 @@ Item
             VisualReport
             {
                 id: visualReport2
-                height:  500
+                height: 480
                 width: 3000
                 y: visualReport1.y + visualReport1.height + 5
 
