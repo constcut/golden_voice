@@ -8,6 +8,9 @@
 #include <QVariantList>
 
 
+#include <map>
+
+
 using namespace diaryth;
 
 
@@ -119,9 +122,22 @@ void VisualReport::paintPlainWords(QPainter* painter, const QJsonObject& event) 
         if (morphObj.contains("part_of_speech"))
         {
             QString partOfSpeech = morphObj["part_of_speech"].toString();
-            painter->drawText(x, 35, partOfSpeech);
+
+            std::map<QString, QString> translateMap {
+                        std::make_pair("NOUN","сущ"),std::make_pair("ADJF","прил"), std::make_pair("ADJS","кр прил"),
+                        std::make_pair("COMP","срав"),std::make_pair("VERB","гл"),std::make_pair("INFN","инф"),
+                        std::make_pair("PRTF","прич"),std::make_pair("PRTS","кр прич"),std::make_pair("GRND","дпр"),
+                        std::make_pair("NUMR","числ"),std::make_pair("ADVB","нар"),std::make_pair("NPRO","мест"),
+                        std::make_pair("PRED","сост"),std::make_pair("PREP","пред"),std::make_pair("CONJ","союз"),
+                        std::make_pair("PRCL","част"),std::make_pair("INTJ","межд")};
+
+
+            qDebug() << partOfSpeech << " translated into " << translateMap.at(partOfSpeech);
+            painter->drawText(x, 35, translateMap.at(partOfSpeech));
         }
     }
+    else
+        qDebug() << " else ";
 
     //Тут возможен морфологический анализ
 }
