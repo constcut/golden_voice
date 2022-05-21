@@ -60,7 +60,7 @@ void VisualReport::paint(QPainter* painter)
     FieldPrevStats prevPraats;
 
 
-    painter->fillRect(0, 0, width(), height(), QColor("lightgray").lighter());
+    painter->fillRect(0, 0, width(), height(), QColor("lightgray"));
     if (_showBorder)
         painter->drawRect(2, 2, width() - 4, height() - 4);
 
