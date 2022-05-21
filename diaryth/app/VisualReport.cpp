@@ -59,8 +59,11 @@ void VisualReport::paint(QPainter* painter)
     ReportPrevStats prevStats;
     FieldPrevStats prevPraats;
 
+
+    painter->fillRect(0, 0, width(), height(), QColor("lightgray").lighter());
     if (_showBorder)
         painter->drawRect(2, 2, width() - 4, height() - 4);
+
 
     const auto& events = _parentReport->getEvents();
 
@@ -330,7 +333,7 @@ void VisualReport::paintSequenceType(QPainter* painter, const QJsonObject &event
     double verticalZoom = 1.0;
 
     if (_type == VisualTypes::Amplitude)
-        verticalZoom = 1.5;
+        verticalZoom = 1.5; //TODO CONFIGURABLE!!!!!!!!!! FOR ALL TYPES TODO TODO TODO TODO TODO TODO
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
     double start = event["startTime"].toDouble();
@@ -401,7 +404,29 @@ void VisualReport::paintSequenceType(QPainter* painter, const QJsonObject &event
                               fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift);
 
         prevStats.prevMean = fullHeight - value["mean"].toDouble() * verticalZoom - verticalShift;
+
+
+        painter->setPen(QColor("gray"));
+
+
+        if (prevStats.prevMax != 0)
+            painter->drawLine(prevStats.prevXEnd, prevStats.prevMax,
+                              x, fullHeight - value["max"].toDouble() * verticalZoom - verticalShift);
+
+        prevStats.prevMax = fullHeight - value["max"].toDouble() * verticalZoom - verticalShift;
+
+
+        if (prevStats.prevMin != 0)
+            painter->drawLine(prevStats.prevXEnd, prevStats.prevMin, x,
+                              fullHeight - value["min"].toDouble() * verticalZoom - verticalShift);
+
+        prevStats.prevMin = fullHeight - value["min"].toDouble() * verticalZoom - verticalShift;
+
+
         prevStats.prevXEnd = x + w;
+
+
+
 
 
         QJsonArray sequence;

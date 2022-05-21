@@ -24,6 +24,8 @@ namespace diaryth
         double prevMean = 0.0;
         double prevMedian = 0.0;
         double prevXEnd = 0.0;
+        double prevMin = 0.0;
+        double prevMax = 0.0;
     };
 
     struct FieldPrevStats
