@@ -381,18 +381,6 @@ Item {
 
 
 
-    Connections {
-        target: recorder
-
-        function onTimeUpdate(ms) {
-            timeText.text = ms
-        }
-
-        function onDbsUpdate(dbs) {
-            dbsText.text = dbs
-        }
-    }
-
 
     function keyboardEventSend(key, mode) {
         //Заглушка обработки клавиш
