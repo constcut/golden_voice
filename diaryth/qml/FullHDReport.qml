@@ -200,8 +200,22 @@ Item {
                 markupPopup.open()
             }
         }
+
+        Button
+        {
+            text: "All words"
+        }
+
+        Button
+        {
+            text: "All tags"
+        }
     }
 
+
+    Drawer {
+
+    }
 
 
     ScrollView
@@ -224,9 +238,7 @@ Item {
 
             ScrollBar.vertical: ScrollBar
             {
-                height: 15
-                active: true
-                interactive: true
+                width: 40
                 policy: ScrollBar.AlwaysOn
             }
 
@@ -237,13 +249,10 @@ Item {
 
                 id: scroll
                 width: parent.width
-                height: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5] ///TODO
+                height: parent.height ///TODO
 
                 function updatePositions()
                 {
-                    scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5]  + 10 * 4 ///TODO
-                    flick.height = scroll.height
-
                     for (var i = 0; i < reportsRepeater.model; ++i)
                     {
                         var newY = fullHDReport.calculateY(i)
@@ -268,9 +277,7 @@ Item {
 
                     ScrollBar.horizontal: ScrollBar
                     {
-                        height: 15
-                        active: true
-                        interactive: true
+                        height: 30
                         policy: ScrollBar.AlwaysOn
                     }
 
