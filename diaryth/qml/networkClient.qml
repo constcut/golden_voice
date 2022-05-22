@@ -11,11 +11,37 @@ Item {
     property string date: ""
     property int localId: 0
 
-
-    Component.onCompleted:
+    Connections
     {
+        id: connector
 
+        target: requestClient
+
+        function onLoggedIn(value)
+        {
+            console.log("onLoggedIn", value)
+            if (value) {
+                mainWindow.mainMenuButton.visible = true
+            }
+        }
+
+        function onFileSent(type, result)
+        {
+            if  (type === "audio")
+                audioStatus.text = result
+
+            if  (type === "image")
+                imageStatus.text = result
+        }
+
+        function onFileProcessed(id, result)
+        {
+            processInfo.text = "DONE" //Возможно предлагать открыть визуализатор
+            textArea.text = result
+        }
     }
+
+
 
     ColumnLayout
     {
@@ -155,35 +181,7 @@ Item {
 
     }
 
-    Connections
-    {
-        id: connector
 
-        target: requestClient
-
-        function onLoggedIn(value)
-        {
-            if (value)
-                loginStatus.text = "You are logged in!"
-            else
-                loginStatus.text = "Username or password incorrect"
-        }
-
-        function onFileSent(type, result)
-        {
-            if  (type === "audio")
-                audioStatus.text = result
-
-            if  (type === "image")
-                imageStatus.text = result
-        }
-
-        function onFileProcessed(id, result)
-        {
-            processInfo.text = "DONE" //Возможно предлагать открыть визуализатор
-            textArea.text = result
-        }
-    }
 
 
 
