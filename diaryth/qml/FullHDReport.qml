@@ -56,8 +56,8 @@ Item {
     }
 
 
-    property var reportsHeight: [ 200, 35, 200, 500 ]
-    property var reportsTypes: [VisualTypes.PraatInfo, VisualTypes.PlainWords, VisualTypes.ReportFields, VisualTypes.Pitch]
+    property var reportsHeight: [ 220, 35, 220, 500, 250, 220 ]
+    property var reportsTypes: [VisualTypes.PraatInfo, VisualTypes.PlainWords, VisualTypes.ReportFields, VisualTypes.Pitch, VisualTypes.Amplitude, VisualTypes.ChunksOnly]
 
 
     function calculateY(idx)
@@ -203,42 +203,26 @@ Item {
     }
 
 
+
     ScrollView
     {
-        y: 50
-
-        id: scroll
         width: parent.width
-        height: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3]
+        height: parent.height - 300//fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] //TODO function
 
-        function updatePositions()
-        {
-            scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + 10 * 4
-            flick.height = scroll.height
-
-            for (var i = 0; i < reportsRepeater.model; ++i)
-            {
-                var newY = fullHDReport.calculateY(i)
-                reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
-                reportsRepeater.itemAt(i).height = fullHDReport.reportsHeight[i]
-            }
-
-        }
-
+        y: 50
 
         Flickable
         {
-            id: flick
             y: 5
             x: 0
             width: parent.width
-            height: scroll.height
-            contentWidth: 3000
-            contentHeight:  parent.height
-            property int pressedX : 0
+            height: parent.height
+
+            contentWidth: parent.width
+            contentHeight: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5] + 60  ///TODO
 
 
-            ScrollBar.horizontal: ScrollBar
+            ScrollBar.vertical: ScrollBar
             {
                 height: 15
                 active: true
@@ -247,89 +231,136 @@ Item {
             }
 
 
-            Repeater
+            ScrollView
             {
-                id: reportsRepeater
-                model: 4
+                y: 0
 
-                VisualReport
+                id: scroll
+                width: parent.width
+                height: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5] ///TODO
+
+                function updatePositions()
                 {
-                    id: visualReport
+                    scroll.height = fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5]  + 10 * 4 ///TODO
+                    flick.height = scroll.height
 
-                    height: fullHDReport.reportsHeight[index]
-                    width: 3000
-                    y: fullHDReport.calculateY(index)
-
-                    ToolTip {
-                        id: localToolTip
+                    for (var i = 0; i < reportsRepeater.model; ++i)
+                    {
+                        var newY = fullHDReport.calculateY(i)
+                        reportsRepeater.itemAt(i).y = fullHDReport.calculateY(i)
+                        reportsRepeater.itemAt(i).height = fullHDReport.reportsHeight[i]
                     }
 
-                    /*Component.onDestroyed:
-                    {
-                        jsonReport.removeVisual(visualReport)
-                    }*/ //We need it if reportsRepeater.model will change
-
-                    MouseArea
-                    {
-                        anchors.fill: parent
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                        onClicked:
-                        {
-                            if (mouse.button === Qt.LeftButton)
-                            {
-                                var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
-                                var seconds = mouseX / jsonReport.getZoom()
-                                localToolTip.show("value= " + realY + " time= " + seconds + "s")
-                                localToolTip.x = mouseX + 2
-                                localToolTip.y = mouseY + 2
-                            }
-                        }
-
-                        onDoubleClicked:
-                        {
-                            if (mouse.button == Qt.RightButton)
-                            {
-                                var reportType = visualReport.getType()
-
-                                if (reportType === VisualTypes.PraatInfo || reportType === VisualTypes.PraatInfoFullDiff ||
-                                    reportType === VisualTypes.PraatInfoChunkDiff || reportType === VisualTypes.ChunksOnly)
-                                {
-                                    praatFieldsConfigPopup.loadFromVisual(visualReport)
-                                    praatFieldsConfigPopup.open()
-                                }
-
-                                if (reportType === VisualTypes.ReportFields)
-                                {
-                                    reportFieldsConfigPopup.loadFromVisual(visualReport)
-                                    reportFieldsConfigPopup.open()
-                                }
-                            }
-                            else
-                            {
-                                var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
-                                jsonReport.selectEvent(idx)
-                            }
-                        }
-
-                        onPressAndHold:
-                        {
-                            if (mouse.button == Qt.RightButton)
-                            {
-                                configVisualReportPopup.connectWithReport(visualReport, index)
-                                configVisualReportPopup.open()
-                            }
-                        }
-
-                    }
                 }
 
 
-            }
+                Flickable
+                {
+                    id: flick
+                    y: 5
+                    x: 0
+                    width: parent.width
+                    height: scroll.height
+                    contentWidth: 3000
+                    contentHeight:  parent.height
+                    property int pressedX : 0
 
-        } //Flickable
 
-    } //ScrollView
+                    ScrollBar.horizontal: ScrollBar
+                    {
+                        height: 15
+                        active: true
+                        interactive: true
+                        policy: ScrollBar.AlwaysOn
+                    }
+
+
+                    Repeater
+                    {
+                        id: reportsRepeater
+                        model: 6
+
+                        VisualReport
+                        {
+                            id: visualReport
+
+                            height: fullHDReport.reportsHeight[index]
+                            width: 3000
+                            y: fullHDReport.calculateY(index)
+
+                            ToolTip {
+                                id: localToolTip
+                            }
+
+                            /*Component.onDestroyed:
+                            {
+                                jsonReport.removeVisual(visualReport)
+                            }*/ //We need it if reportsRepeater.model will change
+
+                            MouseArea
+                            {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                                onClicked:
+                                {
+                                    if (mouse.button === Qt.LeftButton)
+                                    {
+                                        var realY = (visualReport.height - mouseY) / parseFloat(infoCoef.text)
+                                        var seconds = mouseX / jsonReport.getZoom()
+                                        localToolTip.show("value= " + realY + " time= " + seconds + "s")
+                                        localToolTip.x = mouseX + 2
+                                        localToolTip.y = mouseY + 2
+                                    }
+                                }
+
+                                onDoubleClicked:
+                                {
+                                    if (mouse.button == Qt.RightButton)
+                                    {
+                                        var reportType = visualReport.getType()
+
+                                        if (reportType === VisualTypes.PraatInfo || reportType === VisualTypes.PraatInfoFullDiff ||
+                                            reportType === VisualTypes.PraatInfoChunkDiff || reportType === VisualTypes.ChunksOnly)
+                                        {
+                                            praatFieldsConfigPopup.loadFromVisual(visualReport)
+                                            praatFieldsConfigPopup.open()
+                                        }
+
+                                        if (reportType === VisualTypes.ReportFields)
+                                        {
+                                            reportFieldsConfigPopup.loadFromVisual(visualReport)
+                                            reportFieldsConfigPopup.open()
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var idx = jsonReport.eventIdxOnClick(mouseX, mouseY)
+                                        jsonReport.selectEvent(idx)
+                                    }
+                                }
+
+                                onPressAndHold:
+                                {
+                                    if (mouse.button == Qt.RightButton)
+                                    {
+                                        configVisualReportPopup.connectWithReport(visualReport, index)
+                                        configVisualReportPopup.open()
+                                    }
+                                }
+
+                            }
+                        }
+
+
+                    }
+
+                } //Flickable
+
+            } //ScrollView
+
+        }
+    }
 
 
 

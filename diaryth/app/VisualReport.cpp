@@ -136,10 +136,6 @@ void VisualReport::paintPlainWords(QPainter* painter, const QJsonObject& event) 
             painter->drawText(x, 35, translateMap.at(partOfSpeech));
         }
     }
-    else
-        qDebug() << " else ";
-
-    //Тут возможен морфологический анализ
 }
 
 
@@ -346,10 +342,7 @@ void VisualReport::paintSequenceType(QPainter* painter, const QJsonObject &event
 {
     const auto fullHeight = height() ;
 
-    double verticalZoom = 1.0;
-
-    if (_type == VisualTypes::Amplitude)
-        verticalZoom = 1.5; //TODO CONFIGURABLE!!!!!!!!!! FOR ALL TYPES TODO TODO TODO TODO TODO TODO
+    double verticalZoom = 0.75; //TODO CONFIGURABLE!!!!!!!!!! FOR ALL TYPES TODO TODO TODO TODO TODO TODO
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
     double start = event["startTime"].toDouble();
