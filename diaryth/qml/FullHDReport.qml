@@ -218,19 +218,24 @@ Item {
     }
 
 
+
     ScrollView
     {
         width: parent.width
         height: parent.height - 300//fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] //TODO function
+        clip: true
 
         y: 50
 
         Flickable
         {
+
+            id: hFlick
             y: 5
             x: 0
             width: parent.width
             height: parent.height
+            clip: true
 
             contentWidth: parent.width
             contentHeight: fullHDReport.reportsHeight[0] + reportsHeight[1] + reportsHeight[2] + reportsHeight[3] + reportsHeight[4] + reportsHeight[5] + 60  ///TODO
@@ -238,6 +243,7 @@ Item {
 
             ScrollBar.vertical: ScrollBar
             {
+                id: hScroll
                 width: 40
                 policy: ScrollBar.AlwaysOn
             }
@@ -250,6 +256,8 @@ Item {
                 id: scroll
                 width: parent.width
                 height: parent.height ///TODO
+
+
 
                 function updatePositions()
                 {
@@ -277,6 +285,7 @@ Item {
 
                     ScrollBar.horizontal: ScrollBar
                     {
+
                         height: 30
                         policy: ScrollBar.AlwaysOn
                     }
@@ -319,6 +328,16 @@ Item {
                                         localToolTip.x = mouseX + 2
                                         localToolTip.y = mouseY + 2
                                     }
+                                }
+
+                                onWheel:
+                                {
+                                    if (wheel.angleDelta.y > 0)
+                                        hScroll.position += 0.05
+                                    else
+                                        hScroll.position -= 0.05
+
+                                    //hScroll.position += 10
                                 }
 
                                 onDoubleClicked:
