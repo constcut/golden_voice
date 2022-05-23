@@ -332,9 +332,9 @@ Item {
 
                                 onWheel:
                                 {
-                                    if (wheel.angleDelta.y > 0 && hScroll.position >= 0.00)
+                                    if (wheel.angleDelta.y > 0 && hScroll.position >= 0.05)
                                         hScroll.position -= 0.05
-                                    else if (hScroll.position <= 0.51)
+                                    else if (hScroll.position <= 0.45)
                                         hScroll.position += 0.05
 
                                     //hScroll.position += 10
