@@ -332,12 +332,13 @@ Item {
 
                                 onWheel:
                                 {
-                                    if (wheel.angleDelta.y > 0)
-                                        hScroll.position += 0.05
-                                    else
+                                    if (wheel.angleDelta.y > 0 && hScroll.position >= 0.00)
                                         hScroll.position -= 0.05
+                                    else if (hScroll.position <= 0.51)
+                                        hScroll.position += 0.05
 
                                     //hScroll.position += 10
+                                    print(hScroll.position)
                                 }
 
                                 onDoubleClicked:
