@@ -39,12 +39,9 @@ ApplicationWindow
                 if (Screen.desktopAvailableWidth >= 1920)
                     mainWindow.x = Screen.desktopAvailableWidth - 1920
 
-                //fullhdReport.visible = true
-                //smallItem.visible = false
-                fullhdReport.visible = false
-                smallItem.visible = true
-                mainLoader.setSource("networkClient.qml") //DEBUG
-                //fullhdReport.requestFileDialog()
+                fullhdReport.visible = true
+                smallItem.visible = false
+                fullhdReport.requestFileDialog()
             }
             else
             {
@@ -54,8 +51,8 @@ ApplicationWindow
                 fullhdReport.visible = false
                 smallItem.visible = true
 
-                mainLoader.setSource("reportVisualizer.qml")
-                mainLoader.item.requestFileDialog()
+                mainLoader.setSource("networkClient.qml")
+                //mainLoader.item.requestFileDialog() //reportVisualizer
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
@@ -95,7 +92,8 @@ ApplicationWindow
        anchors.fill: parent
 
 
-        ToolButton {
+        ToolButton
+        {
             id: mainMenuButton
             text: ":"
             x: parent.width - width - 5

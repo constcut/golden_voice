@@ -66,13 +66,13 @@ Item {
                 id: username
                 placeholderText: "username"
 
-                text: "testlogin"
+                text: "login"
             }
             TextField {
                 id: password
                 placeholderText: "password"
 
-                text: "testpassword"
+                text: "password"
             }
             Button
             {
