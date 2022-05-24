@@ -25,9 +25,10 @@ Item {
                 loginStatus.text = "LOGGED IN"
                 mainWindow.showButton()
 
-                imageRow = true
-                reportRow = true
+                imageRow.visible = true
+                reportRow.visible = true
                 audioRow.visible = true
+                view.visible = true
             }
         }
 
@@ -168,6 +169,8 @@ Item {
             id: view
             width: 650
             clip: true
+
+            visible: false
 
             implicitWidth: 650
 
