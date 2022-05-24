@@ -20,9 +20,9 @@ Item {
         function onLoggedIn(value)
         {
             console.log("onLoggedIn", value)
-            if (value) {
-                //
-                processInfo.text = "LOGGED IN"
+            if (value)
+            {
+                loginStatus.text = "LOGGED IN"
                 mainWindow.showButton()
             }
         }
@@ -89,7 +89,7 @@ Item {
             {
                 id: filename
                 placeholderText: "audio filename"
-                text: "C:/Users/constcut/Desktop/local/local_2.ogg"
+                text: "C:/audio.ogg"
                 implicitWidth: 410
             }
 
@@ -115,7 +115,7 @@ Item {
             {
                 id: imagename
                 placeholderText: "image filename"
-                text: "C:/Users/constcut/Desktop/local/check.png"
+                text: "C:/image.png"
                 implicitWidth: 410
             }
 
