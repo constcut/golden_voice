@@ -288,6 +288,17 @@ Item {
 
                         height: 30
                         policy: ScrollBar.AlwaysOn
+
+                    }
+
+                    onContentXChanged:
+                    {
+
+                        if (contentX > (contentWidth - width - 10))
+                        {
+                            contentX = 0
+                            console.log("Scrollback")
+                        }
                     }
 
 
