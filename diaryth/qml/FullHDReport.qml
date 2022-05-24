@@ -5,11 +5,9 @@ import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.1
 
 
-Item {
-
+Item
+{
     id: fullHDReport
-
-
 
     FileDialog
     {
