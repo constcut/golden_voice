@@ -39,10 +39,12 @@ ApplicationWindow
                 if (Screen.desktopAvailableWidth >= 1920)
                     mainWindow.x = Screen.desktopAvailableWidth - 1920
 
-                fullhdReport.visible = true
-                smallItem.visible = false
-
-                fullhdReport.requestFileDialog()
+                //fullhdReport.visible = true
+                //smallItem.visible = false
+                fullhdReport.visible = false
+                smallItem.visible = true
+                mainLoader.setSource("networkClient.qml") //DEBUG
+                //fullhdReport.requestFileDialog()
             }
             else
             {
@@ -81,6 +83,11 @@ ApplicationWindow
     }
 
 
+    function showButton()
+    {
+        mainMenuButton.visible = true
+    }
+
     Item
     {
        id: smallItem
@@ -93,6 +100,7 @@ ApplicationWindow
             text: ":"
             x: parent.width - width - 5
             y: 5
+            visible: false
             onClicked: {
                 mainMenu.x = parent.width - mainMenu.width
                 mainMenu.open()

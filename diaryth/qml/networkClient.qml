@@ -21,7 +21,9 @@ Item {
         {
             console.log("onLoggedIn", value)
             if (value) {
-                mainWindow.mainMenuButton.visible = true
+                //
+                processInfo.text = "LOGGED IN"
+                mainWindow.showButton()
             }
         }
 
