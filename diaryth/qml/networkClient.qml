@@ -24,6 +24,10 @@ Item {
             {
                 loginStatus.text = "LOGGED IN"
                 mainWindow.showButton()
+
+                imageRow = true
+                reportRow = true
+                audioRow.visible = true
             }
         }
 
@@ -84,6 +88,8 @@ Item {
 
         RowLayout
         {
+            id: audioRow
+            visible: false
 
             TextField
             {
@@ -111,6 +117,9 @@ Item {
         RowLayout
         {
 
+            id: imageRow
+            visible: false
+
             TextField
             {
                 id: imagename
@@ -137,6 +146,9 @@ Item {
         RowLayout
         {
             spacing: 10
+
+            id: reportRow
+            visible: false
 
 
             Button {
