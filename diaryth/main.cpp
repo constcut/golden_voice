@@ -8,5 +8,6 @@ int main(int argc, char *argv[])
 {
     LogHandler::getInstance().setFilename("log.txt");
     qDebug() << "Starting application";
+
     return mainInit(argc,argv);
 }
