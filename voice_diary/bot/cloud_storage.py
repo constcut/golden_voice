@@ -23,7 +23,7 @@ def upload_file(filename, alias):
     config, s3, session = start_session()
     s3.upload_file(filename, config["bucket"], alias)
 
-    print(f"File uploaded{alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"File uploaded {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 
@@ -49,7 +49,7 @@ def delete_file(alias): #TODO + another function to clean all using time (after 
 
     #TODO check response
 
-    print(f"File removed{alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"File removed {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 
