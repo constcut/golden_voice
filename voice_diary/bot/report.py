@@ -685,7 +685,8 @@ class ReportGenerator:
 
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
 
-			print("audio documents blocked for a while") #TODO unlock later
+			print("deplayed_audio_document attempt") #TODO unlock later
+			self.bot.reply_to(message, 'Анализ mp3\wav файлов временно отключён.')
 			return
 
 			if message.document != None:
@@ -747,7 +748,7 @@ class ReportGenerator:
 		self.send_message_and_reports(path_user_logs, message, message_text)
 
 		if self.required_cleaning: #TODO later move into another function to share with docments send
-			
+
 			if os.path.exists(wav_file):
 				os.remove(wav_file)
 
