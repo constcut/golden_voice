@@ -19,7 +19,7 @@ import threading
 import time
 import requests
 
-from cloud_storage import upload_file
+from cloud_storage import upload_file, delete_file
 
 
 class ReportGenerator:
@@ -759,6 +759,8 @@ class ReportGenerator:
 
 			if os.path.exists(full_report_name):
 				os.remove(full_report_name) 
+
+			delete_file(alias_name)
 
 		#TODO remove alias
 

@@ -1,5 +1,6 @@
 import boto3
 import json
+import datetime
 
 #class yandex_object_storage class
 
@@ -21,7 +22,8 @@ def upload_file(filename, alias):
 
     config, s3, session = start_session()
     s3.upload_file(filename, config["bucket"], alias)
-    print("File uploaded")
+
+    print(f"File uploaded{alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 
@@ -44,6 +46,10 @@ def delete_file(alias): #TODO + another function to clean all using time (after 
 
     forDeletion = [{'Key':alias}] 
     response = s3.delete_objects(Bucket=config["bucket"], Delete={'Objects': forDeletion})
+
+    #TODO check response
+
+    print(f"File removed{alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 
