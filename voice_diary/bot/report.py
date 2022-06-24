@@ -47,6 +47,7 @@ class ReportGenerator:
 
 		self.measure_time = False 
 		self.verbose = False
+		self.required_cleaning = True
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -89,6 +90,8 @@ class ReportGenerator:
 
 		while True:
 
+			time.sleep(7)
+
 			GET = "https://operation.api.cloud.yandex.net/operations/{id}"
 			req = requests.get(GET.format(id=id), headers=header)
 			req = req.json()
@@ -99,7 +102,7 @@ class ReportGenerator:
 			if self.verbose:
 				print("Not ready")
 
-			time.sleep(15) #Это число можно рассчитывать, но я ленив :)
+			time.sleep(5) #Это число можно рассчитывать, но я ленив :)
 
 		return req
 
@@ -682,6 +685,9 @@ class ReportGenerator:
 
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
 
+			print("audio documents blocked for a while") #TODO unlock later
+			return
+
 			if message.document != None:
 				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
 			else:
@@ -739,6 +745,21 @@ class ReportGenerator:
 		message_text = self.merge_text_from_request(req)
 			
 		self.send_message_and_reports(path_user_logs, message, message_text)
+
+		if self.required_cleaning: #TODO later move into another function to share with docments send
+			
+			if os.path.exists(wav_file):
+				os.remove(wav_file)
+
+			if os.path.exists(record_file_path):
+				os.remove(record_file_path) 
+
+			full_report_name = path_user_logs + '/full_report_' + str(message.id) + '.json'
+
+			if os.path.exists(full_report_name):
+				os.remove(full_report_name) 
+
+		#TODO remove alias
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
