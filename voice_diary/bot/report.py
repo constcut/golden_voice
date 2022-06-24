@@ -46,6 +46,7 @@ class ReportGenerator:
 		self.use_morph_analysis = False
 
 		self.measure_time = False 
+		self.verbose = False
 
 
 	def request_recognition(self, record_file_path, alias_name):
@@ -582,24 +583,26 @@ class ReportGenerator:
 
 		#TODO если установить , ensure_ascii=False тогда репорт human readable - иначе проблемы на стороне QT
 
-		full_report_generated = datetime.datetime.now()
+		if self.measure_time == True:
 
-		total_spent = full_report_generated - start_moment
-		print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
+			full_report_generated = datetime.datetime.now()
 
-		rehape_spent = reshape_sequences_moment - start_moment
-		surf_spent = surf_moment - reshape_sequences_moment
-		praat_spemt = praat_moment - surf_moment
-		all_chunks_spent = all_chnunks_and_events_moment - praat_moment
-		cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
-		dump_spent = full_report_generated - cross_matrix__moment
+			total_spent = full_report_generated - start_moment
+			print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
 
-		print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
-		print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
-		print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
-		print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds/ 1000.0, " ms")
-		print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
-		print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
+			rehape_spent = reshape_sequences_moment - start_moment
+			surf_spent = surf_moment - reshape_sequences_moment
+			praat_spemt = praat_moment - surf_moment
+			all_chunks_spent = all_chnunks_and_events_moment - praat_moment
+			cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
+			dump_spent = full_report_generated - cross_matrix__moment
+
+			print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
+			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
+			print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
+			print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds/ 1000.0, " ms")
+			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
+			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 			
 		return json_report
 
@@ -630,13 +633,14 @@ class ReportGenerator:
 		self.bot.reply_to(message, voice_report)
 
 
-	def save_json_products(self, path_user_logs, json_report, full_string):
+	def save_json_products(self, path_user_logs, json_report, full_string, message_id):
 
-		with open(path_user_logs + '/full_report.json', 'w') as outfile:
+		with open(path_user_logs + '/full_report_' + message_id + '.json', 'w') as outfile:
 			outfile.write(json_report)
 
-		with open(path_user_logs + '/stt.json', 'w') as outfile:
-			outfile.write(full_string)
+		if self.verbose == True:
+			with open(path_user_logs + '/stt_' + message_id + '.json', 'w') as outfile:
+				outfile.write(full_string)
 
 
 	def merge_text_from_request(self, req): 
@@ -644,9 +648,14 @@ class ReportGenerator:
 		text_lines = []
 		message_text = ""
 
-		print("Text chunks:")
+		if self.verbose == True:
+			print("Text chunks:")
+
 		for chunk in req['response']['chunks']:
-			print(chunk['alternatives'][0]['text'])
+
+			if self.verbose == True:
+				print(chunk['alternatives'][0]['text'])
+
 			text_lines.append(chunk['alternatives'][0]['text']) #Внимание не собираются alternatives ATTENTION
 			message_text += chunk['alternatives'][0]['text'] + "\n"
 
@@ -685,7 +694,7 @@ class ReportGenerator:
 
 			id = r.request_recognition(new_file, alias)
 
-			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file) 
+			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file, str(message.id)) 
 			seq_dict = self.extract_features(wav_file)
 
 			req = self.check_server_recognition(id)
@@ -693,7 +702,7 @@ class ReportGenerator:
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
 			json_report = self.make_json_report(req, seq_dict)
 
-			self.save_json_products(path_user_logs, json_report, full_string)
+			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
 			message_text = self.merge_text_from_request(req)
 			self.send_message_and_reports(path_user_logs, message, message_text)
@@ -707,7 +716,7 @@ class ReportGenerator:
 
 		id = self.request_recognition(record_file_path, alias_name)
 
-		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
+		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, str(message.id))
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -719,7 +728,7 @@ class ReportGenerator:
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
 		json_report = self.make_json_report(req, seq_dict)
 
-		self.save_json_products(path_user_logs, json_report, full_string)
+		self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
 		message_text = self.merge_text_from_request(req)
 			
@@ -1117,15 +1126,16 @@ class ReportGenerator:
 		return seq_dict
 
 
-	def convert_ogg_to_wav(self, path_user_logs, record_file_path):
+	def convert_ogg_to_wav(self, path_user_logs, record_file_path, message_id):
 
-		if os.path.exists(path_user_logs + '/pcm.wav'):
-			os.remove(path_user_logs +"/pcm.wav")
+		wav_file = f"{path_user_logs}/pcm_{message_id}.wav"
 
-		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {path_user_logs}/pcm.wav"
+		if os.path.exists(wav_file):
+			os.remove(wav_file)
+
+		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {wav_file}"
 		_ = check_call(command.split())
 
-		wav_file = f"{path_user_logs}/pcm.wav"
 		return wav_file
 
 
@@ -1149,7 +1159,7 @@ class ReportGenerator:
 
 		request_sent_moment = datetime.datetime.now()
 
-		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path)
+		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, "local_id")
 
 		seq_dict = self.extract_features(wav_file)
 
@@ -1167,7 +1177,7 @@ class ReportGenerator:
 
 		full_report_generated = datetime.datetime.now()
 
-		self.save_json_products(path_user_logs, json_report, full_string)
+		self.save_json_products(path_user_logs, json_report, full_string, "local_id")
 
 
 		if self.measure_time:
