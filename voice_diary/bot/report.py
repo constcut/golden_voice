@@ -666,10 +666,11 @@ class ReportGenerator:
 
 		self.bot.reply_to(message, message_text)
 
-		doc = open(path_user_logs + '/stt.json', 'rb')
-		self.bot.send_document(message.chat.id, doc)
+		if self.verbose:
+			doc = open(path_user_logs + '/stt_' + str(message.id)  + '.json', 'rb')
+			self.bot.send_document(message.chat.id, doc)
 
-		doc = open(path_user_logs + '/full_report.json', 'rb')
+		doc = open(path_user_logs + '/full_report_'  + str(message.id)  + '.json', 'rb')
 		self.bot.send_document(message.chat.id, doc)
 
 
