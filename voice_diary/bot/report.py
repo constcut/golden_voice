@@ -75,7 +75,8 @@ class ReportGenerator:
 		data = req.json()
 
 		id = data['id']
-		print("Y id", id)
+		if self.verbose:
+			print("Y id", id)
 
 		return id
 
@@ -92,10 +93,13 @@ class ReportGenerator:
 			req = requests.get(GET.format(id=id), headers=header)
 			req = req.json()
 
-			if req['done']: break
-			print("Not ready")
+			if req['done']: 
+				break
 
-			time.sleep(10) #Это число можно рассчитывать, но я ленив :)
+			if self.verbose:
+				print("Not ready")
+
+			time.sleep(15) #Это число можно рассчитывать, но я ленив :)
 
 		return req
 
@@ -612,7 +616,8 @@ class ReportGenerator:
 
 		record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
 
-		print(record_file_path, " <- dir path")
+		if self.verbose:
+			print(record_file_path, " <- dir path")
 
 		with open(os.path.join(record_file_path), 'wb') as new_file:
 			new_file.write(downloaded_file)
@@ -1020,7 +1025,8 @@ class ReportGenerator:
 			t = threading.Timer(1.0, self.deplayed_recognition, [path_user_logs, message, downloaded_file])
 			t.start()
 
-			print("Audio saved")
+			if self.verbose:
+				print("Audio saved")
 
 
 	def extract_features(self, wav_file):
