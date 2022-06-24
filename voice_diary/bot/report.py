@@ -45,7 +45,7 @@ class ReportGenerator:
 
 		self.use_morph_analysis = False
 
-		self.measure_time = True 
+		self.measure_time = False 
 
 
 	def request_recognition(self, record_file_path, alias_name):
