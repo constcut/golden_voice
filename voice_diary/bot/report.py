@@ -253,7 +253,7 @@ class ReportGenerator:
 
 	def make_json_report(self, req, seq_dict, time, date): 
 
-		import datetime
+		import datetime #TODO remove all measures
 
 		start_moment = datetime.datetime.now()
 
@@ -314,6 +314,8 @@ class ReportGenerator:
 		chunks = []
 		words_freq = {}
 
+		tags = []
+
 		tokens = {}
 		tokens_count = 0
 
@@ -334,6 +336,8 @@ class ReportGenerator:
 		all_ends = []
 		total_words = 0
 		chunkId = 0
+
+		tag_request_found = False
 
 
 		for chunk in req['response']['chunks']:
@@ -361,7 +365,6 @@ class ReportGenerator:
 					silence_end = start
 
 					
-
 					if self.use_surf:
 						pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
 						
@@ -378,11 +381,11 @@ class ReportGenerator:
 					if self.use_surf:
 						pause_surf_intens = self.get_full_statistics(pause_surf_intens)
 
-					silence_report = ""#От него отказались пока что
-				
 					single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end}
 
 					single_pause["Intensity"] = pause_intens
+
+					silence_report = ""#От него отказались пока что
 					single_pause["info"] = silence_report
 
 					if self.use_rosa:		
@@ -516,6 +519,10 @@ class ReportGenerator:
 				if self.de_personalization:
 						chunk_text = '-'
 
+				if tag_request_found:
+					full_tag_name = chunk_text.replace(" ", "_")
+					tags.append(full_tag_name)
+
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
 							1.3, 1.6, 0.03, 0.45) #TODO Перенести в члены класса
 
@@ -529,6 +536,9 @@ class ReportGenerator:
 				full_text += chunk_text + ". "
 
 				chunks.append(single_chunk)
+
+				if chunk_text == "тэги":
+					tag_request_found
 
 				altId += 1
 
@@ -579,6 +589,9 @@ class ReportGenerator:
 						"info": praat_dict,
 						"cross_stats": cross_stats, "duration": duration, "steps_sizes": steps}
 
+		if tag_request_found:
+			root_element["tags"] = tags
+
 		if self.use_surf:
 			root_element["jitters"] = seq_dict["global_jitters"]
 			root_element["shimmers"] = seq_dict["global_shimmers"]
@@ -611,7 +624,7 @@ class ReportGenerator:
 			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
 			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 			
-		return json_report
+		return tags, json_report
 
 
 
@@ -716,7 +729,7 @@ class ReportGenerator:
 			req = self.check_server_recognition(id)
 
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
-			json_report = self.make_json_report(req, seq_dict, time, date)
+			json_report, tags = self.make_json_report(req, seq_dict, time, date)
 
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
@@ -745,7 +758,7 @@ class ReportGenerator:
 		req = self.check_server_recognition(id)
 
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-		json_report = self.make_json_report(req, seq_dict, time, date)
+		json_report, tags = self.make_json_report(req, seq_dict, time, date)
 
 		self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
@@ -1212,7 +1225,7 @@ class ReportGenerator:
 
 		recognition_received_moment = datetime.datetime.now()
 
-		json_report = self.make_json_report(req, seq_dict, time, date)
+		json_report, tags = self.make_json_report(req, seq_dict, time, date)
 
 		full_report_generated = datetime.datetime.now()
 
@@ -1316,7 +1329,7 @@ def async_extract(r):
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
 
-			full_report = r.make_json_report(req, seq_dict, time, date)
+			full_report, tags = r.make_json_report(req, seq_dict, time, date)
 			
 			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
 				outfile.write(full_report)
