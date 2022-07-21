@@ -251,7 +251,7 @@ class ReportGenerator:
 
 
 
-	def make_json_report(self, req, seq_dict): #REFACTORING - GOD функция TODO
+	def make_json_report(self, req, seq_dict, time, date): 
 
 		import datetime
 
@@ -689,6 +689,9 @@ class ReportGenerator:
 			self.bot.reply_to(message, 'Анализ mp3\wav файлов временно отключён.')
 			return
 
+			time = datetime.datetime.now().strftime('%H:%M:%S')
+			date = datetime.datetime.now().strftime('%Y-%m-%d')
+
 			if message.document != None:
 				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
 			else:
@@ -713,7 +716,7 @@ class ReportGenerator:
 			req = self.check_server_recognition(id)
 
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
-			json_report = self.make_json_report(req, seq_dict)
+			json_report = self.make_json_report(req, seq_dict, time, date)
 
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
@@ -724,6 +727,9 @@ class ReportGenerator:
 
 
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
+
+		time = datetime.datetime.now().strftime('%H:%M:%S')
+		date = datetime.datetime.now().strftime('%Y-%m-%d')
 
 		record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
 
@@ -739,13 +745,14 @@ class ReportGenerator:
 		req = self.check_server_recognition(id)
 
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-		json_report = self.make_json_report(req, seq_dict)
+		json_report = self.make_json_report(req, seq_dict, time, date)
 
 		self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
 		message_text = self.merge_text_from_request(req)
 			
 		self.send_message_and_reports(path_user_logs, message, message_text)
+
 
 		if self.required_cleaning: #TODO later move into another function to share with docments send
 
@@ -761,8 +768,6 @@ class ReportGenerator:
 				os.remove(full_report_name) 
 
 			delete_file(alias_name)
-
-		#TODO remove alias
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
@@ -1184,6 +1189,9 @@ class ReportGenerator:
 
 		import datetime
 
+		time = datetime.datetime.now().strftime('%H:%M:%S')
+		date = datetime.datetime.now().strftime('%Y-%m-%d')
+
 		start_moment = datetime.datetime.now()
 
 		id = self.request_recognition(record_file_path, alias_name)
@@ -1204,7 +1212,7 @@ class ReportGenerator:
 
 		recognition_received_moment = datetime.datetime.now()
 
-		json_report = self.make_json_report(req, seq_dict)
+		json_report = self.make_json_report(req, seq_dict, time, date)
 
 		full_report_generated = datetime.datetime.now()
 
@@ -1305,7 +1313,10 @@ def async_extract(r):
 			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
 				outfile.write(full_text)
 
-			full_report = r.make_json_report(req, seq_dict)
+			time = datetime.datetime.now().strftime('%H:%M:%S')
+			date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+			full_report = r.make_json_report(req, seq_dict, time, date)
 			
 			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
 				outfile.write(full_report)
