@@ -382,7 +382,7 @@ class ReportGenerator:
 					if self.use_surf:
 						pause_surf_intens = self.get_full_statistics(pause_surf_intens)
 
-					single_pause = {"type":"pause", "startTime": silence_start, "endTime": silence_end}
+					single_pause = {"type":"pause", "start": silence_start, "end": silence_end}
 
 					single_pause["Intensity"] = pause_intens
 
@@ -455,7 +455,7 @@ class ReportGenerator:
 						current_word = '-'
 
 					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
-					"startTime": start, "endTime": end, 
+					"start": start, "end": end, 
 					"confidence": word['confidence'], 
 					"praat_pitch": list(pitch_cut),
 					"praat_intensity": list(intens_cut)
