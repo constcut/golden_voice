@@ -263,8 +263,7 @@ class ReportGenerator:
 
 	def make_json_report(self, req, seq_dict, time, date): 
 
-		import datetime #TODO remove all measures
-
+		import datetime 
 		start_moment = datetime.datetime.now()
 
 		#==========================================
