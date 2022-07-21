@@ -855,6 +855,9 @@ class ReportGenerator:
 
 
 	def send_delayed_text(self, message):
+
+		return
+		'''
 		print("Озвучивание текста")
 
 		from synth_speech import text_to_audio
@@ -865,6 +868,7 @@ class ReportGenerator:
 		self.bot.send_voice(message.chat.id, voice)
 
 		print("Текст озвучен")
+		'''
 
 
 	def draw_intensity_praat(self, intensity): #Отделить всю отрисовку в отдельный класс
@@ -1002,10 +1006,9 @@ class ReportGenerator:
 
 		@self.bot.message_handler(func=lambda message: True)
 		def echo_all(message):
+			pass
 			#t = threading.Timer(1.0, self.send_delayed_text, [message])
 			#t.start()
-			self.bot.reply_to(message, 'На текст больше не отвечаю :P')
-			print("Input message blocked: ", message.text)
 
 
 		@self.bot.message_handler(content_types=['document'])
