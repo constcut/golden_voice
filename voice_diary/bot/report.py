@@ -50,6 +50,9 @@ class ReportGenerator:
 		self.verbose = False
 		self.required_cleaning = True
 
+		self.praat_f0_min = 60
+		self.praat_f0_max = 600
+
 
 	def request_recognition(self, record_file_path, alias_name):
 		
@@ -301,10 +304,10 @@ class ReportGenerator:
 
 		pitch_for_praat = seq_dict["praat_pitch"]
 		pulses = seq_dict["praat_pulses"]
-		f0min = 60 #TODO Перенести в члены класса
-		f0max = 600
 
-		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, f0min, f0max,
+
+		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, 
+							self.praat_f0_min , self.praat_f0_max,
 							1.3, 1.6, 0.03, 0.45)  #TODO Перенести в члены класса
 
 		praat_moment =  datetime.datetime.now()
@@ -431,8 +434,9 @@ class ReportGenerator:
 
 
 					if self.every_word_praat_report:
-						report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end, f0min, f0max,
-								1.3, 1.6, 0.03, 0.45)
+						report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end,
+											self.praat_f0_min, self.praat_f0_max,
+											1.3, 1.6, 0.03, 0.45)
 
 					
 					morph_analysis = []
@@ -524,8 +528,9 @@ class ReportGenerator:
 					full_tag_name = chunk_text.replace(" ", "_")
 					tags.append(full_tag_name)
 
-				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end, f0min, f0max,
-							1.3, 1.6, 0.03, 0.45) #TODO Перенести в члены класса
+				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end,
+									self.praat_f0_min, self.praat_f0_max,
+									1.3, 1.6, 0.03, 0.45) 
 
 				single_chunk = {"chunkId": chunkId, "altId": altId, 
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
@@ -562,7 +567,7 @@ class ReportGenerator:
 					#We can add here anything else yet its enough
 
 					cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
-										cross_start, cross_end, f0min, f0max,
+										cross_start, cross_end, self.praat_f0_min, self.praat_f0_max,
 										1.3, 1.6, 0.03, 0.45) 
 
 					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
@@ -1114,10 +1119,7 @@ class ReportGenerator:
 
 		snd = parselmouth.Sound(wav_file) 
 		
-		f0min = 60 #КАК и выше по стеку вызова!
-		f0max = 600
-
-		pitch = call(snd, "To Pitch", 0.0, f0min, f0max)  
+		pitch = call(snd, "To Pitch", 0.0, self.praat_f0_min, self.praat_f0_max)  
 		intensity = snd.to_intensity()
 
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
