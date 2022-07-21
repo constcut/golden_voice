@@ -59,6 +59,7 @@ class ReportGenerator:
 		self.voice_report_param4 = 0.45
 
 
+
 	def request_recognition(self, record_file_path, alias_name):
 		
 		upload_file(record_file_path,  alias_name)
@@ -473,7 +474,7 @@ class ReportGenerator:
 					,"word_idx" : total_words
 					,"letters_speed" : letters_speed
 					,"letters_freq" : 1.0 / letters_speed
-					} #channel tag left away TODO attention
+					} #Channel tag is not supported there, fine for voice messages, bad for mp3 etc
 					
 
 					if self.calc_every_stat:
@@ -610,9 +611,9 @@ class ReportGenerator:
 			root_element["HNR"] = seq_dict["global_hnr"]
 
 		json_report = json.dumps(root_element, ensure_ascii=False) 
+		#Без следующей строчки - human readable, но проблемы на стороне QT
 		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
 
-		#TODO если установить , ensure_ascii=False тогда репорт human readable - иначе проблемы на стороне QT
 
 		if self.measure_time == True:
 
@@ -654,7 +655,7 @@ class ReportGenerator:
 		return record_file_path, alias_name
 
 
-	def save_images_info(self, path_user_logs, message, voice_report): #TODO разделить бота и генератор репортов
+	def save_images_info(self, path_user_logs, message, voice_report):
 
 		rosaInfo = open(path_user_logs + '/rosaInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, rosaInfo)
@@ -715,7 +716,7 @@ class ReportGenerator:
 
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
 
-			print("deplayed_audio_document attempt") #TODO unlock later
+			print("deplayed_audio_document attempt") 
 			self.bot.reply_to(message, 'Анализ mp3\wav файлов временно отключён.')
 			return
 
