@@ -53,6 +53,11 @@ class ReportGenerator:
 		self.praat_f0_min = 60
 		self.praat_f0_max = 600
 
+		self.voice_report_param1 = 1.3
+		self.voice_report_param2 = 1.6
+		self.voice_report_param3 = 0.03
+		self.voice_report_param4 = 0.45
+
 
 	def request_recognition(self, record_file_path, alias_name):
 		
@@ -308,7 +313,7 @@ class ReportGenerator:
 
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, 
 							self.praat_f0_min , self.praat_f0_max,
-							1.3, 1.6, 0.03, 0.45)  #TODO Перенести в члены класса
+							self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4)
 
 		praat_moment =  datetime.datetime.now()
 		#==========================================Prepare basic information sequences==========================================
@@ -436,7 +441,7 @@ class ReportGenerator:
 					if self.every_word_praat_report:
 						report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end,
 											self.praat_f0_min, self.praat_f0_max,
-											1.3, 1.6, 0.03, 0.45)
+											self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4)
 
 					
 					morph_analysis = []
@@ -530,7 +535,7 @@ class ReportGenerator:
 
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end,
 									self.praat_f0_min, self.praat_f0_max,
-									1.3, 1.6, 0.03, 0.45) 
+									self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
 
 				single_chunk = {"chunkId": chunkId, "altId": altId, 
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
@@ -559,16 +564,16 @@ class ReportGenerator:
 		all_chnunks_and_events_moment = datetime.datetime.now()
 
 		if self.use_cross_matrix:
+
 			for i in range(0, len(all_starts) - 1):
+
 				for j in range(i + 1, len(all_ends)):
 					cross_start = all_starts[i]
 					cross_end = all_ends[j]
 
-					#We can add here anything else yet its enough
-
 					cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
 										cross_start, cross_end, self.praat_f0_min, self.praat_f0_max,
-										1.3, 1.6, 0.03, 0.45) 
+										self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
 
 					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
 									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
