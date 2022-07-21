@@ -548,8 +548,8 @@ class ReportGenerator:
 
 				chunks.append(single_chunk)
 
-				if chunk_text == "тэги":
-					tag_request_found
+				if chunk_text == "Тэги" or chunk_text == "Теги":
+					tag_request_found = True
 
 				altId += 1
 
@@ -758,7 +758,7 @@ class ReportGenerator:
 
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
 
-		#try:
+		try:
 
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -801,8 +801,8 @@ class ReportGenerator:
 
 				delete_file(alias_name)
 
-		#except:
-			#print("exception was thrown in deplayed_recognition")
+		except:
+			print("exception was thrown in deplayed_recognition")
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
