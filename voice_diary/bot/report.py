@@ -4,6 +4,7 @@
 from cmath import pi
 import os
 import datetime
+from re import I
 
 import telebot
 import json
@@ -683,7 +684,13 @@ class ReportGenerator:
 		return message_text
 
 
-	def send_message_and_reports(self, path_user_logs, message, message_text):
+	def send_message_and_reports(self, path_user_logs, message, message_text, tags):
+
+		if len(tags) > 0:
+			message_text += "\n"
+
+			for tag in tags:
+				message_text += "#" + tag + " "
 
 		self.bot.reply_to(message, message_text)
 
@@ -734,7 +741,7 @@ class ReportGenerator:
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 
 			message_text = self.merge_text_from_request(req)
-			self.send_message_and_reports(path_user_logs, message, message_text)
+			self.send_message_and_reports(path_user_logs, message, message_text, tags)
 			
 
 
@@ -764,7 +771,7 @@ class ReportGenerator:
 
 		message_text = self.merge_text_from_request(req)
 			
-		self.send_message_and_reports(path_user_logs, message, message_text)
+		self.send_message_and_reports(path_user_logs, message, message_text, tags)
 
 
 		if self.required_cleaning: #TODO later move into another function to share with docments send
