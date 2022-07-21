@@ -358,8 +358,8 @@ class ReportGenerator:
 
 				for word in alt['words']:
 
-					start = float(word['start'][:-1])
-					end = float(word['end'][:-1])
+					start = float(word['startTime'][:-1])
+					end = float(word['endTime'][:-1])
 
 					word_duration = end - start
 					letters_speed = word_duration / len(word['word'])
@@ -758,7 +758,7 @@ class ReportGenerator:
 
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
 
-		try:
+		#try:
 
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -800,8 +800,9 @@ class ReportGenerator:
 					os.remove(full_report_name) 
 
 				delete_file(alias_name)
-		except:
-			print("exception was thrown in deplayed_recognition")
+
+		#except:
+			#print("exception was thrown in deplayed_recognition")
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
