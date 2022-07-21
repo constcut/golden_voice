@@ -359,8 +359,8 @@ class ReportGenerator:
 
 				for word in alt['words']:
 
-					start = float(word['startTime'][:-1])
-					end = float(word['endTime'][:-1])
+					start = float(word['start'][:-1])
+					end = float(word['end'][:-1])
 
 					word_duration = end - start
 					letters_speed = word_duration / len(word['word'])

@@ -254,8 +254,8 @@ int JsonReport::eventIdxOnClick(int mouseX, [[maybe_unused]] int mouseY) const
         auto e = _events[i];
         auto eObj = e.toObject();
         auto type = eObj["type"].toString();
-        double start = eObj["startTime"].toDouble();
-        double end = eObj["endTime"].toDouble();
+        double start = eObj["start"].toDouble();
+        double end = eObj["end"].toDouble();
 
         if (second >= start && second <= end && type == "word")
             return i; //yet we skip pauses

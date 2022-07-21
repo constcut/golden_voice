@@ -98,8 +98,8 @@ void VisualReport::paintPlainWords(QPainter* painter, const QJsonObject& event) 
     if (event["type"].toString() != "word")
         return;
 
-    double start = event["startTime"].toDouble();
-    double end = event["endTime"].toDouble();
+    double start = event["start"].toDouble();
+    double end = event["end"].toDouble();
 
     const double zoom = _parentReport->getZoom();
 
@@ -145,8 +145,8 @@ void VisualReport::paintReportFields(QPainter* painter, const QJsonObject &event
 {
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
-    double start = event["startTime"].toDouble();
-    double end = event["endTime"].toDouble();
+    double start = event["start"].toDouble();
+    double end = event["end"].toDouble();
 
     const double zoomCoef = _parentReport->getZoom();
     //const auto& selectedIdx = _parentReport->getSelectedIdx();
@@ -270,8 +270,8 @@ void VisualReport::paintPraatInfo(QPainter* painter, const QJsonObject &event,
 {
 
     auto type = event["type"].toString();
-    double start = event["startTime"].toDouble();
-    double end = event["endTime"].toDouble();
+    double start = event["start"].toDouble();
+    double end = event["end"].toDouble();
 
     const double zoomCoef = _parentReport->getZoom();
     const auto& selectedIdx = _parentReport->getSelectedIdx();
@@ -345,8 +345,8 @@ void VisualReport::paintSequenceType(QPainter* painter, const QJsonObject &event
     double verticalZoom = 0.75; //TODO CONFIGURABLE!!!!!!!!!! FOR ALL TYPES TODO TODO TODO TODO TODO TODO
 
     auto type = event["type"].toString(); //Возвращать как structure binding?
-    double start = event["startTime"].toDouble();
-    double end = event["endTime"].toDouble();
+    double start = event["start"].toDouble();
+    double end = event["end"].toDouble();
 
     const double zoomCoef = _parentReport->getZoom();
     const auto& selectedIdx = _parentReport->getSelectedIdx();
