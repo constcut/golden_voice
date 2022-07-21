@@ -635,7 +635,7 @@ class ReportGenerator:
 			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
 			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 			
-		return tags, json_report
+		return json_report, tags
 
 
 
