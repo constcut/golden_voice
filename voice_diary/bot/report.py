@@ -785,7 +785,7 @@ class ReportGenerator:
 		self.send_message_and_reports(path_user_logs, message, message_text, tags)
 
 
-		if self.required_cleaning: #TODO later move into another function to share with docments send
+		if self.required_cleaning:
 
 			if os.path.exists(wav_file):
 				os.remove(wav_file)
@@ -1105,7 +1105,9 @@ class ReportGenerator:
 			import librosa
 
 			y, sr = librosa.load(wav_file)
-			S, phase = librosa.magphase(librosa.stft(y))  #can be avoided, if no plots!
+
+			if self.skip_plots == False:
+				S, phase = librosa.magphase(librosa.stft(y))
 			
 			rms = librosa.feature.rms(S=S)
 			times = librosa.times_like(rms)
@@ -1119,7 +1121,9 @@ class ReportGenerator:
 			seq_dict["librosa_pitch"] = f0
 			seq_dict["librosa_rms"] = rms
 			seq_dict["librosa_times"] = times
-			seq_dict["librosa_S"] = S #TODO can be avoided if not plots!
+
+			if self.skip_plots == False:
+				seq_dict["librosa_S"] = S 
 
 		librosa_done_moment = datetime.datetime.now()
 
