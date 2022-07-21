@@ -543,13 +543,13 @@ class ReportGenerator:
 
 				if self.calc_every_stat:
 					single_chunk["stats"] = statistics_records 
+
+				if chunk_text == "Тэги" or chunk_text == "Теги":
+					tag_request_found = True
 				
 				full_text += chunk_text + ". "
 
 				chunks.append(single_chunk)
-
-				if chunk_text == "Тэги" or chunk_text == "Теги":
-					tag_request_found = True
 
 				altId += 1
 
@@ -687,6 +687,9 @@ class ReportGenerator:
 
 			if self.verbose == True:
 				print(chunk['alternatives'][0]['text'])
+
+			if chunk['alternatives'][0]['text'] == "Теги" or chunk['alternatives'][0]['text'] == "Тэги":
+				break
 
 			text_lines.append(chunk['alternatives'][0]['text']) #Внимание не собираются alternatives ATTENTION
 			message_text += chunk['alternatives'][0]['text'] + "\n"
