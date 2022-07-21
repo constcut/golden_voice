@@ -758,46 +758,50 @@ class ReportGenerator:
 
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
 
-		time = datetime.datetime.now().strftime('%H:%M:%S')
-		date = datetime.datetime.now().strftime('%Y-%m-%d')
+		try:
 
-		record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
+			time = datetime.datetime.now().strftime('%H:%M:%S')
+			date = datetime.datetime.now().strftime('%Y-%m-%d')
 
-		id = self.request_recognition(record_file_path, alias_name)
+			record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
 
-		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, str(message.id))
+			id = self.request_recognition(record_file_path, alias_name)
 
-		seq_dict = self.extract_features(wav_file)
+			wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, str(message.id))
 
-		if self.skip_plots == False:
-			self.save_images(seq_dict)
+			seq_dict = self.extract_features(wav_file)
 
-		req = self.check_server_recognition(id)
+			if self.skip_plots == False:
+				self.save_images(seq_dict)
 
-		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-		json_report, tags = self.make_json_report(req, seq_dict, time, date)
+			req = self.check_server_recognition(id)
 
-		self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
+			full_string = json.dumps(req, ensure_ascii=False, indent=2)
+			json_report, tags = self.make_json_report(req, seq_dict, time, date)
 
-		message_text = self.merge_text_from_request(req)
-			
-		self.send_message_and_reports(path_user_logs, message, message_text, tags)
+			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
+
+			message_text = self.merge_text_from_request(req)
+				
+			self.send_message_and_reports(path_user_logs, message, message_text, tags)
 
 
-		if self.required_cleaning:
+			if self.required_cleaning:
 
-			if os.path.exists(wav_file):
-				os.remove(wav_file)
+				if os.path.exists(wav_file):
+					os.remove(wav_file)
 
-			if os.path.exists(record_file_path):
-				os.remove(record_file_path) 
+				if os.path.exists(record_file_path):
+					os.remove(record_file_path) 
 
-			full_report_name = path_user_logs + '/full_report_' + str(message.id) + '.json'
+				full_report_name = path_user_logs + '/full_report_' + str(message.id) + '.json'
 
-			if os.path.exists(full_report_name):
-				os.remove(full_report_name) 
+				if os.path.exists(full_report_name):
+					os.remove(full_report_name) 
 
-			delete_file(alias_name)
+				delete_file(alias_name)
+		except:
+			print("exception was thrown in deplayed_recognition")
 
 		#commands_response = self.detect_commands(message_text) #blocked:)
 		#if commands_response != '':
@@ -1075,20 +1079,23 @@ class ReportGenerator:
 		@self.bot.message_handler(content_types=['voice'])
 		def process_voice_message(message):
 
-			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
-			if not os.path.exists(path_user_logs):
-				os.makedirs(path_user_logs)
+			try:
+				path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
+				if not os.path.exists(path_user_logs):
+					os.makedirs(path_user_logs)
 
-			file_info = self.bot.get_file(message.voice.file_id)
-			downloaded_file = self.bot.download_file(file_info.file_path)
+				file_info = self.bot.get_file(message.voice.file_id)
+				downloaded_file = self.bot.download_file(file_info.file_path)
 
-			self.bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+				self.bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-			t = threading.Timer(1.0, self.deplayed_recognition, [path_user_logs, message, downloaded_file])
-			t.start()
+				t = threading.Timer(1.0, self.deplayed_recognition, [path_user_logs, message, downloaded_file])
+				t.start()
 
-			if self.verbose:
-				print("Audio saved")
+				if self.verbose:
+					print("Audio saved")
+			except:
+				print("exception thrown from process_voice_message")
 
 
 	def extract_features(self, wav_file):
