@@ -50,6 +50,8 @@ void JsonReport::loadFromFile(QString filename)
     _events = _root["events"].toArray();
     _chunks = _root["chunks"].toArray();
     _fullPraat = _root["info"].toObject();
+
+    qDebug() << "Loaded JSON report: events " << _events.size() << " chunks " << _chunks.size() << " info " << _fullPraat.size();
 }
 
 
@@ -186,7 +188,9 @@ QList<int> JsonReport::loadLocalConfig()
 
 double JsonReport::getFullWidth() const
 {
-    return _events[_events.size() - 1].toObject()["endTime"].toDouble() * _zoomCoef + 20;
+    auto fullWidth = _events[_events.size() - 1].toObject()["end"].toDouble() * _zoomCoef + 20;
+    //qDebug() << "Full width: " << fullWidth;
+    return fullWidth;
 }
 
 void JsonReport::updateAllVisualReports()

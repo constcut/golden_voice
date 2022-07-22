@@ -51,8 +51,8 @@ ApplicationWindow
                 fullhdReport.visible = false
                 smallItem.visible = true
 
-                mainLoader.setSource("networkClient.qml")
-                //mainLoader.item.requestFileDialog() //reportVisualizer
+                mainLoader.setSource("reportVisualizer.qml") //
+                mainLoader.item.requestFileDialog() //reportVisualizer
             }
 
             console.log("Screen.desktopAvailableHeight", Screen.desktopAvailableHeight)
