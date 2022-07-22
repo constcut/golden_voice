@@ -289,6 +289,81 @@ class ReportGenerator:
 			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 
 
+	def make_cross_matrix(self, all_starts, all_ends, snd, pitch_for_praat, pulses):
+
+		cross_stats = []
+
+		for i in range(0, len(all_starts) - 1):
+
+				for j in range(i + 1, len(all_ends)):
+					cross_start = all_starts[i]
+					cross_end = all_ends[j]
+
+					cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
+										cross_start, cross_end, self.praat_f0_min, self.praat_f0_max,
+										self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
+
+					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
+									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
+
+					cross_stats.append(cross_element)
+		
+		return cross_stats
+
+	def make_chunk_report_part(self, alt, tags, chunks):
+
+		#TODO seq map steps and some other things
+
+		pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
+		intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
+		
+		
+		if self.calc_every_stat:
+
+			statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
+								"intensity":self.get_full_statistics(intens_cut),}
+
+			if self.use_rosa:
+				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
+				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
+				statistics_records["pyin_pitch"]  =  self.get_full_statistics(f0_cut)
+				statistics_records["rms"] = self.get_full_statistics(rms_cut)
+
+
+			if self.use_surf:
+				swipe_cut = self.make_sequence_cut(swipe_step, first_start, prev_word_end, swipe_pitch)
+				surf_intens_cut = self.make_sequence_cut(surf_intens_step, first_start, prev_word_end, surf_intensity)
+				statistics_records["surf intensity"]  =  self.get_full_statistics(surf_intens_cut)
+				statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
+
+
+		chunk_text = alt["text"]
+		if self.de_personalization:
+				chunk_text = '-'
+
+		if tag_request_found:
+			full_tag_name = chunk_text.replace(" ", "_")
+			tags.append(full_tag_name)
+
+		chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end,
+							self.praat_f0_min, self.praat_f0_max,
+							self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
+
+		single_chunk = {"chunkId": chunkId, "altId": altId, 
+						"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
+						"text": chunk_text, "info": self.parse_praat_info(chunk_report)}
+
+		if self.calc_every_stat:
+			single_chunk["stats"] = statistics_records 
+
+		if chunk_text == "Тэги" or chunk_text == "Теги":
+			tag_request_found = True
+		
+		full_text += chunk_text + ". "
+
+		chunks.append(single_chunk)
+
+		altId += 1
 
 
 	def make_json_report(self, req, seq_dict, time, date): #REFACTORING split
@@ -322,6 +397,8 @@ class ReportGenerator:
 			f0 = np.array(f0)
 
 		if self.use_surf:
+
+			#TODO into seq dict steps
 
 			swipe_pitch = np.array(seq_dict["swipe_pitch"][0])
 			swipe_step = duration / len(swipe_pitch)
@@ -435,7 +512,6 @@ class ReportGenerator:
 						
 					events.append(single_pause)
 
-					
 
 					prev_word_end = end
 
@@ -593,23 +669,11 @@ class ReportGenerator:
 
 		all_chnunks_and_events_moment = datetime.datetime.now()
 
+
 		if self.use_cross_matrix:
+			cross_stats = self.make_cross_matrix(all_starts, all_ends, snd, pitch_for_praat, pulses)
 
-			for i in range(0, len(all_starts) - 1):
-
-				for j in range(i + 1, len(all_ends)):
-					cross_start = all_starts[i]
-					cross_end = all_ends[j]
-
-					cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
-										cross_start, cross_end, self.praat_f0_min, self.praat_f0_max,
-										self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
-
-					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
-									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
-
-					cross_stats.append(cross_element)
-
+			
 		cross_matrix__moment = datetime.datetime.now()
 
 		praat_dict = self.parse_praat_info(full_report)
