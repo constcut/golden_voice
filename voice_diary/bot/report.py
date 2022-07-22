@@ -183,6 +183,7 @@ class ReportGenerator:
 				
 
 	def make_morph_analysis(self, word):
+
 		import pymorphy2
 		morph = pymorphy2.MorphAnalyzer()
 		p = morph.parse(word)[0]
@@ -260,8 +261,37 @@ class ReportGenerator:
 		return praat_dict
 
 
+	def json_report_for_word(self, word, all_starts, all_ends):
+		pass
+		#step rms, intensity, events, tokens, words_freq
+		#seq dict maybe fine
 
-	def make_json_report(self, req, seq_dict, time, date): 
+	def measure_report_time(self, start_moment, reshape_sequences_moment, 
+	surf_moment, praat_moment, all_chnunks_and_events_moment, cross_matrix__moment):
+
+			full_report_generated = datetime.datetime.now()
+
+			total_spent = full_report_generated - start_moment
+			print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
+
+			rehape_spent = reshape_sequences_moment - start_moment
+			surf_spent = surf_moment - reshape_sequences_moment
+			praat_spemt = praat_moment - surf_moment
+			all_chunks_spent = all_chnunks_and_events_moment - praat_moment
+			cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
+			dump_spent = full_report_generated - cross_matrix__moment
+
+			print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
+			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
+			print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
+			print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds/ 1000.0, " ms")
+			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
+			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
+
+
+
+
+	def make_json_report(self, req, seq_dict, time, date): #REFACTORING split
 
 		import datetime 
 		start_moment = datetime.datetime.now()
@@ -349,14 +379,14 @@ class ReportGenerator:
 		tag_request_found = False
 
 
-		for chunk in req['response']['chunks']:
+		for chunk in req['response']['chunks']: #Refact step #2
 
 			altId = 0
 			for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts ATTENTION
 
 				first_start = -1.0
 
-				for word in alt['words']:
+				for word in alt['words']: #Refact step #1
 
 					start = float(word['startTime'][:-1])
 					end = float(word['endTime'][:-1])
@@ -616,24 +646,9 @@ class ReportGenerator:
 
 		if self.measure_time == True:
 
-			full_report_generated = datetime.datetime.now()
+			self.measure_report_time(start_moment, reshape_sequences_moment, surf_moment,
+			praat_moment, all_chnunks_and_events_moment, cross_matrix__moment)
 
-			total_spent = full_report_generated - start_moment
-			print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
-
-			rehape_spent = reshape_sequences_moment - start_moment
-			surf_spent = surf_moment - reshape_sequences_moment
-			praat_spemt = praat_moment - surf_moment
-			all_chunks_spent = all_chnunks_and_events_moment - praat_moment
-			cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
-			dump_spent = full_report_generated - cross_matrix__moment
-
-			print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
-			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
-			print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
-			print("All chunks", all_chunks_spent.seconds, "s ", all_chunks_spent.microseconds/ 1000.0, " ms")
-			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
-			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 			
 		return json_report, tags
 
