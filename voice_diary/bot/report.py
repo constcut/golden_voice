@@ -376,6 +376,8 @@ class ReportGenerator:
 		intensity = seq_dict["praat_intensity"].values.T 
 		pitch = seq_dict["praat_pitch"]
 
+		#TODO subfunction for seq_dict further preparation
+
 		if self.use_rosa:
 			f0 = seq_dict["librosa_pitch"] 
 			rms = seq_dict["librosa_rms"]
@@ -383,7 +385,7 @@ class ReportGenerator:
 			rms_step = duration / len(rms[0])
 			rms = rms.reshape(rms.shape[0] * rms.shape[1])
 
-		pitch_step = duration / len(pitch)
+		pitch_step = duration / len(pitch) #TODO into seq dict
 		intensity_step = duration / len(intensity)
 
 		pitch = pitch.selected_array['frequency']
@@ -454,6 +456,8 @@ class ReportGenerator:
 		chunkId = 0
 
 		tag_request_found = False
+
+		#OVER HERE MAYBE seq_dict preparation ++
 
 
 		for chunk in req['response']['chunks']: #Refact step #2
