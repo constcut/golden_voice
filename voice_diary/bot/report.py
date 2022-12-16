@@ -957,7 +957,33 @@ class ReportGenerator:
 
 	def send_delayed_text(self, message):
 
-		return
+		path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
+		if not os.path.exists(path_user_logs):
+			os.makedirs(path_user_logs)
+
+		text_name = path_user_logs + '/text_' + str(message.id) + '.txt'
+
+		time = datetime.datetime.now().strftime('%H:%M:%S')
+		date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+		with open(text_name, 'w') as outfile:
+			outfile.write(date)
+			outfile.write('\n')
+			outfile.write(time)
+			outfile.write('\n')
+			outfile.write(message.text)
+
+		self.bot.reply_to(message, 'Готово:')
+
+		doc = open(text_name, 'rb')
+		self.bot.send_document(message.chat.id, doc)
+
+		if self.required_cleaning:
+
+			if os.path.exists(text_name):
+				os.remove(text_name)
+
+
 		'''
 		print("Озвучивание текста")
 
@@ -1107,9 +1133,8 @@ class ReportGenerator:
 
 		@self.bot.message_handler(func=lambda message: True)
 		def echo_all(message):
-			pass
-			#t = threading.Timer(1.0, self.send_delayed_text, [message])
-			#t.start()
+			t = threading.Timer(1.0, self.send_delayed_text, [message])
+			t.start()
 
 
 		@self.bot.message_handler(content_types=['document'])
