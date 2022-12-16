@@ -973,7 +973,7 @@ class ReportGenerator:
 			outfile.write('\n')
 			outfile.write(message.text)
 
-		self.bot.reply_to(message, 'Готово:')
+		self.bot.reply_to(message, 'Обработанно: ' + date + ' ' + time)
 
 		doc = open(text_name, 'rb')
 		self.bot.send_document(message.chat.id, doc)
