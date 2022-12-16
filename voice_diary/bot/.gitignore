@@ -1,6 +1,7 @@
 key.json
 .aws*
 .aws/*
+.DS_Store
 
 *.wav
 *.ogg

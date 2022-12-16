@@ -2,3 +2,5 @@
 *.pyc
 
 build-diaryth-*
+
+.DS_Store
