@@ -707,17 +707,17 @@ class ReportGenerator:
 			root_element["formants"] = seq_dict["global_formants"]
 			root_element["HNR"] = seq_dict["global_hnr"]
 
+		root_element["time"] = time
+		root_element["date"] = date
 		json_report = json.dumps(root_element, ensure_ascii=False) 
 		#Без следующей строчки - human readable, но проблемы на стороне QT
 		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
 
-
 		if self.measure_time == True:
-
 			self.measure_report_time(start_moment, reshape_sequences_moment, surf_moment,
 			praat_moment, all_chnunks_and_events_moment, cross_matrix__moment)
 
-			
+	    
 		return json_report, tags
 
 
@@ -1199,7 +1199,7 @@ class ReportGenerator:
 				file_info = self.bot.get_file(message.voice.file_id)
 				downloaded_file = self.bot.download_file(file_info.file_path)
 
-				self.bot.reply_to(message, f"Запись обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+				self.bot.reply_to(message, f"Голос обрабатывается. {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 				t = threading.Timer(1.0, self.deplayed_recognition, [path_user_logs, message, downloaded_file])
 				t.start()
