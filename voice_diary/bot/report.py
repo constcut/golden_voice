@@ -5,70 +5,51 @@ from cmath import pi
 import os
 import datetime
 from re import I
-
 import telebot
 import json
-
 import numpy as np
-
 import parselmouth
 from parselmouth.praat import call
-
 from subprocess import check_call 
-
 import threading
 import time
 import requests
-
 from cloud_storage import upload_file, delete_file
+import statistics
+import math
+import datetime
 
 
 class ReportGenerator:
-
 	def __init__(self, config_name):
-
 		with open(config_name, 'r') as file:
 			self._config = json.load(file)
-
 		self.bot = telebot.TeleBot(self._config["key"])
-
 		self.use_cross_matrix = False
-
 		self.de_personalization = False
 		self.skip_plots = True
 		self.include_sequences = True
-
 		self.use_surf = False
-		self.use_rosa = False
-
+		self.use_rosa = True
 		self.every_word_praat_report = True
 		self.calc_every_stat = True
-
-		self.use_morph_analysis = False
-
+		self.use_morph_analysis = True
 		self.measure_time = False 
 		self.verbose = False
 		self.required_cleaning = True
 
 		self.praat_f0_min = 60
 		self.praat_f0_max = 600
-
 		self.voice_report_param1 = 1.3
 		self.voice_report_param2 = 1.6
 		self.voice_report_param3 = 0.03
 		self.voice_report_param4 = 0.45
 
-
-
-	def request_recognition(self, record_file_path, alias_name):
-		
+	def request_recognition(self, record_file_path, alias_name):		
 		upload_file(record_file_path,  alias_name)
-
 		filelink = 'https://storage.yandexcloud.net/' + self._config["bucket"]  + '/' + alias_name 
-
 		POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
-
-		body ={
+		body = {
 			"config": {
 				"specification": {
 					"languageCode": "ru-RU"
@@ -78,117 +59,77 @@ class ReportGenerator:
 				"uri": filelink
 			}
 		}
-
 		key = self._config["api-key"]
 		header = {'Authorization': 'Api-Key {}'.format(key)}
-
 		req = requests.post(POST, headers=header, json=body)
 		data = req.json()
-
 		id = data['id']
 		if self.verbose:
 			print("Y id", id)
-
 		return id
 
-
-
 	def check_server_recognition(self, id):
-
 		key = self._config["api-key"]
 		header = {'Authorization': 'Api-Key {}'.format(key)}
-
 		while True:
-
 			time.sleep(7)
-
 			GET = "https://operation.api.cloud.yandex.net/operations/{id}"
 			req = requests.get(GET.format(id=id), headers=header)
 			req = req.json()
-
 			if req['done']: 
 				break
-
 			if self.verbose:
 				print("Not ready")
-
 			time.sleep(5) #Это число можно рассчитывать, но я ленив :)
-
 		return req
 
-
-
 	def make_sequence_cut(self, step_size, start, end, sequence):
-		
 		idx_start = int(start / step_size)
 		idx_end = int(end / step_size)
-
 		return sequence[idx_start: idx_end]
 
-
-
 	def statistic_value(self, sequence, type):
-
-		import statistics
-		import math
-
 		sub_sequence = [x for x in sequence if (math.isnan(x) == False and x != 0)]
-
 		if len(sub_sequence) == 0:
 			return 0.0
-
 		if type == "mean":
 			return statistics.mean(sub_sequence)
-
 		if type == "mode":
 			try:
 				return statistics.mode(sub_sequence)
 			except:
 				return 0 #Мода может выпадать если их несколько
-
-
 		if type == "median":
 			return statistics.median(sub_sequence)
-
 		if type == "min":
 			return min(sub_sequence)
-		
 		if type == "max":
 			return max(sub_sequence)
-
 		if type == "stddev":
 			try:
 				return statistics.stdev(sub_sequence)
 			except:
 				return 0 #Мода может выпадать если их несколько
-
 		print("WARNING: wrong statistic value: ", type)
 		return 0.0
 
-
-
 	def get_full_statistics(self, sequence):
-
 		if len(sequence) <= 2:
 			return {"error": "too small sequence"}
-
 		full_stats = {"mean": self.statistic_value(sequence, type="mean"),
 				"mode": self.statistic_value(sequence, type="mode"),
 				"median": self.statistic_value(sequence, type="median"),
 				"min": self.statistic_value(sequence, type="min"),
 				"max": self.statistic_value(sequence, type="max"),
 				"SD" : self.statistic_value(sequence, type="stddev")}
-
 		return full_stats
 				
 
 	def make_morph_analysis(self, word):
-
 		import pymorphy2
 		morph = pymorphy2.MorphAnalyzer()
 		p = morph.parse(word)[0]
 		morph_tab = p.tag
-
 		part_of_speech = morph_tab.POS
 		aspect = morph_tab.aspect 
 		case = p.tag.case    
@@ -200,19 +141,14 @@ class ReportGenerator:
 		tense = p.tag.tense
 		transitivity = p.tag.transitivity
 		voice = p.tag.voice       
-
 		morph_analysis = {"part_of_speech" : part_of_speech, "aspect" : aspect, "case" : case,
 		"gender": gender, "involement": involement, "mood":mood, "number": number, 
 		"person": person, "tense": tense, "transitivity": transitivity, "voice": voice}
-
 		return morph_analysis
 
-
 	def parse_praat_info(self, info_text):
-
 		if info_text.find("--undefined--") != -1:
 			return {"error": "praat info undefined"}
-
 		fields = [["duration:","seconds"], ["Median pitch:","Hz"], ["Mean pitch:","Hz"],
 		["Standard deviation:","Hz"], ["Minimum pitch:","Hz"], ["Maximum pitch:","Hz"],
 		["Number of pulses:",""], ["Number of periods:", ""], ["Mean period:","seconds"],
@@ -226,38 +162,26 @@ class ReportGenerator:
 		["Shimmer (dda):", "%"], ["Mean autocorrelation:", ""],
 		["Mean noise-to-harmonics ratio:",""],
 		["Mean harmonics-to-noise ratio:", "dB"]]
-
 		praat_dict = {}
-
 		for field_info in fields:
-
 			field_name = field_info[0]
 			field_sepparator = field_info[1]
-
 			name_pos = info_text.find(field_name)
-
 			if name_pos != -1:
-
 				field_value = ""
-
 				if field_sepparator != "":
-
 					sep_pos = info_text.find(field_sepparator, name_pos + len(field_name))
 					next_line_pos = info_text.find("\n", name_pos)
-
 					if sep_pos > next_line_pos:
 						field_value = "0"
 					else:
 						field_value = info_text[name_pos + len(field_name): sep_pos - 1]
-
 				else:
 					sep_pos = info_text.find("\n", name_pos)
 					field_value = info_text[name_pos + len(field_name): sep_pos]
-
 				field_value = field_value.strip()
 				field_name = field_name[:-1]
 				praat_dict[field_name] = float(field_value)
-
 		return praat_dict
 
 
@@ -267,20 +191,16 @@ class ReportGenerator:
 		#seq dict maybe fine
 
 	def measure_report_time(self, start_moment, reshape_sequences_moment, 
-	surf_moment, praat_moment, all_chnunks_and_events_moment, cross_matrix__moment):
-
+							surf_moment, praat_moment, all_chnunks_and_events_moment, cross_matrix__moment):
 			full_report_generated = datetime.datetime.now()
-
 			total_spent = full_report_generated - start_moment
 			print("Total on report: ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
-
 			rehape_spent = reshape_sequences_moment - start_moment
 			surf_spent = surf_moment - reshape_sequences_moment
 			praat_spemt = praat_moment - surf_moment
 			all_chunks_spent = all_chnunks_and_events_moment - praat_moment
 			cross_spent = cross_matrix__moment - all_chnunks_and_events_moment
 			dump_spent = full_report_generated - cross_matrix__moment
-
 			print("Reshape sequences ", rehape_spent.seconds, "s ", rehape_spent.microseconds/ 1000.0, " ms")
 			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds/ 1000.0, " ms")
 			print("Praat ", praat_spemt.seconds, "s ", praat_spemt.microseconds/ 1000.0, " ms")
@@ -288,732 +208,491 @@ class ReportGenerator:
 			print("Cross matrix ", cross_spent.seconds, "s ", cross_spent.microseconds/ 1000.0, " ms")
 			print("Dump spent, ", dump_spent.seconds, "s ", dump_spent.microseconds/ 1000.0, " ms")
 
-
 	def make_cross_matrix(self, all_starts, all_ends, snd, pitch_for_praat, pulses):
-
 		cross_stats = []
-
 		for i in range(0, len(all_starts) - 1):
-
 				for j in range(i + 1, len(all_ends)):
 					cross_start = all_starts[i]
 					cross_end = all_ends[j]
-
 					cross_report = call([snd, pitch_for_praat, pulses], "Voice report",
 										cross_start, cross_end, self.praat_f0_min, self.praat_f0_max,
 										self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
-
 					cross_element = {"info": self.parse_praat_info(cross_report), "start" : cross_start,
 									"end": cross_end, "first_word_idx": i, "last_word_idx": j}
-
 					cross_stats.append(cross_element)
-		
 		return cross_stats
 
 	def make_chunk_report_part(self, alt, tags, chunks):
-
 		#TODO seq map steps and some other things
-
 		pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
 		intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
 		
-		
 		if self.calc_every_stat:
-
 			statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
 								"intensity":self.get_full_statistics(intens_cut),}
-
 			if self.use_rosa:
 				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
 				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
 				statistics_records["pyin_pitch"]  =  self.get_full_statistics(f0_cut)
 				statistics_records["rms"] = self.get_full_statistics(rms_cut)
-
-
 			if self.use_surf:
 				swipe_cut = self.make_sequence_cut(swipe_step, first_start, prev_word_end, swipe_pitch)
 				surf_intens_cut = self.make_sequence_cut(surf_intens_step, first_start, prev_word_end, surf_intensity)
 				statistics_records["surf intensity"]  =  self.get_full_statistics(surf_intens_cut)
 				statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
-
-
 		chunk_text = alt["text"]
 		if self.de_personalization:
 				chunk_text = '-'
-
 		if tag_request_found:
 			full_tag_name = chunk_text.replace(" ", "_")
 			tags.append(full_tag_name)
-
 		chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end,
 							self.praat_f0_min, self.praat_f0_max,
 							self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
-
 		single_chunk = {"chunkId": chunkId, "altId": altId, 
 						"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
 						"text": chunk_text, "info": self.parse_praat_info(chunk_report)}
-
 		if self.calc_every_stat:
 			single_chunk["stats"] = statistics_records 
-
 		if chunk_text == "Тэги" or chunk_text == "Теги":
 			tag_request_found = True
-		
 		full_text += chunk_text + ". "
-
 		chunks.append(single_chunk)
-
 		altId += 1
 
-
-	def make_json_report(self, req, seq_dict, time, date): #REFACTORING split
-
-		import datetime 
+	def make_json_report(self, req, seq_dict, time, date):
 		start_moment = datetime.datetime.now()
-
-		#==========================================
 		duration = seq_dict["duration"]
 		intensity = seq_dict["praat_intensity"].values.T 
 		pitch = seq_dict["praat_pitch"]
-
-		#TODO subfunction for seq_dict further preparation
-
 		if self.use_rosa:
 			f0 = seq_dict["librosa_pitch"] 
 			rms = seq_dict["librosa_rms"]
 			f0_step = duration / len(f0)
 			rms_step = duration / len(rms[0])
 			rms = rms.reshape(rms.shape[0] * rms.shape[1])
-
-		pitch_step = duration / len(pitch) #TODO into seq dict
+		pitch_step = duration / len(pitch) 
 		intensity_step = duration / len(intensity)
-
 		pitch = pitch.selected_array['frequency']
 		intensity = intensity.reshape(intensity.shape[0] * intensity.shape[1])
-		
 		pitch = np.array(pitch) 
 		intensity = np.array(intensity)
-
 		if self.use_rosa:
 			rms = np.array(rms)
 			f0 = np.array(f0)
-
 		if self.use_surf:
-
-			#TODO into seq dict steps
-
 			swipe_pitch = np.array(seq_dict["swipe_pitch"][0])
 			swipe_step = duration / len(swipe_pitch)
-
 			surf_intensity = np.array(seq_dict["surf_intensity"][0])
 			surf_intensity = surf_intensity.astype(float)
-
 			surf_intens_step = duration / len(surf_intensity)
-
-
 		reshape_sequences_moment =  datetime.datetime.now()
 		surf_moment =  datetime.datetime.now()
-
 		snd = seq_dict["praat_sound"]
-
 		pitch_for_praat = seq_dict["praat_pitch"]
 		pulses = seq_dict["praat_pulses"]
-
-
 		full_report = call([snd, pitch_for_praat, pulses], "Voice report", 0, duration, 
 							self.praat_f0_min , self.praat_f0_max,
 							self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4)
-
 		praat_moment =  datetime.datetime.now()
 		#==========================================Prepare basic information sequences==========================================
-
 		events = []
 		prev_word_end = 0.0
 		chunks = []
 		words_freq = {}
-
 		tags = []
-
 		tokens = {}
 		tokens_count = 0
-
 		full_stats = {"praat_pitch": self.get_full_statistics(pitch),
 					  "intensity":self.get_full_statistics(intensity)}
-
 		if self.use_rosa:
 			full_stats["rms"] = self.get_full_statistics(rms)
 			full_stats["pyin_pitch"] = self.get_full_statistics(f0)
-
 		if self.use_surf:
 			full_stats["surf intensity"] = self.get_full_statistics(surf_intensity)
 			full_stats["swipe_pitch"] = self.get_full_statistics(swipe_pitch)
-		
-
 		full_text = ""
 		all_starts = []
 		all_ends = []
 		total_words = 0
 		chunkId = 0
-
 		tag_request_found = False
-
-		#OVER HERE MAYBE seq_dict preparation ++
-
-
+		pauses_total_duration = 0.0
+		words_total_duration = 0.0
+		words_count = 0
 		for chunk in req['response']['chunks']: #Refact step #2
-
 			altId = 0
 			for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts ATTENTION
-
 				first_start = -1.0
-
 				for word in alt['words']: #Refact step #1
-
 					start = float(word['startTime'][:-1])
 					end = float(word['endTime'][:-1])
-
 					word_duration = end - start
 					letters_speed = word_duration / len(word['word'])
-
+					words_total_duration += word_duration
 					all_starts.append(start)
 					all_ends.append(end)
-
 					if first_start == -1.0:
 						first_start = start
-
 					silence_start = prev_word_end
 					silence_end = start
+					pauses_total_duration += silence_end - silence_start
+					words_count += 1
 
-					
-					if self.use_surf:
-						pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
-						
+					pause_RMS = self.make_sequence_cut(rms_step, silence_start, silence_end, rms) 
 					pause_intens = self.make_sequence_cut(intensity_step, silence_start, silence_end, intensity)
-
 					if self.use_surf:
 						pause_surf_intens = self.make_sequence_cut(surf_intens_step, silence_start, silence_end, surf_intensity)
-
 					if self.use_rosa:
 						pause_RMS = self.get_full_statistics(pause_RMS)
-					
 					pause_intens = self.get_full_statistics(pause_intens)
-
 					if self.use_surf:
 						pause_surf_intens = self.get_full_statistics(pause_surf_intens)
-
 					single_pause = {"type":"pause", "start": silence_start, "end": silence_end}
-
 					single_pause["Intensity"] = pause_intens
-
-					silence_report = ""#От него отказались пока что
+					silence_report = "None"
 					single_pause["info"] = silence_report
-
 					if self.use_rosa:		
 						single_pause["RMS"] = pause_RMS 		
-
 					if self.use_surf:
-						single_pause["Surf Intencity"] = pause_surf_intens
-						
+						single_pause["Surf Intencity"] = pause_surf_intens				
 					events.append(single_pause)
-
-
 					prev_word_end = end
-
 					if self.include_sequences:
-
 						if self.use_rosa:	
 							f0_cut = self.make_sequence_cut(f0_step, start, end, f0) 
 							rms_cut = self.make_sequence_cut(rms_step, start, end, rms) 
-
 						pitch_cut = self.make_sequence_cut(pitch_step, start, end, pitch)  
 						intens_cut = self.make_sequence_cut(intensity_step, start, end, intensity) 
-						
 						if self.use_surf:
 							swipe_cut = self.make_sequence_cut(swipe_step, start, end, swipe_pitch) 
 							surf_intens_cut = self.make_sequence_cut(surf_intens_step, start, end, surf_intensity)
-
-
-
 					if self.calc_every_stat:
-
 						statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
 											"intensity":self.get_full_statistics(intens_cut)}
-
 						if self.use_surf:
 							statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
 							statistics_records["surf intensity"] = self.get_full_statistics(surf_intens_cut)
-
 						if self.use_rosa:	
 							statistics_records["rms"] = self.get_full_statistics(rms_cut)
 							statistics_records["pyin_pitch"] = self.get_full_statistics(f0_cut)
-
-
 					if self.every_word_praat_report:
 						report_string = call([snd, pitch_for_praat, pulses], "Voice report", start, end,
 											self.praat_f0_min, self.praat_f0_max,
 											self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4)
-
-					
 					morph_analysis = []
-
 					if self.use_morph_analysis or duration < 20.0:
 						morph_analysis = self.make_morph_analysis(word['word'])
-
 					token_id = 0
-
 					current_word = word["word"]
-
 					if current_word not in tokens:
 						tokens[current_word] = tokens_count + 1
 						tokens_count += 1
 						token_id = tokens_count
 					else:
 						token_id = tokens[current_word]
-
 					if self.de_personalization: 
 						current_word = '-'
-
-					singleWord =  {"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
-					"start": start, "end": end, 
-					"confidence": word['confidence'], 
-					"praat_pitch": list(pitch_cut),
-					"praat_intensity": list(intens_cut)
-					,"morph" : morph_analysis
-					,"token_id" : token_id
-					,"word_idx" : total_words
-					,"letters_speed" : letters_speed
-					,"letters_freq" : 1.0 / letters_speed
-					} #Channel tag is not supported there, fine for voice messages, bad for mp3 etc
-					
-
+					singleWord = {
+						"type":"word",  "chunkId" : chunkId, "altId": altId, "word": current_word, 
+						"start": start, "end": end, 
+						"confidence": word['confidence'], 
+						"praat_pitch": list(pitch_cut),
+						"praat_intensity": list(intens_cut),
+						"morph" : morph_analysis,
+						"token_id" : token_id,
+						"word_idx" : total_words,
+						"letters_speed" : letters_speed,
+						"letters_freq" : 1.0 / letters_speed
+					}
 					if self.calc_every_stat:
 						singleWord["stats"] = statistics_records 
-
 					if self.every_word_praat_report:
 						singleWord["info"] = self.parse_praat_info(report_string)
-
 					if self.use_rosa:	 
 						singleWord["pyin_pitch"] = list(f0_cut)
 						singleWord["RMS"] = list(rms_cut)
-
-
 					if self.use_surf:
 						singleWord["swipe_pitch"] = list(swipe_cut)
 						singleWord["surt_inten"] = list(surf_intens_cut)
-
-
 					total_words += 1
-
 					events.append(singleWord)
 
 					if token_id in words_freq:
 						words_freq[token_id] += 1
 					else:
 						words_freq[token_id] = 1
-
 				
 				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
 				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
 				
-				
 				if self.calc_every_stat:
-
 					statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
 										"intensity":self.get_full_statistics(intens_cut),}
-
 					if self.use_rosa:
 						f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
 						rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
 						statistics_records["pyin_pitch"]  =  self.get_full_statistics(f0_cut)
 						statistics_records["rms"] = self.get_full_statistics(rms_cut)
-
-
 					if self.use_surf:
 						swipe_cut = self.make_sequence_cut(swipe_step, first_start, prev_word_end, swipe_pitch)
 						surf_intens_cut = self.make_sequence_cut(surf_intens_step, first_start, prev_word_end, surf_intensity)
 						statistics_records["surf intensity"]  =  self.get_full_statistics(surf_intens_cut)
 						statistics_records["swipe_pitch"] = self.get_full_statistics(swipe_cut)
 
-
 				chunk_text = alt["text"]
 				if self.de_personalization:
 						chunk_text = '-'
-
 				if tag_request_found:
 					full_tag_name = chunk_text.replace(" ", "_")
 					tags.append(full_tag_name)
-
 				chunk_report = call([snd, pitch_for_praat, pulses], "Voice report", first_start, prev_word_end,
 									self.praat_f0_min, self.praat_f0_max,
 									self.voice_report_param1, self.voice_report_param2, self.voice_report_param3, self.voice_report_param4) 
-
 				single_chunk = {"chunkId": chunkId, "altId": altId, 
 								"start" : first_start, "end": prev_word_end, "words_speed": (prev_word_end - first_start) / len(alt["words"]),
 								"text": chunk_text, "info": self.parse_praat_info(chunk_report)}
-
 				if self.calc_every_stat:
 					single_chunk["stats"] = statistics_records 
-
 				if chunk_text == "Тэги" or chunk_text == "Теги":
 					tag_request_found = True
-				
 				full_text += chunk_text + ". "
-
 				chunks.append(single_chunk)
-
 				altId += 1
-
 			chunkId += 1
-
 		if self.de_personalization == True:
 			tokens = {}
-
-
 		cross_stats = []
-
 		all_chnunks_and_events_moment = datetime.datetime.now()
-
-
 		if self.use_cross_matrix:
 			cross_stats = self.make_cross_matrix(all_starts, all_ends, snd, pitch_for_praat, pulses)
-
-			
 		cross_matrix__moment = datetime.datetime.now()
-
 		praat_dict = self.parse_praat_info(full_report)
-
 		steps = {"praat_putch_step": pitch_step,
 				 "intensity_step": intensity_step }
-
 		if self.use_rosa:
 			steps[ "librosa_pitch_step"] = f0_step
 			steps[ "rms_step"] = rms_step
-
 		if self.use_surf:
 			steps[ "swipe_step"] = swipe_step
 			steps[ "surf_intens_step"] = surf_intens_step
-
 		root_element = {"events": events, "full_stats": full_stats, "chunks": chunks,
 						"words_freq": words_freq, "full_text": full_text, "tokens": tokens,
 						"info": praat_dict,
 						"cross_stats": cross_stats, "duration": duration, "steps_sizes": steps}
-
 		if tag_request_found:
 			root_element["tags"] = tags
-
 		if self.use_surf:
 			root_element["jitters"] = seq_dict["global_jitters"]
 			root_element["shimmers"] = seq_dict["global_shimmers"]
 			root_element["formants"] = seq_dict["global_formants"]
 			root_element["HNR"] = seq_dict["global_hnr"]
-
 		root_element["time"] = time
 		root_element["date"] = date
+		root_element["pauses_duration"] = pauses_total_duration
+		root_element["words_duration"] = words_total_duration
+		root_element["words_count"] = words_count
 		json_report = json.dumps(root_element, ensure_ascii=False) 
 		#Без следующей строчки - human readable, но проблемы на стороне QT
 		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
-
 		if self.measure_time == True:
 			self.measure_report_time(start_moment, reshape_sequences_moment, surf_moment,
 			praat_moment, all_chnunks_and_events_moment, cross_matrix__moment)
-
-	    
 		return json_report, tags
 
 
-
 	def save_downloaded_and_name(self, path_user_logs, message, downloaded_file):
-
 		record_file_path = path_user_logs + '/record_' + str(message.id) + '.ogg'
-
 		if self.verbose:
 			print(record_file_path, " <- dir path")
-
 		with open(os.path.join(record_file_path), 'wb') as new_file:
 			new_file.write(downloaded_file)
-
 		alias_name = "a" + str(message.chat.id)  + "b" + str(message.id) + ".ogg"
-
 		return record_file_path, alias_name
 
-
 	def save_images_info(self, path_user_logs, message, voice_report):
-
 		rosaInfo = open(path_user_logs + '/rosaInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, rosaInfo)
-
 		praatInfo = open(path_user_logs + '/praatInfo.png', 'rb')
 		self.bot.send_photo(message.chat.id, praatInfo)
-
 		self.bot.reply_to(message, voice_report)
 
-
 	def save_json_products(self, path_user_logs, json_report, full_string, message_id):
-
 		with open(path_user_logs + '/full_report_' + message_id + '.json', 'w') as outfile:
 			outfile.write(json_report)
-
 		if self.verbose == True:
 			with open(path_user_logs + '/stt_' + message_id + '.json', 'w') as outfile:
 				outfile.write(full_string)
 
-
 	def merge_text_from_request(self, req): 
-
 		text_lines = []
 		message_text = ""
-
 		if self.verbose == True:
 			print("Text chunks:")
-
 		for chunk in req['response']['chunks']:
-
 			if self.verbose == True:
 				print(chunk['alternatives'][0]['text'])
-
 			if chunk['alternatives'][0]['text'] == "Теги" or chunk['alternatives'][0]['text'] == "Тэги":
 				break
-
 			text_lines.append(chunk['alternatives'][0]['text']) #Внимание не собираются alternatives ATTENTION
 			message_text += chunk['alternatives'][0]['text'] + "\n"
-
 		return message_text
 
-
 	def send_message_and_reports(self, path_user_logs, message, message_text, tags):
-
 		if len(tags) > 0:
 			message_text += "\n"
-
 			for tag in tags:
 				message_text += "#" + tag + " "
-
 		self.bot.reply_to(message, message_text)
-
 		if self.verbose:
 			doc = open(path_user_logs + '/stt_' + str(message.id)  + '.json', 'rb')
 			self.bot.send_document(message.chat.id, doc)
-
 		doc = open(path_user_logs + '/full_report_'  + str(message.id)  + '.json', 'rb')
 		self.bot.send_document(message.chat.id, doc)
 
-
-
 	def deplayed_audio_document(self, path_user_logs, message, downloaded_file):
-
-			print("deplayed_audio_document attempt") 
-			self.bot.reply_to(message, 'Анализ mp3\wav файлов временно отключён.')
-			return
-
+			self.bot.reply_to(message, 'Анализ mp3\wav файлов может не работать с длинными записями')
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
-
 			if message.document != None:
 				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.document.file_name
 			else:
 				record_file_path = path_user_logs + '/audio_' + str(message.id) +  "_" + message.audio.file_name
-
 			print(record_file_path, " <- document\audio file path")
-
 			with open(os.path.join(record_file_path), 'wb') as new_file:
 				new_file.write(downloaded_file)
-
 			new_file = path_user_logs + "/converted.ogg"
-
 			self.convert_wav_to_ogg(record_file_path, new_file)
-
 			alias = "doc" + str(message.id) + "x" + str(message.chat.id)
-
 			id = r.request_recognition(new_file, alias)
 
 			wav_file = self.convert_ogg_to_wav(path_user_logs, new_file, str(message.id)) 
 			seq_dict = self.extract_features(wav_file)
-
 			req = self.check_server_recognition(id)
 
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
 			json_report, tags = self.make_json_report(req, seq_dict, time, date)
-
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
-
 			message_text = self.merge_text_from_request(req)
 			self.send_message_and_reports(path_user_logs, message, message_text, tags)
 			
-
-
-
 	def deplayed_recognition(self, path_user_logs, message, downloaded_file):
-
 		try:
-
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
-
 			record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
-
 			id = self.request_recognition(record_file_path, alias_name)
-
 			wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, str(message.id))
-
 			seq_dict = self.extract_features(wav_file)
-
 			if self.skip_plots == False:
 				self.save_images(seq_dict)
-
 			req = self.check_server_recognition(id)
-
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
 			json_report, tags = self.make_json_report(req, seq_dict, time, date)
-
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
-
 			message_text = self.merge_text_from_request(req)
-				
 			self.send_message_and_reports(path_user_logs, message, message_text, tags)
-
-
 			if self.required_cleaning:
-
 				if os.path.exists(wav_file):
 					os.remove(wav_file)
-
 				if os.path.exists(record_file_path):
 					os.remove(record_file_path) 
-
 				full_report_name = path_user_logs + '/full_report_' + str(message.id) + '.json'
-
 				if os.path.exists(full_report_name):
 					os.remove(full_report_name) 
-
 				delete_file(alias_name)
-
 		except:
 			print("exception was thrown in deplayed_recognition")
-
-		#commands_response = self.detect_commands(message_text) #blocked:)
-		#if commands_response != '':
-		#	self.bot.reply_to(message, commands_response)
+		commands_response = self.detect_commands(message_text) #blocked:)
+		if commands_response != '':
+			self.bot.reply_to(message, commands_response)
 			
-
-
 	def detect_commands(self, text):
-
 		text = text.lower()
-
 		request_string = "создать задачу"
 		create_aim_pos = text.find(request_string)
 		if create_aim_pos != -1:
 			return "Создается задача с именем: " + text[create_aim_pos + len(request_string):]
-
 		request_string = "начать задачу"
 		start_aim_pos = text.find(request_string)
 		if start_aim_pos != -1:
 			return "Начата задача с именем: " + text[start_aim_pos + len(request_string):]
-
 		request_string = "завершить задачу"
 		finish_aim_pos = text.find(request_string)
 		if finish_aim_pos != -1:
 			return "Завершена задача с именем: " + text[finish_aim_pos + len(request_string):]
-
 		request_string = "я съел"
 		eat_pos = text.find(request_string)
 		if eat_pos != -1:
 			return "Записан продукт[ы] питания: " + text[eat_pos + len(request_string):]
-
 		request_string = "я выпил"
 		drink_pos = text.find(request_string)
 		if drink_pos != -1:
 			return "Записан напиток: " + text[drink_pos + len(request_string):]
-
 		request_string = "я принял"
 		meds_pos = text.find(request_string)
 		if meds_pos != -1:
 			return "Записан препарат: "  + text[meds_pos + len(request_string):]
-
 		request_string = "применен навык"
 		skills_pos = text.find(request_string)
 		if skills_pos != -1:
 			return "Зафиксированно применения навыка\[ов]" + text[skills_pos + len(request_string):]
-
 		request_string = "заполнить поле"
 		field_pos = text.find(request_string)
-
 		request_string_2 = "значением"
 		value_pos = text.find(request_string_2)
-
 		if field_pos != -1 and value_pos != -1: #Если значение не задано - то это просто бинарное поле
 			field_name = text[field_pos + len(request_string): value_pos - 1]
 			value_text = text[value_pos + len(request_string_2): ]
 			return "Поле: " + field_name +" заполненно значением " + value_text
-
 		if field_pos != -1 and value_pos == -1:
 			field_name = text[field_pos + len(request_string): value_pos - 1]
 			return "Поле: " + field_name + " отмечено"
-
 		#Рецепт - игредиенты и приготовление
-
 		return ""
 
 
 	def send_delayed_text(self, message):
-
 		path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
 		if not os.path.exists(path_user_logs):
 			os.makedirs(path_user_logs)
-
 		text_name = path_user_logs + '/text_' + str(message.id) + '.txt'
-
 		time = datetime.datetime.now().strftime('%H:%M:%S')
 		date = datetime.datetime.now().strftime('%Y-%m-%d')
-
 		with open(text_name, 'w') as outfile:
 			outfile.write(date)
 			outfile.write('\n')
 			outfile.write(time)
 			outfile.write('\n')
 			outfile.write(message.text)
-
 		self.bot.reply_to(message, 'Обработанно: ' + date + ' ' + time)
-
 		doc = open(text_name, 'rb')
 		self.bot.send_document(message.chat.id, doc)
-
 		if self.required_cleaning:
-
 			if os.path.exists(text_name):
 				os.remove(text_name)
 
-
 		'''
 		print("Озвучивание текста")
-
 		from synth_speech import text_to_audio
 		text_to_audio("123.ogg", message.text)
-
 		self.bot.reply_to(message, 'Озвучивание:')
 		voice = open("123.ogg", 'rb')
 		self.bot.send_voice(message.chat.id, voice)
-
 		print("Текст озвучен")
 		'''
 
 
 	def draw_intensity_praat(self, intensity): #Отделить всю отрисовку в отдельный класс
-
 		import matplotlib.pyplot as plt
-
 		plt.plot(intensity.xs(), intensity.values.T, linewidth=3, color='g')
 		plt.plot(intensity.xs(), intensity.values.T, linewidth=1)
 		plt.grid(False)
 		plt.ylim(0, 100)
 		plt.ylabel("intensity [dB]")
 
-
-
 	def draw_pitch_praat(self, pitch):
-
 		import matplotlib.pyplot as plt
-
 		pitch_values = pitch.selected_array['frequency']
 		pitch_values[pitch_values==0] = np.nan
 		plt.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='r')
@@ -1022,71 +701,46 @@ class ReportGenerator:
 		plt.ylim(0, pitch.ceiling)
 		plt.ylabel("fundamental frequency [Hz]")
 
-
-
 	def plot_pitches(self, seq_dict, output_filepath):
-
 		import matplotlib.pyplot as plt
 		import librosa
-
 		fig = plt.figure()
-
 		f0 = seq_dict["librosa_pitch"]
 		pitch = seq_dict["praat_pitch"]
-
 		times = librosa.times_like(f0)
 		plt.plot(times, f0, color='green', linewidth=5)
 		plt.ylim(0, pitch.ceiling)
-
 		pitch_values = pitch.selected_array['frequency']
 		pitch_values[pitch_values==0] = np.nan
 		plt.plot(pitch.xs(), pitch_values, 'o', markersize=3, color='r')
 		plt.grid(False)
 		plt.ylim(0, pitch.ceiling)
 		plt.ylabel("fundamental frequency [Hz]")
-
 		fig.set_size_inches(12, 9)
-
 		plt.savefig(output_filepath + '/pitches.png', bbox_inches='tight')
 
-
-
 	def save_images(self, seq_dict):	
-
 		if self.use_rosa:
 			self.plot_librosa(seq_dict, self._config["dir"])
-			
 		self.plot_praat(seq_dict, self._config["dir"])
-
 		if self.use_rosa:
 			self.plot_pitches(seq_dict, self._config["dir"])
 
-
-
 	def plot_praat(self, seq_dict, output_filepath): 
-
 		import matplotlib.pyplot as plt
 		import seaborn as sns 
-
 		snd = seq_dict["praat_sound"]
 		intensity = seq_dict["praat_intensity"]
 		pitch = seq_dict["praat_pitch"] 
-
 		fig = plt.figure()
-		
 		self.draw_pitch_praat(pitch)
-
 		plt.twinx()
 		self.draw_intensity_praat(intensity)
 		plt.xlim([snd.xmin, snd.xmax])
-
 		fig.set_size_inches(12, 9)
 		plt.savefig(output_filepath + '/praatInfo.png', bbox_inches='tight')
 
-
-
 	def plot_librosa(self, seq_dict, output_filepath):
-
 		rms = seq_dict["librosa_rms"]
 		times = seq_dict["librosa_times"]
 		f0 = seq_dict["librosa_pitch"]
@@ -1224,8 +878,8 @@ class ReportGenerator:
 
 			y, sr = librosa.load(wav_file)
 
-			if self.skip_plots == False:
-				S, phase = librosa.magphase(librosa.stft(y))
+			#if self.skip_plots == False:
+			S, phase = librosa.magphase(librosa.stft(y))
 			
 			rms = librosa.feature.rms(S=S)
 			times = librosa.times_like(rms)
@@ -1239,9 +893,7 @@ class ReportGenerator:
 			seq_dict["librosa_pitch"] = f0
 			seq_dict["librosa_rms"] = rms
 			seq_dict["librosa_times"] = times
-
-			if self.skip_plots == False:
-				seq_dict["librosa_S"] = S 
+			seq_dict["librosa_S"] = S 
 
 		librosa_done_moment = datetime.datetime.now()
 
