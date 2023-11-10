@@ -18,6 +18,7 @@ from cloud_storage import upload_file, delete_file
 import statistics
 import math
 import datetime
+import csv
 
 
 class ReportGenerator:
@@ -693,7 +694,6 @@ class ReportGenerator:
 		print("Текст озвучен")
 		'''
 
-
 	def draw_intensity_praat(self, intensity): #Отделить всю отрисовку в отдельный класс
 		import matplotlib.pyplot as plt
 		plt.plot(intensity.xs(), intensity.values.T, linewidth=3, color='g')
@@ -756,22 +756,16 @@ class ReportGenerator:
 		times = seq_dict["librosa_times"]
 		f0 = seq_dict["librosa_pitch"]
 		S = seq_dict["librosa_S"]
-
 		import matplotlib.pyplot as plt
-
 		fig, ax = plt.subplots(nrows=2, sharex=True)
-
 		ax[0].semilogy(times, rms[0], label='RMS Energy')
 		ax[0].set(xticks=[])
 		ax[0].label_outer()
-
 		#Can be avoided?
 		import librosa
 		import librosa.display
-
 		librosa.display.specshow(librosa.amplitude_to_db(S, ref=np.max),
 								y_axis='log', x_axis='time', ax=ax[1])
-
 		ax[1].plot(times, f0, color='green', linewidth=3)			
 		ax[1].set(title='log Power spectrogram')
 
@@ -779,43 +773,32 @@ class ReportGenerator:
 		o_env = librosa.onset.onset_strength(y=y, sr=sr)
 		times = librosa.times_like(o_env, sr=sr)
 		onset_frames = librosa.onset.onset_detect(onset_envelope=o_env, sr=sr)
-
 		ax[2].plot(times, o_env)
 		ax[2].vlines(times[onset_frames], 0, o_env.max(), color='r', alpha=0.9,
 				linestyle='--')
-
 		'''
 		fig.set_size_inches(12, 9)
 		plt.savefig(output_filepath + '/rosaInfo.png', bbox_inches='tight')
 
-
 	def set_handlers(self):
-
 		@self.bot.message_handler(commands=['start', 'help'])
 		def send_welcome(message):
 			self.bot.reply_to(message, "Menu yet not implemented")
-
 
 		@self.bot.message_handler(func=lambda message: True)
 		def echo_all(message):
 			t = threading.Timer(1.0, self.send_delayed_text, [message])
 			t.start()
 
-
 		@self.bot.message_handler(content_types=['document'])
 		def process_docs_audio(message):
-
 			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
 			if not os.path.exists(path_user_logs):
 				os.makedirs(path_user_logs)
-
 			file_info = self.bot.get_file(message.document.file_id)
 			downloaded_file = self.bot.download_file(file_info.file_path)
-
 			file_extenstion = message.document.file_name[-3:]
-
 			print("Doc file-name", message.document.file_name, "ext", file_extenstion)
-
 			if file_extenstion != "mp3" and file_extenstion != "wav":
 				self.bot.reply_to(message, "Допускаются только .wav или .mp3")
 			else:
@@ -823,391 +806,248 @@ class ReportGenerator:
 
 				t = threading.Timer(1.0, self.deplayed_audio_document, [path_user_logs, message, downloaded_file])
 				t.start()
-
 				print("Document saved")
-
 
 		@self.bot.message_handler(content_types=['audio'])
 		def process_docs_audio(message):
-
 			path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
 			if not os.path.exists(path_user_logs):
 				os.makedirs(path_user_logs)
-
 			file_info = self.bot.get_file(message.audio.file_id)
 			downloaded_file = self.bot.download_file(file_info.file_path)
-
 			file_extenstion = message.audio.file_name[-3:]
-
 			print("Doc file-name", message.audio.file_name, "ext", file_extenstion)
-
 			if file_extenstion != "mp3" and file_extenstion != "wav":
 				self.bot.reply_to(message, "Допускаются только .wav или .mp3")
 			else:
 				self.bot.reply_to(message, f"Аудио обрабатывается. Момент: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
 				t = threading.Timer(1.0, self.deplayed_audio_document, [path_user_logs, message, downloaded_file])
 				t.start()
-
 				print("Document saved")
-
-
 
 		@self.bot.message_handler(content_types=['voice'])
 		def process_voice_message(message):
-
 			try:
 				path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
 				if not os.path.exists(path_user_logs):
 					os.makedirs(path_user_logs)
-
 				file_info = self.bot.get_file(message.voice.file_id)
 				downloaded_file = self.bot.download_file(file_info.file_path)
-
 				self.bot.reply_to(message, f"Голос обрабатывается. {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
 				t = threading.Timer(1.0, self.deplayed_recognition, [path_user_logs, message, downloaded_file])
 				t.start()
-
 				if self.verbose:
 					print("Audio saved")
 			except:
 				print("exception thrown from process_voice_message")
 
-
 	def extract_features(self, wav_file):
-
 		seq_dict = {}
-
 		start_moment =  datetime.datetime.now() #Позже убрать или закамуфлировать
 		librosa_loaded_moment =  datetime.datetime.now()
 		librosa_stft_moment =  datetime.datetime.now()
-
 		if self.use_rosa:
-
 			import librosa
-
 			y, sr = librosa.load(wav_file)
-
 			#if self.skip_plots == False:
 			S, phase = librosa.magphase(librosa.stft(y))
-			
 			rms = librosa.feature.rms(S=S)
 			times = librosa.times_like(rms)
-
 			f0 = librosa.yin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
-
 			#f0, voiced_flag, voiced_probs = librosa.pyin(y, #Работает дольше
 			#	fmin=librosa.note_to_hz('C2'),
 			#	fmax=librosa.note_to_hz('C7'))
-
 			seq_dict["librosa_pitch"] = f0
 			seq_dict["librosa_rms"] = rms
 			seq_dict["librosa_times"] = times
 			seq_dict["librosa_S"] = S 
-
 		librosa_done_moment = datetime.datetime.now()
-
 		snd = parselmouth.Sound(wav_file) 
-		
 		pitch = call(snd, "To Pitch", 0.0, self.praat_f0_min, self.praat_f0_max)  
 		intensity = snd.to_intensity()
-
 		pulses = call([snd, pitch], "To PointProcess (cc)") 
 		duration = call(snd, "Get total duration")
-
 		#formants = snd.to_formant_burg()
 		#print("Formants ", len(formants), " ", formants) # nFormants
 		#TOOO BIG :(
-
 		seq_dict["praat_pitch"] = pitch
 		seq_dict["praat_intensity"] = intensity
-
 		seq_dict["duration"] = duration
-
 		seq_dict["praat_sound"] = snd
 		seq_dict["praat_pulses"] = pulses
-
 		praat_done_moment = datetime.datetime.now()
-
 		if self.use_surf == True:
-
 			from surfboard.sound import Waveform 
 			sound = Waveform(path=wav_file, sample_rate=44100) 
-
 			swipe_pitch = sound.f0_contour()
 			surf_intensity = sound.intensity() 
-
 			#formants_sequence = sound.formants_slidingwindow()
 			#print("Formants sequence: ", len(formants_sequence), " and signle ",
 			#	len(formants_sequence[0]))
-
 			global_shimmers = sound.shimmers()
 			global_jitters = sound.jitters()
 			global_formants = sound.formants()
 			global_hnr = sound.hnr()
-
 			seq_dict["swipe_pitch"] = swipe_pitch
 			seq_dict["surf_intensity"] = surf_intensity
-
 			seq_dict["global_jitters"] = global_jitters
 			seq_dict["global_shimmers"] = global_shimmers
 			seq_dict["global_formants"] = global_formants
 			seq_dict["global_hnr"] = global_hnr
-
 		surf_done_moment = datetime.datetime.now()
-
 		if self.measure_time:
-
 			librosa_load_spent = librosa_loaded_moment - start_moment
 			librosa_stft_spent = librosa_stft_moment - librosa_loaded_moment
 			librosa_rest_spent = librosa_done_moment - librosa_loaded_moment
 			praat_spent = praat_done_moment - librosa_done_moment
 			surf_spent = surf_done_moment - praat_done_moment
 			total_spent = surf_done_moment - start_moment
-
 			print("Total ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
-
 			print("Rosa load ", librosa_load_spent.seconds, "s ", librosa_load_spent.microseconds / 1000.0, " ms")
 			print("Rosa stft ", librosa_stft_spent.seconds, "s ", librosa_stft_spent.microseconds / 1000.0, " ms")
 			print("Rosa rest ", librosa_rest_spent.seconds, "s ", librosa_rest_spent.microseconds / 1000.0, " ms")
-
 			print("Praat ", praat_spent.seconds, "s ", praat_spent.microseconds / 1000.0, " ms")
 			print("Surf ", surf_spent.seconds, "s ", surf_spent.microseconds / 1000.0, " ms")
-
 		return seq_dict
 
-
 	def convert_ogg_to_wav(self, path_user_logs, record_file_path, message_id):
-
 		wav_file = f"{path_user_logs}/pcm_{message_id}.wav"
-
 		if os.path.exists(wav_file):
 			os.remove(wav_file)
-
 		command = f"ffmpeg -hide_banner -loglevel error -i {record_file_path} -ar 48000 -ac 2 -ab 192K -f wav {wav_file}"
 		_ = check_call(command.split())
-
 		return wav_file
 
-
 	def convert_wav_to_ogg(self, input_file, output_file):
-
 		if os.path.exists(output_file): 
 			os.remove(output_file)
-
 		command = f"ffmpeg -hide_banner -loglevel error -i {input_file} -c:a libopus {output_file}" 
 		_ = check_call(command.split())
 
-
-
 	def local_recognition(self, path_user_logs, record_file_path, alias_name):
-
-		import datetime
-
 		time = datetime.datetime.now().strftime('%H:%M:%S')
 		date = datetime.datetime.now().strftime('%Y-%m-%d')
-
 		start_moment = datetime.datetime.now()
-
 		id = self.request_recognition(record_file_path, alias_name)
-
 		request_sent_moment = datetime.datetime.now()
-
 		wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, "local_id")
-
 		seq_dict = self.extract_features(wav_file)
-
 		if self.skip_plots == False:
 			self.save_images(seq_dict) #возможно надо сохранять ещё директорию, но вначале возьмём из конфига - abadoned
-
 		images_saved_moment = datetime.datetime.now()
-
 		req = self.check_server_recognition(id)
 		full_string = json.dumps(req, ensure_ascii=False, indent=2)
-
 		recognition_received_moment = datetime.datetime.now()
-
 		json_report, tags = self.make_json_report(req, seq_dict, time, date)
-
 		full_report_generated = datetime.datetime.now()
-
 		self.save_json_products(path_user_logs, json_report, full_string, "local_id")
-
-
 		if self.measure_time:
-
 			spent_on_send = request_sent_moment - start_moment
 			spent_on_imaged = images_saved_moment - request_sent_moment
 			spent_on_received = recognition_received_moment - images_saved_moment
 			spent_on_report = full_report_generated - recognition_received_moment
 			total_spent = full_report_generated - start_moment
-
 			print("Spent on send: ", spent_on_send.seconds, "s ", spent_on_send.microseconds / 1000.0, " ms")
 			print("Spent on imaged: ", spent_on_imaged.seconds, "s ", spent_on_imaged.microseconds / 1000.0, " ms")
 			print("Spent on received: ", spent_on_received.seconds, "s ", spent_on_received.microseconds / 1000.0, " ms")
 			print("Spent on report: ", spent_on_report.seconds, "s ", spent_on_report.microseconds / 1000.0, " ms")
 			print("Total spent ", total_spent.seconds, "s ", total_spent.microseconds / 1000.0, " ms")
-
 		print("Done!")
 
-
 	def start_bot(self):
-
 		self.set_handlers()
-
 		print("Starting bot")
 		self.bot.infinity_polling()
 		print("Bot is finished")
 
 
-
-
 def async_load_dir(r):
-
 	files_dict = {}
-
 	i = 0
-
 	for filename in os.listdir(r._config['temp']):
-
 		f = os.path.join(r._config['temp'], filename)
-
 		if os.path.isfile(f):
-
 			print('FILE', f)
-
 			i += 1
 			filename_no_ext =  "idfile" + str(i) 
-
 			new_file = r._config['out'] + '/' + filename + '_out.ogg'
-
 			r.convert_wav_to_ogg(f, new_file) 
-
 			id = r.request_recognition(new_file, filename_no_ext) 
-
 			files_dict[filename] = id
 			continue
-
-			
 	id_texts = json.dumps(files_dict, indent = 4, ensure_ascii=False) 
 	with open(r._config['out'] + '/ids.json', 'w') as outfile:
 			outfile.write(id_texts)
 
-
-
-
 def async_extract(r):
-
 	files_dict = {}
-
 	with open(r._config['out'] + '/ids.json', 'r') as file:
 		files_dict = json.load(file)
-
 	for filename in os.listdir(r._config['temp']):
-
 		f = os.path.join(r._config['temp'], filename) 
-
 		if os.path.isfile(f):
-
 			print('FILE: ', f)
 			new_file = r._config['out'] + '/' + filename + '_out.ogg'
-
 			id = files_dict[filename] 
-			
 			seq_dict = r.extract_features(f) 
-
 			req = r.check_server_recognition(id)
-
 			if 'chunks' not in req['response']:
 				continue
-
 			full_text = json.dumps(req, ensure_ascii=False, indent=2)
-
 			reports_pre_name = r._config['out'] + '/' + filename
-
 			with open(reports_pre_name +  '_full_text.json', 'w') as outfile:
 				outfile.write(full_text)
-
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
-
 			full_report, tags = r.make_json_report(req, seq_dict, time, date)
-			
 			with open(reports_pre_name +  '_full_report.json', 'w') as outfile:
 				outfile.write(full_report)
-
 			print("File done")
 
 
-
 def rename_files(r):
-
 	for filename in os.listdir(r._config['temp']):
-
 		f = os.path.join(r._config['temp'], filename) 
-
 		if os.path.isfile(f):
-
 			if f.find(" ") != -1:
 				f_replaces = f.replace(" ", "_")
 				os.rename(f, f_replaces)
-
 				print("Renaming ", f, f_replaces)
 
 
-
 def reports_to_csv(r):
-
-
-	import csv
 	with open(r._config['to-csv'] + '/full.csv', 'w', newline='') as csvfile:
 		table = csv.writer(csvfile, delimiter=',')
-
 		table.writerow(["name", "text", "duration", "Median pitch", "Mean pitch", "Number of pulses", "Fraction of locally unvoiced frames", "Jitter (local)", "Shimmer (local)", "Mean harmonics-to-noise ratio", "Pitch SD", "Intensity SD"])
-
-		
 		for filename in os.listdir(r._config['to-csv']):
-
 			f = os.path.join(r._config['to-csv'], filename) 
-			
 			if os.path.isfile(f) and f.find("full_report") != -1:
-
 				print("FILE ", f, " opening")
-
 				with open(f, 'r') as file:
 					report_dict = json.load(file)
-
 				report_dict["full_stats"]["praat_pitch"]["SD"]
 				report_dict["full_stats"]["intensity"]["SD"]
-				
 				if "duration" not in report_dict["info"]:
 					continue
-
 				f_name = filename.replace(",","_")
-
 				table.writerow([f_name, report_dict["full_text"], report_dict["info"]["duration"], report_dict["info"]["Median pitch"], report_dict["info"]["Mean pitch"], report_dict["info"]["Number of pulses"],
 				report_dict["info"]["Fraction of locally unvoiced frames"], report_dict["info"]["Jitter (local)"], report_dict["info"]["Shimmer (local)"], report_dict["info"]["Mean harmonics-to-noise ratio"],
 				report_dict["full_stats"]["praat_pitch"]["SD"], report_dict["full_stats"]["intensity"]["SD"]])
-
 				print("FILE ", f_name, " parsed")
 
 
-#rename_files(r)
-#async_load_dir(r)
-#async_extract(r) #WHY long runs out of memory?
-#reports_to_csv(r)\
-#print("CSV DONE!")
-
 print("Waiting for wifi")
-
 #time.sleep(10) # Для Raspbery Pi установить связь с Wifi
-
 r = ReportGenerator("key.json")
 r.start_bot()
-
 #r.local_recognition(r._config['dir'] , r._config['dir'] + '/local_2.ogg', "changen7")
-#r.extract_features(r._config["dir"] + "/pcm.wav")
+#r.extract_features(r._config["dir"] + "/pcm.wav") #sync offline
+
+#rename_files(r)
+#async_load_dir(r)
+#async_extract(r)
+#reports_to_csv(r)
+#print("CSV DONE!")
 
 
 
