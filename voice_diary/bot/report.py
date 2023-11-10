@@ -230,8 +230,13 @@ class ReportGenerator:
 		if self.calc_every_stat:
 			statistics_records = {"praat_pitch": self.get_full_statistics(pitch_cut),
 								"intensity":self.get_full_statistics(intens_cut),}
+			
+			#f0_step = duration / len(f0)
+			#rms_step = duration / len(rms[0])
+			#rms = rms.reshape(rms.shape[0] * rms.shape[1])
+
 			if self.use_rosa:
-				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0)
+				f0_cut = self.make_sequence_cut(f0_step, first_start, prev_word_end, f0) #TODO fix, probably librosa broken
 				rms_cut = self.make_sequence_cut(rms_step, first_start, prev_word_end, rms)
 				statistics_records["pyin_pitch"]  =  self.get_full_statistics(f0_cut)
 				statistics_records["rms"] = self.get_full_statistics(rms_cut)
@@ -418,10 +423,16 @@ class ReportGenerator:
 					total_words += 1
 					events.append(singleWord)
 
-					if token_id in words_freq:
-						words_freq[token_id] += 1
+					if self.de_personalization:
+						if token_id in words_freq:
+							words_freq[token_id] += 1
+						else:
+							words_freq[token_id] = 1 #defaultdict
 					else:
-						words_freq[token_id] = 1
+						if current_word in words_freq:
+							words_freq[current_word] += 1
+						else:
+							words_freq[current_word] = 1
 				
 				pitch_cut = self.make_sequence_cut(pitch_step, first_start, prev_word_end, pitch)
 				intens_cut = self.make_sequence_cut(intensity_step, first_start, prev_word_end, intensity)
