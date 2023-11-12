@@ -64,9 +64,10 @@ class ReportGenerator:
 		header = {'Authorization': 'Api-Key {}'.format(key)}
 		req = requests.post(POST, headers=header, json=body)
 		data = req.json()
-		id = data['id']
-		if self.verbose:
-			print("Y id", id)
+		if 'id' in data:
+			id = data['id']
+		else:
+			print("no id", data)
 		return id
 
 	def check_server_recognition(self, id):
@@ -593,7 +594,9 @@ class ReportGenerator:
 			time = datetime.datetime.now().strftime('%H:%M:%S')
 			date = datetime.datetime.now().strftime('%Y-%m-%d')
 			record_file_path, alias_name = self.save_downloaded_and_name(path_user_logs, message, downloaded_file)
-			id = self.request_recognition(record_file_path, alias_name)
+			print(record_file_path)
+			self.convert_wav_to_ogg(record_file_path, record_file_path + ".ogg")
+			id = self.request_recognition(record_file_path + ".ogg", alias_name)
 			wav_file = self.convert_ogg_to_wav(path_user_logs, record_file_path, str(message.id))
 			seq_dict = self.extract_features(wav_file)
 			if self.skip_plots == False:
@@ -613,11 +616,13 @@ class ReportGenerator:
 				if os.path.exists(full_report_name):
 					os.remove(full_report_name) 
 				delete_file(alias_name)
+			#commands_response = self.detect_commands(message_text) #blocked:)
+			#if commands_response != '':
+			#	self.bot.reply_to(message, commands_response)
 		except:
-			print("exception was thrown in deplayed_recognition")
-		commands_response = self.detect_commands(message_text) #blocked:)
-		if commands_response != '':
-			self.bot.reply_to(message, commands_response)
+			import traceback
+			traceback.print_exc()
+			print("exception was thrown in deplayed_recognition") #TODO full info
 			
 	def detect_commands(self, text):
 		text = text.lower()
