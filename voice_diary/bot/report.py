@@ -329,7 +329,13 @@ class ReportGenerator:
 		words_count = 0
 		for chunk in req['response']['chunks']: #Refact step #2
 			altId = 0
+			channel_id = chunk['channelTag']
+			if channel_id != '1':
+				#print("skipping")
+				continue
 			for alt in chunk['alternatives']: #We don't handle silence right yet in case for alts ATTENTION
+				#if alt["channelTag"] != '1':
+				#	continue
 				first_start = -1.0
 				for word in alt['words']: #Refact step #1
 					start = float(word['startTime'][:-1])
@@ -410,7 +416,7 @@ class ReportGenerator:
 						"token_id" : token_id,
 						"word_idx" : total_words,
 						"letters_speed" : letters_speed,
-						"letters_freq" : 1.0 / letters_speed
+						"letters_freq" : 1.0 / (letters_speed + 0.00000000001) #fastest fix
 					}
 					if self.calc_every_stat:
 						singleWord["stats"] = statistics_records 
@@ -505,6 +511,7 @@ class ReportGenerator:
 		root_element["pauses_duration"] = pauses_total_duration
 		root_element["words_duration"] = words_total_duration
 		root_element["words_count"] = words_count
+		root_element["recognition_log"] = req
 		json_report = json.dumps(root_element, ensure_ascii=False) 
 		#Без следующей строчки - human readable, но проблемы на стороне QT
 		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
@@ -543,6 +550,9 @@ class ReportGenerator:
 		if self.verbose == True:
 			print("Text chunks:")
 		for chunk in req['response']['chunks']:
+			channel_id = chunk['channelTag']
+			if channel_id != '1':
+				continue
 			if self.verbose == True:
 				print(chunk['alternatives'][0]['text'])
 			if chunk['alternatives'][0]['text'] == "Теги" or chunk['alternatives'][0]['text'] == "Тэги":
@@ -601,7 +611,8 @@ class ReportGenerator:
 			seq_dict = self.extract_features(wav_file)
 			if self.skip_plots == False:
 				self.save_images(seq_dict)
-			req = self.check_server_recognition(id)
+			req = self.check_server_recognition(id) #here we may loose a lot of time TODO async + queue
+			#print(req)
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
 			json_report, tags = self.make_json_report(req, seq_dict, time, date)
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
