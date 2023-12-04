@@ -261,7 +261,7 @@ class ReportGenerator:
 						"text": chunk_text, "info": self.parse_praat_info(chunk_report)}
 		if self.calc_every_stat:
 			single_chunk["stats"] = statistics_records 
-		if chunk_text == "Тэги" or chunk_text == "Теги":
+		if chunk_text == "Тэги" or chunk_text == "Теги" or chunk_text == "Теге" or chunk_text == "Тэге":
 			tag_request_found = True
 		full_text += chunk_text + ". "
 		chunks.append(single_chunk)
@@ -512,13 +512,10 @@ class ReportGenerator:
 		root_element["words_duration"] = words_total_duration
 		root_element["words_count"] = words_count
 		root_element["recognition_log"] = req
-		json_report = json.dumps(root_element, ensure_ascii=False) 
-		#Без следующей строчки - human readable, но проблемы на стороне QT
-		json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
 		if self.measure_time == True:
 			self.measure_report_time(start_moment, reshape_sequences_moment, surf_moment,
 			praat_moment, all_chnunks_and_events_moment, cross_matrix__moment)
-		return json_report, tags
+		return root_element, tags
 
 
 	def save_downloaded_and_name(self, path_user_logs, message, downloaded_file):
@@ -615,6 +612,12 @@ class ReportGenerator:
 			#print(req)
 			full_string = json.dumps(req, ensure_ascii=False, indent=2)
 			json_report, tags = self.make_json_report(req, seq_dict, time, date)
+			import hashlib
+			with open(record_file_path, 'rb') as file_obj:
+				file_contents = file_obj.read()
+				json_report["audio_md5"] = hashlib.md5(file_contents).hexdigest()
+			json_report = json.dumps(json_report, ensure_ascii=False) 
+			json_report = json.dumps(json.loads(json_report, parse_float=lambda x: round(float(x), 9)), indent = 4)
 			self.save_json_products(path_user_logs, json_report, full_string, str(message.id))
 			message_text = self.merge_text_from_request(req)
 			self.send_message_and_reports(path_user_logs, message, message_text, tags)
@@ -622,7 +625,9 @@ class ReportGenerator:
 				if os.path.exists(wav_file):
 					os.remove(wav_file)
 				if os.path.exists(record_file_path):
-					os.remove(record_file_path) 
+					os.remove(record_file_path)
+					if os.path.exists(record_file_path + ".ogg"):
+						os.remove(record_file_path + ".ogg")	
 				full_report_name = path_user_logs + '/full_report_' + str(message.id) + '.json'
 				if os.path.exists(full_report_name):
 					os.remove(full_report_name) 
