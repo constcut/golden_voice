@@ -654,11 +654,15 @@ class ReportGenerator:
 
         full_string = json.dumps(req, ensure_ascii=False, indent=2)
         json_report, tags = self.make_json_report(req, seq_dict, time, date)
+        json_report = json.dumps(json_report, ensure_ascii=False) # TODO add md5
+        json_report = json.dumps(json.loads(
+            json_report, parse_float=lambda x: round(float(x), 9)), indent=4)
         self.save_json_products(
             path_user_logs, json_report, full_string, str(message.id))
         message_text = self.merge_text_from_request(req)
         self.send_message_and_reports(
             path_user_logs, message, message_text, tags)
+        delete_file(alias)
 
     def deplayed_recognition(self, path_user_logs, message, downloaded_file):
         try:
