@@ -4,3 +4,7 @@
 build-diaryth-*
 
 .DS_Store
+
+jvd/jvd
+
+*.vscode*
