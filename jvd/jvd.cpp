@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <limits>
 
 #include "simdjson.cpp"
 #include "simdjson.h"
@@ -14,12 +15,39 @@
 // Подробная статистика по каждому слову
 // Отдельный класс
 // # в череде глобальных слов, праат, длительность, диапазоны высоты и грокомости
+struct WordStats {
+  std::unordered_map<std::string, double> stats;
+  std::vector<unsigned int> idxes;
+
+  void process_stat(const std::string& name, double value) {
+    if (stats.count(name + "_count") == 0) {
+      stats[name + "_count"] = {};
+      stats[name + "_sum"] = {};
+      stats[name + "_max"] = std::numeric_limits<double>::min();
+      stats[name + "_min"] = std::numeric_limits<double>::max();
+    }
+    stats[name + "_count"] += 1;
+    stats[name + "_sum"] += value;
+    stats[name + "_max"] = std::max(stats[name + "_max"], value);
+    stats[name + "_min"] = std::min(stats[name + "_min"], value);
+    stats[name + "_mean"] = stats[name + "_sum"] / stats[name + "_count"];
+  }
+  // letters count
+  // среднее по величинам, минимальное и максимальное по величинам
+  //    min, max, median, mode, sd -> praat_pitch / intensity / rms
+  //    letters_speed, morph, 
+  //    info: duration + all other
+
+  // время по каждой встрече слова
+  // индексы, когда это слово встречается (последовательная глобальная индексация слов)
+};
 
 using namespace simdjson;
 
 class RecordsManager {
  public:
-  RecordsManager() {
+  RecordsManager() 
+      : global_word_idx_(0) {
     paths_.reserve(500);
     records_.reserve(500);
   }
@@ -43,11 +71,24 @@ class RecordsManager {
         std::string word = std::string(event["word"].get_string().take_value());
         std::transform(word.begin(), word.end(), word.begin(), ::tolower);
         words_[word].push_back(&event);
+
+        WordStats word_stats;
+        word_stats.process_stat("letters_speed", event["letters_speed"].get_double());
+        word_stats.process_stat("letters_freq", event["letters_freq"].get_double());
+        if (!event["stats"]["praat_pitch"].is_null()) {
+          if (event["stats"]["praat_pitch"].find_field("SD").error() == SUCCESS) {
+            word_stats.process_stat("pitch_SD", event["stats"]["praat_pitch"]["SD"].get_double());
+          }
+        }
+
+
         // TODO we don't have here exact time of each word!!!
         // TODO total stats:
             // letters freq, duration
             // stats - praat_pitch, intensiti -> word "range"
             // full praat info -> Jitter, Shimmer
+        word_stats.idxes.push_back(global_word_idx_);
+        ++global_word_idx_;
       }
     }
 
@@ -66,6 +107,8 @@ class RecordsManager {
   }
 
  private:
+  unsigned int global_word_idx_;
+
   std::vector<std::filesystem::path> paths_;
   std::vector<ondemand::document> records_;
   std::unordered_map<std::string, double> stats_;
