@@ -24,6 +24,9 @@ JsonReport::JsonReport(QObject *parent) : QObject(parent)
 
 void JsonReport::loadFromFile(QString filename)
 {
+    if (filename[0] != '/')
+        filename = "/" + filename; //HOT FIX FOR PATH CUT
+
     QFile f(filename);
     f.open(QIODevice::ReadOnly);
 

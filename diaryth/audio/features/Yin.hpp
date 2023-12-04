@@ -2,7 +2,7 @@
 #define YIN_H
 
 #include <vector>
-
+#include <stddef.h>
 // YIN monophonic pitch detection algorithm (http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf).
 
 
