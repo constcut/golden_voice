@@ -39,7 +39,7 @@ class ReportGenerator:
         self.verbose = False
         self.required_cleaning = True
 
-        self.praat_f0_min = 60
+        self.praat_f0_min = 73
         self.praat_f0_max = 600
         self.voice_report_param1 = 1.3
         self.voice_report_param2 = 1.6

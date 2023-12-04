@@ -16,10 +16,14 @@
 // Отдельный класс
 // # в череде глобальных слов, праат, длительность, диапазоны высоты и грокомости
 struct WordStats {
-  std::unordered_map<std::string, double> stats;
+  std::map<std::string, double> stats;
   std::vector<unsigned int> idxes;
 
   void process_stat(const std::string& name, double value) {
+    if (value == 0) {
+      // TODO remove tmp fix for freq etc - should be done on level higher in report generator
+      return;
+    }
     if (stats.count(name + "_count") == 0) {
       stats[name + "_count"] = {};
       stats[name + "_sum"] = {};
@@ -29,7 +33,7 @@ struct WordStats {
     stats[name + "_count"] += 1;
     stats[name + "_sum"] += value;
     stats[name + "_max"] = std::max(stats[name + "_max"], value);
-    stats[name + "_min"] = std::min(stats[name + "_min"], value);
+    stats[name + "_min"] = std::min(stats[name + "_min"], value); //avoid 0 min freqs
     stats[name + "_mean"] = stats[name + "_sum"] / stats[name + "_count"];
   }
   // letters count
@@ -71,23 +75,29 @@ class RecordsManager {
         std::string word = std::string(event["word"].get_string().take_value());
         std::transform(word.begin(), word.end(), word.begin(), ::tolower);
         words_[word].push_back(&event);
-
-        WordStats word_stats;
-        word_stats.process_stat("letters_speed", event["letters_speed"].get_double());
+        WordStats& word_stats = words_stats_[word];
+        //word_stats.process_stat("letters_speed", event["letters_speed"].get_double());
         word_stats.process_stat("letters_freq", event["letters_freq"].get_double());
-        if (!event["stats"]["praat_pitch"].is_null()) {
-          if (event["stats"]["praat_pitch"].find_field("SD").error() == SUCCESS) {
-            word_stats.process_stat("pitch_SD", event["stats"]["praat_pitch"]["SD"].get_double());
+        if (event["stats"]["praat_pitch"].error() == SUCCESS) {
+          if (event["stats"]["praat_pitch"].find_field("min").error() == SUCCESS) {
+            word_stats.process_stat("pitch_min", event["stats"]["praat_pitch"]["min"].get_double());
+            word_stats.process_stat("pitch_max", event["stats"]["praat_pitch"]["max"].get_double());
+            word_stats.process_stat("intensity_min", event["stats"]["intensity"]["min"].get_double());
+            word_stats.process_stat("intensity_max", event["stats"]["intensity"]["max"].get_double());
           }
         }
-
-
-        // TODO we don't have here exact time of each word!!!
-        // TODO total stats:
-            // letters freq, duration
-            // stats - praat_pitch, intensiti -> word "range"
-            // full praat info -> Jitter, Shimmer
-        word_stats.idxes.push_back(global_word_idx_);
+        if (!event["info"].is_null()) {
+          if (event["info"].find_field("duration").error() == SUCCESS) {
+            word_stats.process_stat("duration", event["info"]["duration"].get_double());
+          }
+          if (event["info"].find_field("Number of pulses").error() == SUCCESS) {
+            //word_stats.process_stat("pulses", event["info"]["Number of pulses"].get_double());
+          }
+          if (event["info"].find_field("Number of voice breaks").error() == SUCCESS) {
+            //word_stats.process_stat("voice_breaks", event["info"]["Number of voice breaks"].get_double());
+          }
+        }
+        word_stats.idxes.push_back(global_word_idx_); // TODO find min/max gap
         ++global_word_idx_;
       }
     }
@@ -102,6 +112,12 @@ class RecordsManager {
     for (const auto& [name, records] : words_) {
       if (records.size() > 50) {
         std::cout << records.size() << " times " << name  << std::endl;
+        for (const auto& [key, val]: words_stats_[name].stats) {
+          if (key.find("count") != std::string::npos || key.find("sum") != std::string::npos)
+            continue;
+          std::cout << "\n    "  << key << " = " << val << ";";
+        }
+        std::cout << std::endl;
       }
     }
   }
@@ -114,6 +130,8 @@ class RecordsManager {
   std::unordered_map<std::string, double> stats_;
 
   std::map<std::string, std::vector<const simdjson_result<ondemand::value>*>> words_;
+  std::map<std::string, WordStats> words_stats_;
+
   std::map<std::string, std::vector<const ondemand::document*>> dates_;
   std::vector<std::vector<const ondemand::document*>> weeks_;
 
