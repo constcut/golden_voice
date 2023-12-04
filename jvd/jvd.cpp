@@ -3,18 +3,15 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <limits>
 
 #include "simdjson.cpp"
 #include "simdjson.h"
 
-// Подробная статистика по каждому слову
-// Отдельный класс
-// # в череде глобальных слов, праат, длительность, диапазоны высоты и грокомости
 struct WordStats {
   std::map<std::string, double> stats;
   std::vector<unsigned int> idxes;
@@ -33,24 +30,16 @@ struct WordStats {
     stats[name + "_count"] += 1;
     stats[name + "_sum"] += value;
     stats[name + "_max"] = std::max(stats[name + "_max"], value);
-    stats[name + "_min"] = std::min(stats[name + "_min"], value); //avoid 0 min freqs
+    stats[name + "_min"] = std::min(stats[name + "_min"], value);
     stats[name + "_mean"] = stats[name + "_sum"] / stats[name + "_count"];
   }
-  // letters count
-  // среднее по величинам, минимальное и максимальное по величинам
-  //    min, max, median, mode, sd -> praat_pitch / intensity / rms
-  //    letters_speed, morph, 
-  //    info: duration + all other
-
-  // время по каждой встрече слова
-  // индексы, когда это слово встречается (последовательная глобальная индексация слов)
 };
 
 using namespace simdjson;
 
 class RecordsManager {
  public:
-  RecordsManager() 
+  RecordsManager()
       : global_word_idx_(0) {
     paths_.reserve(500);
     records_.reserve(500);
@@ -76,7 +65,7 @@ class RecordsManager {
         std::transform(word.begin(), word.end(), word.begin(), ::tolower);
         words_[word].push_back(&event);
         WordStats& word_stats = words_stats_[word];
-        //word_stats.process_stat("letters_speed", event["letters_speed"].get_double());
+        // word_stats.process_stat("letters_speed", event["letters_speed"].get_double());
         word_stats.process_stat("letters_freq", event["letters_freq"].get_double());
         if (event["stats"]["praat_pitch"].error() == SUCCESS) {
           if (event["stats"]["praat_pitch"].find_field("min").error() == SUCCESS) {
@@ -91,13 +80,13 @@ class RecordsManager {
             word_stats.process_stat("duration", event["info"]["duration"].get_double());
           }
           if (event["info"].find_field("Number of pulses").error() == SUCCESS) {
-            //word_stats.process_stat("pulses", event["info"]["Number of pulses"].get_double());
+            // word_stats.process_stat("pulses", event["info"]["Number of pulses"].get_double());
           }
           if (event["info"].find_field("Number of voice breaks").error() == SUCCESS) {
-            //word_stats.process_stat("voice_breaks", event["info"]["Number of voice breaks"].get_double());
+            // word_stats.process_stat("voice_breaks", event["info"]["Number of voice breaks"].get_double());
           }
         }
-        word_stats.idxes.push_back(global_word_idx_); // TODO find min/max gap
+        word_stats.idxes.push_back(global_word_idx_);  // TODO find min/max gap
         ++global_word_idx_;
       }
     }
@@ -111,11 +100,11 @@ class RecordsManager {
     }
     for (const auto& [name, records] : words_) {
       if (records.size() > 50) {
-        std::cout << records.size() << " times " << name  << std::endl;
-        for (const auto& [key, val]: words_stats_[name].stats) {
+        std::cout << records.size() << " times " << name << std::endl;
+        for (const auto& [key, val] : words_stats_[name].stats) {
           if (key.find("count") != std::string::npos || key.find("sum") != std::string::npos)
             continue;
-          std::cout << "\n    "  << key << " = " << val << ";";
+          std::cout << "\n    " << key << " = " << val << ";";
         }
         std::cout << std::endl;
       }
@@ -145,7 +134,6 @@ int main() {
   for (const auto& it : recursive_directory_iterator("/home/constcut/life/jvd/files")) {  // fs::current_path()
     const auto report_file = it.path();
     if (report_file.extension() == ".json") {
-      // std::cout << report_file << std::endl;
       man.add_json_record(report_file);
     }
   }
