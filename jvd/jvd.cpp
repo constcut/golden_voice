@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -6,6 +7,9 @@
 #include <vector>
 
 #include "json.hpp"
+
+#include "simdjson.h"
+#include "simdjson.cpp"
 
 namespace fs = std::filesystem;
 
@@ -24,6 +28,18 @@ class RecordsManager {
     auto data = nlohmann::json::parse(file);
     for (const auto& stat: stats_list_) {
         stats_[stat] += static_cast<double>(data[stat]);
+        const std::string date = data["date"];
+        dates_[date].push_back(&data);
+        //weeks_;
+        //mothes_;
+        //years_;
+    }
+    for (const auto& event: data["events"]) {
+      if (event["type"] == "word") {
+        std::string word = event["word"];
+        std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+        words_[word].push_back(&event);
+      }
     }
     records_.push_back(std::move(data));
     // by_date_[data["date"]].push_back(&data);
@@ -48,12 +64,22 @@ class RecordsManager {
     for (const auto& [name, value]: stats_) {
         std::cout << name << " = " << value << ";" << std::endl;
     }
+    for (const auto& [name, records]: words_) {
+      if (records.size() > 50) {
+        std::cout << name << " got " << records.size() << std::endl;
+      }
+    }
   }
 
  private:
   std::vector<fs::path> paths_;
   std::vector<nlohmann::json> records_; //  TODO make nice naming dictionay
   std::unordered_map<std::string, double> stats_;
+
+  std::map<std::string, std::vector<const nlohmann::json*>> words_;
+  std::map<std::string, std::vector<const nlohmann::json*>> dates_;
+  std::vector<std::vector<const nlohmann::json*>> weeks_;
+
   const std::vector<std::string> stats_list_ = {"duration", "words_count", "words_duration", "pauses_duration"};
 };
 
