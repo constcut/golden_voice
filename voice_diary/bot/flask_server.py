@@ -41,7 +41,7 @@ class Processed(Resource):
         return response
 
 
-class AudioUpload(Resource): #add get later - to load last file back
+class AudioUpload(Resource):  # add get later - to load last file back
 
     def put(self):
 
@@ -77,14 +77,13 @@ class ImageUpload(Resource):
         return response
 
 
-
 class Home(Resource):
 
     def get(self):
 
         response = make_response("Welcome home!", 200)
         response.mimetype = "text/plain"
-        return response     
+        return response
 
 
 api.add_resource(Login, '/login')
@@ -95,4 +94,4 @@ api.add_resource(Home, "/")
 
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0') #debug=True
+    application.run(host='0.0.0.0')  # debug=True

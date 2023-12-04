@@ -2,7 +2,8 @@ import boto3
 import json
 import datetime
 
-#class yandex_object_storage class
+# class yandex_object_storage class
+
 
 def start_session():
 
@@ -23,8 +24,8 @@ def upload_file(filename, alias):
     config, s3, session = start_session()
     s3.upload_file(filename, config["bucket"], alias)
 
-    print(f"File uploaded {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
+    print(
+        f"File uploaded {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 def get_all_files():
@@ -40,21 +41,22 @@ def get_all_files():
     return files_list
 
 
-def delete_file(alias): #TODO + another function to clean all using time (after 1 week)
+def delete_file(alias):  # TODO + another function to clean all using time (after 1 week)
 
     config, s3, session = start_session()
 
-    forDeletion = [{'Key':alias}] 
-    response = s3.delete_objects(Bucket=config["bucket"], Delete={'Objects': forDeletion})
+    forDeletion = [{'Key': alias}]
+    response = s3.delete_objects(Bucket=config["bucket"], Delete={
+                                 'Objects': forDeletion})
 
-    #TODO check response
+    # TODO check response
 
-    print(f"File removed {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(
+        f"File removed {alias}. Moment: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
-
-#Допольнительная справочная информация:
+# Допольнительная справочная информация:
 # Создать новый бакет
-#s3.create_bucket(Bucket=key["bucket"])
-## Сохранить строковый объект, это может быть JSON\CSV или просто строка
-#s3.put_object(Bucket='audio', Key='object_name', Body='TEST', StorageClass='COLD')
+# s3.create_bucket(Bucket=key["bucket"])
+# Сохранить строковый объект, это может быть JSON\CSV или просто строка
+# s3.put_object(Bucket='audio', Key='object_name', Body='TEST', StorageClass='COLD')

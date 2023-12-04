@@ -16,13 +16,14 @@ def text_to_speech(text):
     data = {
         'text': text,
         'lang': 'ru-RU',
-        'voice': 'filipp', #alena, jane
-        'emotion' : 'good' #neutral
+        'voice': 'filipp',  # alena, jane
+        'emotion': 'good'  # neutral
     }
 
     with requests.post(url, headers=header, data=data, stream=True) as resp:
         if resp.status_code != 200:
-            raise RuntimeError("Invalid response received: code: %d, message: %s" % (resp.status_code, resp.text))
+            raise RuntimeError("Invalid response received: code: %d, message: %s" % (
+                resp.status_code, resp.text))
 
         for chunk in resp.iter_content(chunk_size=None):
             yield chunk
