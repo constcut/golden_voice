@@ -611,7 +611,7 @@ class ReportGenerator:
                 break
             # Внимание не собираются alternatives ATTENTION
             text_lines.append(chunk['alternatives'][0]['text'])
-            message_text += chunk['alternatives'][0]['text'] + "\n"
+            message_text += chunk['alternatives'][0]['text'] + ". " #TODO /n . etc as config
         return message_text
 
     def send_message_and_reports(self, path_user_logs, message, message_text, tags):
@@ -716,50 +716,6 @@ class ReportGenerator:
             traceback.print_exc()
             # TODO full info
             print("exception was thrown in deplayed_recognition")
-
-    def detect_commands(self, text):
-        text = text.lower()
-        request_string = "создать задачу"
-        create_aim_pos = text.find(request_string)
-        if create_aim_pos != -1:
-            return "Создается задача с именем: " + text[create_aim_pos + len(request_string):]
-        request_string = "начать задачу"
-        start_aim_pos = text.find(request_string)
-        if start_aim_pos != -1:
-            return "Начата задача с именем: " + text[start_aim_pos + len(request_string):]
-        request_string = "завершить задачу"
-        finish_aim_pos = text.find(request_string)
-        if finish_aim_pos != -1:
-            return "Завершена задача с именем: " + text[finish_aim_pos + len(request_string):]
-        request_string = "я съел"
-        eat_pos = text.find(request_string)
-        if eat_pos != -1:
-            return "Записан продукт[ы] питания: " + text[eat_pos + len(request_string):]
-        request_string = "я выпил"
-        drink_pos = text.find(request_string)
-        if drink_pos != -1:
-            return "Записан напиток: " + text[drink_pos + len(request_string):]
-        request_string = "я принял"
-        meds_pos = text.find(request_string)
-        if meds_pos != -1:
-            return "Записан препарат: " + text[meds_pos + len(request_string):]
-        request_string = "применен навык"
-        skills_pos = text.find(request_string)
-        if skills_pos != -1:
-            return "Зафиксированно применения навыка\[ов]" + text[skills_pos + len(request_string):]
-        request_string = "заполнить поле"
-        field_pos = text.find(request_string)
-        request_string_2 = "значением"
-        value_pos = text.find(request_string_2)
-        if field_pos != -1 and value_pos != -1:  # Если значение не задано - то это просто бинарное поле
-            field_name = text[field_pos + len(request_string): value_pos - 1]
-            value_text = text[value_pos + len(request_string_2):]
-            return "Поле: " + field_name + " заполненно значением " + value_text
-        if field_pos != -1 and value_pos == -1:
-            field_name = text[field_pos + len(request_string): value_pos - 1]
-            return "Поле: " + field_name + " отмечено"
-        # Рецепт - игредиенты и приготовление
-        return ""
 
     def send_delayed_text(self, message):
         path_user_logs = self._config["dir"] + '/' + str(message.chat.id)
