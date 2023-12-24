@@ -285,8 +285,10 @@ class ReportGenerator:
                         "text": chunk_text, "info": self.parse_praat_info(chunk_report)}
         if self.calc_every_stat:
             single_chunk["stats"] = statistics_records
-        if chunk_text == "Тэги" or chunk_text == "Теги" or chunk_text == "Теге" or chunk_text == "Тэге":
-            tag_request_found = True
+        for variation in ("Тэги", "Теги", "Теге", "Тэге", "Тэг", "Тег", "Тек", "Тэк"):
+            if chunk_text == variation:
+                tag_request_found = True
+                break   
         full_text += chunk_text + ". "
         chunks.append(single_chunk)
         altId += 1
@@ -526,8 +528,10 @@ class ReportGenerator:
                                 "text": chunk_text, "info": self.parse_praat_info(chunk_report)}
                 if self.calc_every_stat:
                     single_chunk["stats"] = statistics_records
-                if chunk_text == "Тэги" or chunk_text == "Теги":
-                    tag_request_found = True
+                    for variation in ("Тэги", "Теги", "Теге", "Тэге", "Тэг", "Тег", "Тек", "Тэк"):
+                        if chunk_text == variation:
+                            tag_request_found = True
+                            break  
                 full_text += chunk_text + ". "
                 chunks.append(single_chunk)
                 altId += 1
@@ -607,8 +611,10 @@ class ReportGenerator:
                 continue
             if self.verbose == True:
                 print(chunk['alternatives'][0]['text'])
-            if chunk['alternatives'][0]['text'] == "Теги" or chunk['alternatives'][0]['text'] == "Тэги":
-                break
+            for variation in ("Тэги", "Теги", "Теге", "Тэге", "Тэг", "Тег", "Тек", "Тэк"):
+                if chunk['alternatives'][0]['text'] == variation:
+                    tag_request_found = True
+                    break  
             # Внимание не собираются alternatives ATTENTION
             text_lines.append(chunk['alternatives'][0]['text'])
             message_text += chunk['alternatives'][0]['text'] + ". " #TODO /n . etc as config
